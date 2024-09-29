@@ -25,8 +25,8 @@ CREATE TABLE orchestra_member (
 );
 
 CREATE TABLE orchestra_orchestra_member (
-	id_orchestra uuid,
-	id_orchestra_member uuid,
+	id_orchestra uuid references orchestra(id),
+	id_orchestra_member uuid references orchestra_member(id),
 	is_owner boolean NOT NULL,
     is_manager boolean NOT NULL,
     primary key (id_orchestra, id_orchestra_member)
@@ -45,8 +45,8 @@ CREATE TABLE orchestra_group (
 );
 
 CREATE TABLE orchestra_group_orchestra_member (
-	id_orchestra_group uuid,
-	id_orchestra_member uuid,
+	id_orchestra_group uuid references orchestra_group(id),
+	id_orchestra_member uuid references orchestra_member(id),
 	primary key (id_orchestra_group, id_orchestra_member)
 );
 
@@ -69,10 +69,10 @@ CREATE TABLE piece_of_music (
 );
 
 CREATE TABLE concert_piece_of_music (
-	id_concert uuid,
-	id_piece_of_music uuid,
+	id_concert uuid references concert(id),
+	id_piece_of_music uuid references piece_of_music(id),
     order_piece integer NOT NULL,
-	primary key (id_concert, id_piece_of_music)
+	primary key (id_concert, id_piece_of_music),
 );
 
 CREATE TABLE audience_opinion (
@@ -83,15 +83,15 @@ CREATE TABLE audience_opinion (
 );
 
 CREATE TABLE concert_audience_opinion (
-    id_concert uuid,
-    id_audience_opinion uuid,
+    id_concert uuid references concert(id),
+    id_audience_opinion uuid references audience_opinion(id),
     opinion_timestamp timestamp NOT NULL,
     primary key (id_concert, id_audience_opinion)
 );
 
 CREATE TABLE piece_of_music_orchestra_group (
-	id_piece_of_music uuid,
-	id_orchestra_group uuid,
+	id_piece_of_music uuid references piece_of_music(id),
+	id_orchestra_group uuid references orchestra_group(id),
 	pdf_music_sheet-notes bytea NOT NULL,
     primary key (id_piece_of_music, id_orchestra_group)
 );
