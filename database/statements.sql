@@ -1,8 +1,10 @@
 CREATE TABLE orchestra (
 	id uuid primary key,
 	name text NOT NULL,
-	email text,
 	logo bytea,
+	email text,
+	address text,
+	history text,
 	facebook_url text,
 	instagram_url text,
 	youtube_url text
@@ -18,7 +20,8 @@ CREATE TABLE orchestra_member (
 	birth_date date NOT NULL DEFAULT current_date,
 	are_you_student boolean NOT NULL,
 	university text,
-	profile_picture bytea
+	profile_picture bytea,
+	description text
 );
 
 CREATE TABLE orchestra_orchestra_member (
@@ -84,4 +87,11 @@ CREATE TABLE concert_audience_opinion (
     id_audience_opinion uuid,
     opinion_timestamp timestamp NOT NULL,
     primary key (id_concert, id_audience_opinion)
+);
+
+CREATE TABLE piece_of_music_orchestra_group (
+	id_piece_of_music uuid,
+	id_orchestra_group uuid,
+	pdf_music_sheet-notes bytea NOT NULL,
+    primary key (id_piece_of_music, id_orchestra_group)
 );
