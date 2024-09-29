@@ -1,3 +1,5 @@
+CREATE DATABASE orchestras;
+
 CREATE TABLE orchestra (
 	id uuid primary key,
 	name text NOT NULL,
@@ -72,7 +74,7 @@ CREATE TABLE concert_piece_of_music (
 	id_concert uuid references concert(id),
 	id_piece_of_music uuid references piece_of_music(id),
     order_piece integer NOT NULL,
-	primary key (id_concert, id_piece_of_music),
+	primary key (id_concert, id_piece_of_music)
 );
 
 CREATE TABLE audience_opinion (
@@ -92,6 +94,6 @@ CREATE TABLE concert_audience_opinion (
 CREATE TABLE piece_of_music_orchestra_group (
 	id_piece_of_music uuid references piece_of_music(id),
 	id_orchestra_group uuid references orchestra_group(id),
-	pdf_music_sheet-notes bytea NOT NULL,
+	pdf_music_sheet_notes bytea NOT NULL,
     primary key (id_piece_of_music, id_orchestra_group)
 );
