@@ -1,8 +1,9 @@
 const pool = require('../../config/database');
+const queries = require('./queries');
 
 const getOrchestraMembers = (req, res) => {
     console.log('getOrchestraMembers');
-    pool.query('SELECT * FROM orchestra_member', (error, results) => {
+    pool.query(queries.getOrchestraMembers, (error, results) => {
         if (error) {
             throw error;
         }
