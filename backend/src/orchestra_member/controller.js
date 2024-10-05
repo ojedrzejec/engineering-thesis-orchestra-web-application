@@ -11,6 +11,18 @@ const getOrchestraMembers = (req, res) => {
     });
 };
 
+const getOrchestraMemberById = (req, res) => {
+    const id = req.params.id;
+    console.log('getOrchestraMemberById');
+    pool.query(queries.getOrchestraMemberById, [id], (error, results) => {
+        if (error) {
+            throw error;
+        }
+        res.status(200).json(results.rows);
+    });
+};
+
 module.exports = {
     getOrchestraMembers,
+    getOrchestraMemberById,
 };
