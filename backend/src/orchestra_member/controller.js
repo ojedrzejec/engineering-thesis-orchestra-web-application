@@ -22,7 +22,38 @@ const getOrchestraMemberById = (req, res) => {
     });
 };
 
+const addOrchestraMember = (req, res) => {
+    const { email, password, first_name, last_name, phone, birth_date, are_you_student, university, profile_picture, description } = req.body;
+    console.log('addOrchestraMember');
+    // check if the email exists in the database
+    pool.query(queries.checkEmailExists, [email], (error, results) => {
+        // if (error) {
+        //     return res.status(500).send("An error occurred while checking the email.");
+        // }
+        if (error) {
+            throw error;
+        }
+
+        if (results.rows.length > 0) {
+            return res.status(400).send('Email already exists.');
+        }
+
+        // if the email does not exist, add the orchestra member
+        pool.query(queries.createOrchestraMember, [email, password, first_name, last_name, phone, birth_date, are_you_student, university, profile_picture, description], (error, results) => {
+            // if (error) {
+            //     return res.status(500).send("An error occurred while adding the orchestra member.");
+            // }
+            if (error) {
+                throw error;
+            }
+            res.status(201).send(`Orchestra member added successfully with ID: ${results.insertId}`);
+            console.log('Orchestra Member created');
+        });
+    });
+};
+
 module.exports = {
     getOrchestraMembers,
     getOrchestraMemberById,
+    addOrchestraMember,
 };
