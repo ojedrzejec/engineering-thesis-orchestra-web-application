@@ -1,3 +1,4 @@
+const { v4: uuidv4 } = require('uuid');
 const pool = require('../../config/database');
 const queries = require('./queries');
 
@@ -23,6 +24,7 @@ const getOrchestraMemberById = (req, res) => {
 };
 
 const addOrchestraMember = (req, res) => {
+    const id = uuidv4(); // Generate a new UUID
     const { email, password, first_name, last_name, phone, birth_date, are_you_student, university, profile_picture, description } = req.body;
     console.log('addOrchestraMember');
     // check if the email exists in the database
@@ -39,14 +41,14 @@ const addOrchestraMember = (req, res) => {
         }
 
         // if the email does not exist, add the orchestra member
-        pool.query(queries.createOrchestraMember, [email, password, first_name, last_name, phone, birth_date, are_you_student, university, profile_picture, description], (error, results) => {
+        pool.query(queries.createOrchestraMember, [id, email, password, first_name, last_name, phone, birth_date, are_you_student, university, profile_picture, description], (error, results) => {
             // if (error) {
             //     return res.status(500).send("An error occurred while adding the orchestra member.");
             // }
             if (error) {
                 throw error;
             }
-            res.status(201).send(`Orchestra member added successfully with ID: ${results.insertId}`);
+            res.status(201).send('Orchestra member added successfully!');
             console.log('Orchestra Member created');
         });
     });
