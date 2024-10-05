@@ -3,7 +3,7 @@
 CREATE TABLE orchestra (
 	id uuid primary key,
 	name text NOT NULL,
-	logo bytea,
+	logo text,
 	email text,
 	address text,
 	history text,
@@ -22,7 +22,7 @@ CREATE TABLE orchestra_member (
 	birth_date date NOT NULL DEFAULT current_date,
 	are_you_student boolean NOT NULL,
 	university text,
-	profile_picture bytea,
+	profile_picture text,
 	description text
 );
 
@@ -61,7 +61,7 @@ CREATE TABLE concert (
 	place text NOT NULL,
 	description text,
 	reservation_url text,
-	graphic bytea
+	graphic text
 );
 
 CREATE TABLE piece_of_music (
@@ -94,6 +94,6 @@ CREATE TABLE concert_audience_opinion (
 CREATE TABLE piece_of_music_orchestra_group (
 	id_piece_of_music uuid references piece_of_music(id),
 	id_orchestra_group uuid references orchestra_group(id),
-	pdf_music_sheet_notes bytea NOT NULL,
+	pdf_music_sheet_notes text NOT NULL,
 	primary key (id_piece_of_music, id_orchestra_group)
 );
