@@ -7,6 +7,6 @@ router.get('/', controller.getOrchestraMembers)
 router.get('/:id', controller.getOrchestraMemberById)
 router.post('/', controller.addOrchestraMember)
 router.delete('/:id', controller.removeOrchestraMemberById)
-// router.put('/:id', controller.updateOrchestraMember);
+router.patch('/:id', controller.updateOrchestraMemberById) // update only the modified columns of the orchestra member
 
 module.exports = router

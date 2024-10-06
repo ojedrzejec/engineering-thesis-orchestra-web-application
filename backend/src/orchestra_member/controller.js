@@ -57,12 +57,14 @@ const addOrchestraMember = (req, res) => {
             return res
                 .status(500)
                 .send(
-                    'An error occurred while checking if the email exists in the database.'
+                    'An error occurred while checking if the email exists in the database, cannot add new orchestra member.'
                 )
         }
 
         if (results.rows.length > 0) {
-            return res.status(400).send('Email already exists.')
+            return res
+                .status(400)
+                .send('Email already exists, cannot add new orchestra member.')
         }
 
         // if the email does not exist, add the orchestra member
@@ -105,7 +107,7 @@ const removeOrchestraMemberById = (req, res) => {
             return res
                 .status(500)
                 .send(
-                    'An error occurred while getting the orchestra member by id.'
+                    'An error occurred while getting the orchestra member by id, cannot delete.'
                 )
         }
 
@@ -128,7 +130,70 @@ const removeOrchestraMemberById = (req, res) => {
                         )
                 }
                 res.status(200).send(
-                    `Orchestra member with ID: \"${id}\" deleted successfully.`
+                    `Orchestra member with ID: \"${id}\" deleted successfully!`
+                )
+            }
+        )
+    })
+}
+
+const updateOrchestraMemberById = (req, res) => {
+    const id = req.params.id
+    const {
+        // email,
+        // password,
+        first_name,
+        last_name,
+        phone,
+        birth_date,
+        are_you_student,
+        university,
+        profile_picture,
+        description,
+    } = req.body
+    console.log('updateOrchestraMemberById')
+
+    // check if the orchestra member exists
+    pool.query(queries.getOrchestraMemberById, [id], (error, results) => {
+        if (error) {
+            return res
+                .status(500)
+                .send(
+                    'An error occurred while getting the orchestra member by id, cannot update.'
+                )
+        }
+        if (!results.rows.length) {
+            return res
+                .status(404)
+                .send('Orchestra member not found, cannot update.')
+        }
+
+        // if the specified orchestra member exists, update it
+        pool.query(
+            queries.updateOrchestraMemberById,
+            [
+                id,
+                // email,
+                // password,
+                first_name,
+                last_name,
+                phone,
+                birth_date,
+                are_you_student,
+                university,
+                profile_picture,
+                description,
+            ],
+            (error, results) => {
+                if (error) {
+                    return res
+                        .status(500)
+                        .send(
+                            'An error occurred while updating the orchestra member by id.'
+                        )
+                }
+                res.status(200).send(
+                    `Orchestra member with ID: \"${id}\" updated successfully!`
                 )
             }
         )
@@ -140,4 +205,5 @@ module.exports = {
     getOrchestraMemberById,
     addOrchestraMember,
     removeOrchestraMemberById,
+    updateOrchestraMemberById,
 }
