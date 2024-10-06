@@ -6,7 +6,12 @@ const getOrchestraMembers = (req, res) => {
     console.log('getOrchestraMembers')
     pool.query(queries.getOrchestraMembers, (error, results) => {
         if (error) {
-            throw error
+            return res
+                .status(500)
+                .send('An error occurred while getting orchestra members.')
+        }
+        if (!results.rows.length) {
+            return res.status(404).send('No orchestra members found.')
         }
         res.status(200).json(results.rows)
     })
@@ -17,7 +22,14 @@ const getOrchestraMemberById = (req, res) => {
     console.log('getOrchestraMemberById')
     pool.query(queries.getOrchestraMemberById, [id], (error, results) => {
         if (error) {
-            throw error
+            return res
+                .status(500)
+                .send(
+                    'An error occurred while getting the orchestra member by id.'
+                )
+        }
+        if (!results.rows.length) {
+            return res.status(404).send('Orchestra member not found.')
         }
         res.status(200).json(results.rows)
     })
@@ -41,11 +53,12 @@ const addOrchestraMember = (req, res) => {
 
     // check if the email exists in the database
     pool.query(queries.checkEmailExists, [email], (error, results) => {
-        // if (error) {
-        //     return res.status(500).send("An error occurred while checking the email.");
-        // }
         if (error) {
-            throw error
+            return res
+                .status(500)
+                .send(
+                    'An error occurred while checking if the email exists in the database.'
+                )
         }
 
         if (results.rows.length > 0) {
@@ -69,11 +82,12 @@ const addOrchestraMember = (req, res) => {
                 description,
             ],
             (error, results) => {
-                // if (error) {
-                //     return res.status(500).send("An error occurred while adding the orchestra member.");
-                // }
                 if (error) {
-                    throw error
+                    return res
+                        .status(500)
+                        .send(
+                            'An error occurred while adding the orchestra member.'
+                        )
                 }
                 res.status(201).send('Orchestra member added successfully!')
             }
@@ -88,10 +102,14 @@ const removeOrchestraMemberById = (req, res) => {
     // check if the orchestra member exists
     pool.query(queries.getOrchestraMemberById, [id], (error, results) => {
         if (error) {
-            return res.status(error.status).send(error.message)
+            return res
+                .status(500)
+                .send(
+                    'An error occurred while getting the orchestra member by id.'
+                )
         }
 
-        if (results.rows.length === 0) {
+        if (!results.rows.length) {
             return res
                 .status(404)
                 .send('Orchestra member not found, cannot delete.')
@@ -106,11 +124,11 @@ const removeOrchestraMemberById = (req, res) => {
                     return res
                         .status(500)
                         .send(
-                            'An error occurred while deleting the orchestra member.'
+                            'An error occurred while deleting the orchestra member by id.'
                         )
                 }
                 res.status(200).send(
-                    `Orchestra member deleted with ID: \"${id}\".`
+                    `Orchestra member with ID: \"${id}\" deleted successfully.`
                 )
             }
         )
