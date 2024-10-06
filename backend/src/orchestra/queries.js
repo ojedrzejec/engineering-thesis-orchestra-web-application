@@ -1,4 +1,4 @@
-const getOrchestras = 'SELECT * FROM orchestra';
+const getOrchestras = 'SELECT * FROM orchestra'
 
 module.exports = {
     getOrchestras,
