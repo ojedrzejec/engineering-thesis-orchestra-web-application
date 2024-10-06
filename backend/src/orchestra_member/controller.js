@@ -151,11 +151,12 @@ const updateOrchestraMemberById = (req, res) => {
         profile_picture,
         description,
     } = req.body
-    console.log('updateOrchestraMemberById')
+    console.log('updateOrchestraMemberById, received ID:', id)
 
-    // check if the orchestra member exists
+    // Check if the orchestra member exists
     pool.query(queries.getOrchestraMemberById, [id], (error, results) => {
         if (error) {
+            console.error('Error fetching orchestra member by ID:', error)
             return res
                 .status(500)
                 .send(
@@ -168,35 +169,72 @@ const updateOrchestraMemberById = (req, res) => {
                 .send('Orchestra member not found, cannot update.')
         }
 
-        // if the specified orchestra member exists, update it
-        pool.query(
-            queries.updateOrchestraMemberById,
-            [
-                id,
-                // email,
-                // password,
-                first_name,
-                last_name,
-                phone,
-                birth_date,
-                are_you_student,
-                university,
-                profile_picture,
-                description,
-            ],
-            (error, results) => {
-                if (error) {
-                    return res
-                        .status(500)
-                        .send(
-                            'An error occurred while updating the orchestra member by id.'
-                        )
-                }
-                res.status(200).send(
-                    `Orchestra member with ID: \"${id}\" updated successfully!`
-                )
+        // Building the dynamic query
+        const columnsToUpdate = []
+        const values = []
+        let counter = 1
+
+        if (first_name) {
+            columnsToUpdate.push(`first_name = $${counter++}`)
+            values.push(first_name)
+        }
+        if (last_name) {
+            columnsToUpdate.push(`last_name = $${counter++}`)
+            values.push(last_name)
+        }
+        if (phone) {
+            columnsToUpdate.push(`phone = $${counter++}`)
+            values.push(phone)
+        }
+        if (birth_date) {
+            columnsToUpdate.push(`birth_date = $${counter++}`)
+            values.push(birth_date)
+        }
+        if (typeof are_you_student !== 'undefined') {
+            columnsToUpdate.push(`are_you_student = $${counter++}`)
+            values.push(are_you_student)
+        }
+        if (university) {
+            columnsToUpdate.push(`university = $${counter++}`)
+            values.push(university)
+        }
+        if (profile_picture) {
+            columnsToUpdate.push(`profile_picture = $${counter++}`)
+            values.push(profile_picture)
+        }
+        if (description) {
+            columnsToUpdate.push(`description = $${counter++}`)
+            values.push(description)
+        }
+
+        // If there are no columns to update, return a 400 Bad Request response
+        if (columnsToUpdate.length === 0) {
+            return res.status(400).send('No valid columns provided for update.')
+        }
+
+        // Add the id as the last value for the WHERE clause
+        values.push(id)
+        const updateQuery = `
+            UPDATE orchestra_member
+            SET ${columnsToUpdate.join(', ')}
+            WHERE id = $${counter}
+            RETURNING *;
+        `
+
+        // Execute the update query
+        pool.query(updateQuery, values, (error, updateResults) => {
+            if (error) {
+                console.error('Error updating orchestra member by ID:', error)
+                return res
+                    .status(500)
+                    .send(
+                        'An error occurred while updating the orchestra member by id.'
+                    )
             }
-        )
+            res.status(200).send(
+                `Orchestra member with ID: "${id}" updated successfully!`
+            )
+        })
     })
 }
 
