@@ -38,6 +38,7 @@ const addOrchestraMember = (req, res) => {
         description,
     } = req.body
     console.log('addOrchestraMember')
+
     // check if the email exists in the database
     pool.query(queries.checkEmailExists, [email], (error, results) => {
         // if (error) {
@@ -75,7 +76,42 @@ const addOrchestraMember = (req, res) => {
                     throw error
                 }
                 res.status(201).send('Orchestra member added successfully!')
-                console.log('Orchestra Member created')
+            }
+        )
+    })
+}
+
+const removeOrchestraMemberById = (req, res) => {
+    const id = req.params.id
+    console.log('removeOrchestraMemberById')
+
+    // check if the orchestra member exists
+    pool.query(queries.getOrchestraMemberById, [id], (error, results) => {
+        if (error) {
+            return res.status(error.status).send(error.message)
+        }
+
+        if (results.rows.length === 0) {
+            return res
+                .status(404)
+                .send('Orchestra member not found, cannot delete.')
+        }
+
+        // if the specified orchestra member exists, delete it
+        pool.query(
+            queries.deleteOrchestraMemberById,
+            [id],
+            (error, results) => {
+                if (error) {
+                    return res
+                        .status(500)
+                        .send(
+                            'An error occurred while deleting the orchestra member.'
+                        )
+                }
+                res.status(200).send(
+                    `Orchestra member deleted with ID: \"${id}\".`
+                )
             }
         )
     })
@@ -85,4 +121,5 @@ module.exports = {
     getOrchestraMembers,
     getOrchestraMemberById,
     addOrchestraMember,
+    removeOrchestraMemberById,
 }

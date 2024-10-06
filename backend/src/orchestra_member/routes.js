@@ -6,7 +6,7 @@ const router = Router()
 router.get('/', controller.getOrchestraMembers)
 router.get('/:id', controller.getOrchestraMemberById)
 router.post('/', controller.addOrchestraMember)
+router.delete('/:id', controller.removeOrchestraMemberById)
 // router.put('/:id', controller.updateOrchestraMember);
-// router.delete('/:id', controller.deleteOrchestraMember);
 
 module.exports = router

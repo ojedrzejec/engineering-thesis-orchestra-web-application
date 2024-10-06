@@ -19,11 +19,13 @@ const createOrchestraMember = `
     RETURNING *;
 `
 
+const deleteOrchestraMemberById = 'DELETE FROM orchestra_member WHERE id = $1'
+
 module.exports = {
     getOrchestraMembers,
     getOrchestraMemberById,
     checkEmailExists,
     createOrchestraMember,
+    deleteOrchestraMemberById,
     // updateOrchestraMemberById,
-    // deleteOrchestraMemberById,
 }
