@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require('uuid')
+const bcrypt = require('bcrypt')
 const pool = require('../../config/database')
 const queries = require('./queries')
 
@@ -35,65 +36,145 @@ const getOrchestraMemberById = (req, res) => {
     })
 }
 
-const addOrchestraMember = (req, res) => {
-    const id = uuidv4() // Generate a new UUID
-    const {
-        email,
-        password,
-        first_name,
-        last_name,
-        phone,
-        birth_date,
-        are_you_student,
-        university,
-        profile_picture,
-        description,
-    } = req.body
-    console.log('addOrchestraMember')
+const addOrchestraMember = async (req, res) => {
+    try {
+        const salt = await bcrypt.genSalt()
+        const hashedPassword = await bcrypt.hash(req.body.password, salt)
+        console.log(salt)
+        console.log(hashedPassword)
 
-    // check if the email exists in the database
-    pool.query(queries.checkEmailExists, [email], (error, results) => {
-        if (error) {
-            return res
-                .status(500)
-                .send(
-                    'An error occurred while checking if the email exists in the database, cannot add new orchestra member.'
-                )
+        const orchestraMember = {
+            email: req.body.email,
+            password: hashedPassword,
+            first_name: req.body.first_name,
+            last_name: req.body.last_name,
+            phone: req.body.phone,
+            birth_date: req.body.birth_date,
+            are_you_student: req.body.are_you_student,
+            university: req.body.university,
+            profile_picture: req.body.profile_picture,
+            description: req.body.description,
         }
+        console.log('addOrchestraMember')
 
-        if (results.rows.length > 0) {
-            return res
-                .status(400)
-                .send('Email already exists, cannot add new orchestra member.')
-        }
-
-        // if the email does not exist, add the orchestra member
+        // check if the email exists in the database
         pool.query(
-            queries.createOrchestraMember,
-            [
-                id,
-                email,
-                password,
-                first_name,
-                last_name,
-                phone,
-                birth_date,
-                are_you_student,
-                university,
-                profile_picture,
-                description,
-            ],
+            queries.checkEmailExists,
+            [orchestraMember.email],
             (error, results) => {
                 if (error) {
                     return res
                         .status(500)
                         .send(
-                            'An error occurred while adding the orchestra member.'
+                            'An error occurred while checking if the email exists in the database, cannot add new orchestra member.'
                         )
                 }
-                res.status(201).send('Orchestra member added successfully!')
+
+                if (results.rows.length > 0) {
+                    return res
+                        .status(400)
+                        .send(
+                            'Email already exists, cannot add new orchestra member.'
+                        )
+                }
+
+                // if the email does not exist, add the orchestra member
+                const id = uuidv4() // Generate a new UUID
+                pool.query(
+                    queries.createOrchestraMember,
+                    [
+                        id,
+                        orchestraMember.email,
+                        orchestraMember.password,
+                        orchestraMember.first_name,
+                        orchestraMember.last_name,
+                        orchestraMember.phone,
+                        orchestraMember.birth_date,
+                        orchestraMember.are_you_student,
+                        orchestraMember.university,
+                        orchestraMember.profile_picture,
+                        orchestraMember.description,
+                    ],
+                    (error, results) => {
+                        if (error) {
+                            return res
+                                .status(500)
+                                .send(
+                                    'An error occurred while adding the orchestra member.'
+                                )
+                        }
+                        res.status(201).send(
+                            'Orchestra member added successfully!'
+                        )
+                    }
+                )
             }
         )
+    } catch {
+        res.status(500).send(
+            'An error occurred while registering the orchestra member.'
+        )
+    }
+}
+
+const loginOrchestraMember = (req, res) => {
+    console.log('loginOrchestraMember')
+    const { email, password } = req.body
+    // check if the email exists in the database
+    pool.query(queries.checkEmailExists, [email], async (error, results) => {
+        if (error) {
+            return res
+                .status(500)
+                .send(
+                    'An error occurred while checking if the email exists in the database, cannot login orchestra member.'
+                )
+        }
+
+        if (!results.rows.length) {
+            return res
+                .status(400)
+                .send(
+                    'Email does not exist in the database, cannot login orchestra member.'
+                )
+        }
+
+        // if the email exist, login the orchestra member
+        try {
+            // const user = results.rows[0].m.match(/(?<=\().+?(?=\))/g)[0]
+
+            // Extract the user details from the result
+            const userRow = results.rows[0].m // Assuming `m` is the field with the user data
+            console.log('user:', userRow)
+
+            // Parse the userRow, assuming it's in the format you provided earlier
+            const userArray = userRow.match(/\(([^)]+)\)/)[1].split(',')
+
+            const user = {
+                email: userArray[1].replace(/"/g, ''),
+                password: userArray[2].replace(/"/g, ''),
+                first_name: userArray[3].replace(/"/g, ''),
+                last_name: userArray[4].replace(/"/g, ''),
+                phone: userArray[5].replace(/"/g, ''),
+                birth_date: userArray[6].replace(/"/g, ''),
+                are_you_student: userArray[7] === 't',
+                university: userArray[8].replace(/"/g, ''),
+                profile_picture: userArray[9].replace(/"/g, ''),
+                description: userArray[10].replace(/"/g, ''),
+            }
+
+            console.log('user:', user)
+            if (await bcrypt.compare(password, user.password)) {
+                // res.status(200).send('Login successful!')
+                res.send('Login successful!')
+            } else {
+                // res.status(401).send('Login failed!')
+                res.send('Login failed!')
+            }
+        } catch {
+            res.status(500).send(
+                'An error occured while login orchestra member'
+            )
+        }
     })
 }
 
@@ -242,6 +323,7 @@ module.exports = {
     getOrchestraMembers,
     getOrchestraMemberById,
     addOrchestraMember,
+    loginOrchestraMember,
     removeOrchestraMemberById,
     updateOrchestraMemberById,
 }

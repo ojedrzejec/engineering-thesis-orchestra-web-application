@@ -7,10 +7,10 @@ const port = 3000
 
 // Increase the size limit for the JSON payload
 app.use(express.json({ limit: '100mb' }))
-app.use(express.urlencoded({ limit: '100mb', extended: true })) // Increase the limit for URL-encoded payloads
+app.use(express.urlencoded({ limit: '100mb', extended: false })) // Increase the limit for URL-encoded payloads
 
 app.get('/', (req, res) => {
-    res.send('Hello World')
+    res.send('Home')
 })
 
 app.use('/api/orchestra', orchestraRoutes)
