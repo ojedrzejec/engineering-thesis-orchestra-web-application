@@ -1,5 +1,9 @@
+require('dotenv').config()
+// ACCESS_TOKEN_SECRET is defined in the .env file; the secret keys were generated in node with command=> require('crypto').randomBytes(64).toString('hex')
+
 const { v4: uuidv4 } = require('uuid')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 const pool = require('../../config/database')
 const queries = require('./queries')
 
@@ -40,8 +44,8 @@ const addOrchestraMember = async (req, res) => {
     try {
         const salt = await bcrypt.genSalt()
         const hashedPassword = await bcrypt.hash(req.body.password, salt)
-        console.log(salt)
-        console.log(hashedPassword)
+        // console.log(salt)
+        // console.log(hashedPassword)
 
         const orchestraMember = {
             email: req.body.email,
@@ -140,11 +144,12 @@ const loginOrchestraMember = (req, res) => {
 
         // if the email exist, login the orchestra member
         try {
+            console.log('inside try')
             // const user = results.rows[0].m.match(/(?<=\().+?(?=\))/g)[0]
 
             // Extract the user details from the result
             const userRow = results.rows[0].m // Assuming `m` is the field with the user data
-            console.log('user:', userRow)
+            // console.log('user:', userRow)
 
             // Parse the userRow, assuming it's in the format you provided earlier
             const userArray = userRow.match(/\(([^)]+)\)/)[1].split(',')
@@ -162,7 +167,13 @@ const loginOrchestraMember = (req, res) => {
                 description: userArray[10].replace(/"/g, ''),
             }
 
-            console.log('user:', user)
+            const accessToken = jwt.sign(
+                user.email,
+                process.env.ACCESS_TOKEN_SECRET
+            )
+            res.json({ accessToken: accessToken })
+
+            // console.log('user:', user)
             if (await bcrypt.compare(password, user.password)) {
                 // res.status(200).send('Login successful!')
                 res.send('Login successful!')
