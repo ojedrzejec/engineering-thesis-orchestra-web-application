@@ -1,4 +1,4 @@
-const pool = require('../../config/database')
+const pool = require('../config/database')
 const queries = require('./queries')
 
 const getOrchestras = (req, res) => {

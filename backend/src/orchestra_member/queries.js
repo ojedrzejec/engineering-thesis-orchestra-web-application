@@ -1,8 +1,14 @@
-const getOrchestraMembers = 'SELECT * FROM orchestra_member'
+const getOrchestraMembers = `SELECT * FROM orchestra_member`
 
-const getOrchestraMemberById = 'SELECT * FROM orchestra_member WHERE id = $1'
+const getOrchestraMemberById = `SELECT * FROM orchestra_member WHERE id = $1`
 
-const checkEmailExists = 'SELECT m FROM orchestra_member m WHERE m.email = $1' // m is an alias for orchestra member
+const checkEmailExists = `SELECT m FROM orchestra_member m WHERE m.email = $1` // m is an alias for orchestra member
+
+const getMemberOrchestrasAndRoles = `
+    SELECT id_orchestra, is_owner, is_manager 
+    FROM orchestra_orchestra_member 
+    WHERE id_orchestra_member = $1
+`
 
 const createOrchestraMember = `
     INSERT INTO orchestra_member (
@@ -22,12 +28,13 @@ const createOrchestraMember = `
     RETURNING *;
 `
 
-const deleteOrchestraMemberById = 'DELETE FROM orchestra_member WHERE id = $1'
+const deleteOrchestraMemberById = `DELETE FROM orchestra_member WHERE id = $1`
 
 module.exports = {
     getOrchestraMembers,
     getOrchestraMemberById,
     checkEmailExists,
+    getMemberOrchestrasAndRoles,
     createOrchestraMember,
     deleteOrchestraMemberById,
 }

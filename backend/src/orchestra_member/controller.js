@@ -1,10 +1,9 @@
 require('dotenv').config()
-// ACCESS_TOKEN_SECRET is defined in the .env file; the secret keys were generated in node with command=> require('crypto').randomBytes(64).toString('hex')
 
 const { v4: uuidv4 } = require('uuid')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const pool = require('../../config/database')
+const pool = require('../config/database')
 const queries = require('./queries')
 
 const getOrchestraMembers = (req, res) => {
@@ -124,7 +123,8 @@ const addOrchestraMember = async (req, res) => {
 const loginOrchestraMember = (req, res) => {
     console.log('loginOrchestraMember')
     const { email, password } = req.body
-    // check if the email exists in the database
+
+    // Check if the email exists in the database
     pool.query(queries.checkEmailExists, [email], async (error, results) => {
         if (error) {
             return res
@@ -142,51 +142,67 @@ const loginOrchestraMember = (req, res) => {
                 )
         }
 
-        // if the email exist, login the orchestra member
         try {
-            console.log('inside try')
-            // const user = results.rows[0].m.match(/(?<=\().+?(?=\))/g)[0]
-
-            // Extract the user details from the result
-            const userRow = results.rows[0].m // Assuming `m` is the field with the user data
-            // console.log('user:', userRow)
-
-            // Parse the userRow, assuming it's in the format you provided earlier
+            const userRow = results.rows[0].m
             const userArray = userRow.match(/\(([^)]+)\)/)[1].split(',')
+            const userId = userArray[0].replace(/"/g, '')
+            const userEmail = userArray[1].replace(/"/g, '')
+            const userPassword = userArray[2].replace(/"/g, '')
 
-            const user = {
-                email: userArray[1].replace(/"/g, ''),
-                password: userArray[2].replace(/"/g, ''),
-                first_name: userArray[3].replace(/"/g, ''),
-                last_name: userArray[4].replace(/"/g, ''),
-                phone: userArray[5].replace(/"/g, ''),
-                birth_date: userArray[6].replace(/"/g, ''),
-                are_you_student: userArray[7] === 't',
-                university: userArray[8].replace(/"/g, ''),
-                profile_picture: userArray[9].replace(/"/g, ''),
-                description: userArray[10].replace(/"/g, ''),
-            }
+            // Verify password
+            if (await bcrypt.compare(password, userPassword)) {
+                // Fetch all orchestras and roles for the member
+                pool.query(
+                    queries.getMemberOrchestrasAndRoles,
+                    [userId],
+                    (error, roleResults) => {
+                        if (error) {
+                            return res
+                                .status(500)
+                                .send(
+                                    'An error occurred while retrieving orchestra roles.'
+                                )
+                        }
 
-            const accessToken = jwt.sign(
-                user.email,
-                process.env.ACCESS_TOKEN_SECRET
-            )
-            res.json({ accessToken: accessToken })
+                        const orchestras = roleResults.rows.map((row) => ({
+                            orchestraId: row.id_orchestra,
+                            isOwner: row.is_owner,
+                            isManager: row.is_manager,
+                        }))
 
-            // console.log('user:', user)
-            if (await bcrypt.compare(password, user.password)) {
-                // res.status(200).send('Login successful!')
-                res.send('Login successful!')
+                        // Generate JWT token with user's ID and associated orchestras
+                        const accessToken = generateJsonWebToken(
+                            userId,
+                            userEmail,
+                            orchestras
+                        )
+
+                        const refreshToken = jwt.sign(
+                            { userId, email, orchestras },
+                            process.env.REFRESH_JWT_TOKEN_SECRET
+                        )
+
+                        return res.json({
+                            accessToken: accessToken,
+                            refreshToken: refreshToken,
+                        })
+                    }
+                )
             } else {
-                // res.status(401).send('Login failed!')
-                res.send('Login failed!')
+                return res.status(403).send('Invalid credentials.')
             }
-        } catch {
-            res.status(500).send(
-                'An error occured while login orchestra member'
-            )
+        } catch (err) {
+            return res.status(500).send('An error occurred while logging in.')
         }
     })
+}
+
+const generateJsonWebToken = (memberId, email, orchestras) => {
+    return jwt.sign(
+        { memberId, email, orchestras },
+        process.env.ACCESS_JWT_TOKEN_SECRET,
+        { expiresIn: '15m' }
+    )
 }
 
 const removeOrchestraMemberById = (req, res) => {

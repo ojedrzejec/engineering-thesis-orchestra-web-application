@@ -36,7 +36,7 @@ CREATE TABLE orchestra_orchestra_member (
 
 CREATE TABLE instrument (
 	id uuid primary key,
-	id_orchestra_member uuid references orchestra_member(id) NOT NULL,
+	id_orchestra_member uuid references orchestra_member(id) NULL,
 	name text NOT NULL
 );
 
@@ -96,4 +96,11 @@ CREATE TABLE piece_of_music_orchestra_group (
 	id_orchestra_group uuid references orchestra_group(id),
 	pdf_music_sheet_notes text NOT NULL,
 	primary key (id_piece_of_music, id_orchestra_group)
+);
+
+CREATE TABLE orchestra_member_concert_availability (
+    id_orchestra_member uuid references orchestra_member(id),
+    id_concert uuid references concert(id),
+    is_available BOOLEAN NULL,
+    PRIMARY KEY (id_orchestra_member, id_concert),
 );
