@@ -40,8 +40,7 @@ const createOrchestra = async (req, res) => {
 
         res.json({ token, orchestra })
     } catch (err) {
-        console.error(err)
-        res.status(500).json({ msg: 'Server error' })
+        res.status(500).json({ msg: 'Server error while createOrchestra' })
     }
 }
 

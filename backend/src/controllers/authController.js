@@ -12,7 +12,7 @@ const register = async (req, res) => {
         password,
         first_name,
         last_name,
-        // instruments,
+        instruments, // This is a string of instrument names separated by commas
         phone,
         birth_date,
         are_you_student,
@@ -45,19 +45,23 @@ const register = async (req, res) => {
 
         const createdOrchestraMember =
             await OrchestraMemberModel.createOrchestraMember(newOrchestraMember)
+
+        // Split instruments string into an array
+        const instrumentsArray = instruments
+            .split(',')
+            .map((instr) => instr.trim())
+
+        // Use `for...of` loop to handle async/await properly
+        for (const instrument of instrumentsArray) {
+            await InstrumentModel.addOrchestraMemberToInstrument(
+                createdOrchestraMember.id,
+                instrument // instrument name
+            )
+        }
+
         res.json(createdOrchestraMember)
-
-        console.log(createdOrchestraMember)
-        // console.log('instruments: ', instruments)
-
-        // instruments.forEach(async (instrument) => {
-        //     await InstrumentModel.addOrchestraMemberToInstrument(
-        //         createdOrchestraMember.id,
-        //         instrument // instrument name
-        //     )
-        // })
     } catch (err) {
-        res.status(500).json({ msg: 'Server error' })
+        res.status(500).json({ msg: 'Server error while registration.' })
     }
 }
 
@@ -80,7 +84,7 @@ const login = async (req, res) => {
 
         res.json({ accessToken: accessToken })
     } catch (err) {
-        res.status(500).json({ msg: 'Server error' })
+        res.status(500).json({ msg: 'Server error while login.' })
     }
 }
 
