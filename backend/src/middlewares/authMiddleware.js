@@ -45,7 +45,31 @@ const authorizeRole = (...allowedRoles) => {
     }
 }
 
+// checkRoleForOrchestra = (orchestraId, role) => {
+//     return (req, res, next) => {
+//         const userRole = req.user.roles.find(
+//             (r) => r.orchestraId === orchestraId
+//         )
+//         if (!userRole || userRole.role !== role) {
+//             return res
+//                 .status(403)
+//                 .json({ msg: 'Access denied for this orchestra' })
+//         }
+//         next()
+//     }
+// }
+
+// {
+//     "id": "user-uuid",
+//     "roles": [
+//         { "role": "player", "orchestraId": "orch-uuid-1" },
+//         { "role": "manager", "orchestraId": "orch-uuid-2" },
+//         { "role": "owner", "orchestraId": "orch-uuid-3" }
+//     ]
+// }
+
 module.exports = {
     authenticateToken,
     authorizeRole,
+    // checkRoleForOrchestra,
 }

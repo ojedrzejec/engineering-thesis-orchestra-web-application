@@ -1,4 +1,5 @@
 const pool = require('../config/database')
+const { v4: uuidv4 } = require('uuid')
 
 const findByEmail = async (email) => {
     const result = await pool.query(
@@ -9,6 +10,7 @@ const findByEmail = async (email) => {
 }
 
 const createOrchestraMember = async (userData) => {
+    const id = uuidv4() // Generate a new UUID
     const {
         email,
         password,
@@ -24,6 +26,7 @@ const createOrchestraMember = async (userData) => {
     const result = await pool.query(
         `
       INSERT INTO orchestra_member (
+        id,
         email, 
         password, 
         first_name, 
@@ -35,10 +38,11 @@ const createOrchestraMember = async (userData) => {
         profile_picture, 
         description
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       RETURNING *;
     `,
         [
+            id,
             email,
             password,
             first_name,
