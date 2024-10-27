@@ -71,35 +71,35 @@ const createInstrument = async (instrumentName) => {
     return result.rows[0]
 }
 
-const addOrchestraMemberToInstrument = async (
-    orchestraMemberId,
-    instrumentName
-) => {
-    const foundInstrument = await findByName(instrumentName)
-    if (foundInstrument && !foundInstrument.id_orchestra_member) {
-        // Update the existing instrument by adding the orchestra member ID
-        await linkOrchestraMemberToInstrument(
-            foundInstrument.id,
-            orchestraMemberId
-        )
-    } else {
-        // If the instrument already has an orchestra member, create a new instrument with the same name
-        await createNewInstrumentWithMember(orchestraMemberId, instrumentName)
-    }
-}
+// const addOrchestraMemberToInstrument = async (
+//     orchestraMemberId,
+//     instrumentName
+// ) => {
+//     const foundInstrument = await findByName(instrumentName)
+//     if (foundInstrument && !foundInstrument.id_orchestra_member) {
+//         // Update the existing instrument by adding the orchestra member ID
+//         await linkOrchestraMemberToInstrument(
+//             foundInstrument.id,
+//             orchestraMemberId
+//         )
+//     } else {
+//         // If the instrument already has an orchestra member, create a new instrument with the same name
+//         await createNewInstrumentWithMember(orchestraMemberId, instrumentName)
+//     }
+// }
 
-// Utility function to link an existing instrument to an orchestra member
-const linkOrchestraMemberToInstrument = async (
-    instrumentId,
-    orchestraMemberId
-) => {
-    await pool.query(
-        `UPDATE instrument
-         SET id_orchestra_member = $1
-         WHERE id = $2`,
-        [orchestraMemberId, instrumentId]
-    )
-}
+// // Utility function to link an existing instrument to an orchestra member
+// const linkOrchestraMemberToInstrument = async (
+//     instrumentId,
+//     orchestraMemberId
+// ) => {
+//     await pool.query(
+//         `UPDATE instrument
+//          SET id_orchestra_member = $1
+//          WHERE id = $2`,
+//         [orchestraMemberId, instrumentId]
+//     )
+// }
 
 // Utility function to create a new instrument entry with an orchestra member
 const createNewInstrumentWithMember = async (
@@ -114,38 +114,38 @@ const createNewInstrumentWithMember = async (
     )
 }
 
-const updateOrchestraMemberInstruments = async (
-    orchestraMemberId,
-    instrumentNames
-) => {
-    // Begin a transaction
-    await pool.query('BEGIN')
+// const updateOrchestraMemberInstruments = async (
+//     orchestraMemberId,
+//     instrumentNames
+// ) => {
+//     // Begin a transaction
+//     await pool.query('BEGIN')
 
-    try {
-        // Delete existing instruments for the orchestra member
-        await pool.query(
-            'DELETE FROM instrument WHERE id_orchestra_member = $1',
-            [orchestraMemberId]
-        )
+//     try {
+//         // Delete existing instruments for the orchestra member
+//         await pool.query(
+//             'DELETE FROM instrument WHERE id_orchestra_member = $1',
+//             [orchestraMemberId]
+//         )
 
-        // Insert new instruments
-        for (const instrumentName of instrumentNames) {
-            const id = uuidv4()
-            await pool.query(
-                `INSERT INTO instrument (id, id_orchestra_member, name)
-                 VALUES ($1, $2, $3)`,
-                [id, orchestraMemberId, instrumentName]
-            )
-        }
+//         // Insert new instruments
+//         for (const instrumentName of instrumentNames) {
+//             const id = uuidv4()
+//             await pool.query(
+//                 `INSERT INTO instrument (id, id_orchestra_member, name)
+//                  VALUES ($1, $2, $3)`,
+//                 [id, orchestraMemberId, instrumentName]
+//             )
+//         }
 
-        // Commit transaction
-        await pool.query('COMMIT')
-    } catch (error) {
-        // Rollback on error
-        await pool.query('ROLLBACK')
-        throw error
-    }
-}
+//         // Commit transaction
+//         await pool.query('COMMIT')
+//     } catch (error) {
+//         // Rollback on error
+//         await pool.query('ROLLBACK')
+//         throw error
+//     }
+// }
 
 const patchOrchestraMemberInstruments = async (
     orchestraMemberId,
@@ -201,8 +201,9 @@ module.exports = {
     updateAllInstrumentsByName,
     deleteAllInstrumentsByName,
     createInstrument,
-    addOrchestraMemberToInstrument,
-    updateOrchestraMemberInstruments,
+    // addOrchestraMemberToInstrument,
+    createNewInstrumentWithMember,
+    // updateOrchestraMemberInstruments,
     patchOrchestraMemberInstruments,
     deleteInstrumentsByOrchestraMemberId,
 }

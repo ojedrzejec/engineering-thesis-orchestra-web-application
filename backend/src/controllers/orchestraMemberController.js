@@ -66,10 +66,69 @@ const deleteOrchestraMember = async (req, res) => {
     }
 }
 
-// update single
+// patch single
+const patchOrchestraMember = async (req, res) => {
+    const id = req.params.id
+    const {
+        first_name,
+        last_name,
+        instruments, // Expecting a comma-separated string of instrument names
+        phone,
+        birth_date,
+        are_you_student,
+        university,
+        profile_picture,
+        description,
+    } = req.body
+
+    try {
+        // Check if the orchestra member exists
+        const orchestraMember = await OrchestraMemberModel.findById(id)
+        if (!orchestraMember) {
+            return res.status(404).json({ msg: 'Orchestra member not found.' })
+        }
+
+        // Update the orchestra member details
+        const updatedOrchestraMember =
+            await OrchestraMemberModel.updateOrchestraMemberById(id, {
+                first_name,
+                last_name,
+                phone,
+                birth_date,
+                are_you_student,
+                university,
+                profile_picture,
+                description,
+            })
+
+        // Handle instrument updates
+        if (instruments) {
+            const instrumentNames = instruments
+                .split(',')
+                .map((name) => name.trim())
+            // Delete existing instruments for this member
+            await InstrumentModel.deleteInstrumentsByOrchestraMemberId(id)
+            // Add new instruments
+            for (const instrumentName of instrumentNames) {
+                await InstrumentModel.createNewInstrumentWithMember(
+                    id,
+                    instrumentName
+                )
+            }
+        }
+
+        res.status(200).json(updatedOrchestraMember)
+    } catch (err) {
+        console.error('Error updating orchestra member:', err)
+        res.status(500).json({
+            msg: 'Server error while updating orchestra member.',
+        })
+    }
+}
 
 module.exports = {
     getAllOrchestraMembers,
     getOrchestraMember,
     deleteOrchestraMember,
+    patchOrchestraMember,
 }

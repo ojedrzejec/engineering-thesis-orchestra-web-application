@@ -38,7 +38,46 @@ const deleteOrchestraMemberById = async (id) => {
     return result.rows[0]
 }
 
-// const patchOrchestraMemberById = async (id, userData) => {
+const updateOrchestraMemberById = async (id, fields) => {
+    const {
+        first_name,
+        last_name,
+        phone,
+        birth_date,
+        are_you_student,
+        university,
+        profile_picture,
+        description,
+    } = fields
+
+    // COALESCE() function to return the first non-null argument
+    const result = await pool.query(
+        `UPDATE orchestra_member
+         SET first_name = COALESCE($1, first_name),
+             last_name = COALESCE($2, last_name),
+             phone = COALESCE($3, phone),
+             birth_date = COALESCE($4, birth_date),
+             are_you_student = COALESCE($5, are_you_student),
+             university = COALESCE($6, university),
+             profile_picture = COALESCE($7, profile_picture),
+             description = COALESCE($8, description)
+         WHERE id = $9
+         RETURNING *;`,
+        [
+            first_name,
+            last_name,
+            phone,
+            birth_date,
+            are_you_student,
+            university,
+            profile_picture,
+            description,
+            id,
+        ]
+    )
+
+    return result.rows[0]
+}
 
 const createOrchestraMember = async (userData) => {
     const id = uuidv4() // Generate a new UUID
@@ -95,6 +134,6 @@ module.exports = {
     getAllOrchestraMembers,
     getOrchestraMemberById,
     deleteOrchestraMemberById,
-    // patchOrchestraMemberById,
+    updateOrchestraMemberById,
     createOrchestraMember,
 }
