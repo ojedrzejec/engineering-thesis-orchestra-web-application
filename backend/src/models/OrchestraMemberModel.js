@@ -9,6 +9,27 @@ const findByEmail = async (email) => {
     return result.rows[0]
 }
 
+const findById = async (id) => {
+    const result = await pool.query(
+        'SELECT * FROM orchestra_member WHERE id = $1',
+        [id]
+    )
+    return result.rows[0]
+}
+
+const getAllOrchestraMembers = async () => {
+    const result = await pool.query('SELECT * FROM orchestra_member')
+    return result.rows
+}
+
+const getOrchestraMemberById = async (id) => {
+    const result = await pool.query(
+        'SELECT * FROM orchestra_member WHERE id = $1',
+        [id]
+    )
+    return result.rows[0]
+}
+
 const createOrchestraMember = async (userData) => {
     const id = uuidv4() // Generate a new UUID
     const {
@@ -60,5 +81,8 @@ const createOrchestraMember = async (userData) => {
 
 module.exports = {
     findByEmail,
+    findById,
+    getAllOrchestraMembers,
+    getOrchestraMemberById,
     createOrchestraMember,
 }

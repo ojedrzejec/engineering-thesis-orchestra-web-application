@@ -25,6 +25,7 @@ require('dotenv').config()
 
 const express = require('express')
 const authRoutes = require('./src/routes/authRoutes')
+const orchestraMemberRoutes = require('./src/routes/orchestraMemberRoutes')
 const orchestraRoutes = require('./src/routes/orchestraRoutes')
 
 const app = express()
@@ -36,6 +37,7 @@ app.use(express.json({ limit: '100mb' }))
 app.use(express.urlencoded({ limit: '100mb', extended: true })) // Increase the limit for URL-encoded payloads
 
 app.use('/auth', authRoutes)
+app.use('/orchestraMember', orchestraMemberRoutes)
 app.use('/orchestra', orchestraRoutes)
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
