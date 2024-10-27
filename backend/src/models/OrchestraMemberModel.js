@@ -30,6 +30,16 @@ const getOrchestraMemberById = async (id) => {
     return result.rows[0]
 }
 
+const deleteOrchestraMemberById = async (id) => {
+    const result = await pool.query(
+        'DELETE FROM orchestra_member WHERE id = $1 RETURNING *',
+        [id]
+    )
+    return result.rows[0]
+}
+
+// const patchOrchestraMemberById = async (id, userData) => {
+
 const createOrchestraMember = async (userData) => {
     const id = uuidv4() // Generate a new UUID
     const {
@@ -84,5 +94,7 @@ module.exports = {
     findById,
     getAllOrchestraMembers,
     getOrchestraMemberById,
+    deleteOrchestraMemberById,
+    // patchOrchestraMemberById,
     createOrchestraMember,
 }

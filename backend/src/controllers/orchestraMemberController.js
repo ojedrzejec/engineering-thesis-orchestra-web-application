@@ -1,4 +1,5 @@
 const OrchestraMemberModel = require('../models/OrchestraMemberModel')
+const InstrumentModel = require('../models/InstrumentModel')
 
 // get all
 const getAllOrchestraMembers = async (req, res) => {
@@ -17,12 +18,11 @@ const getAllOrchestraMembers = async (req, res) => {
 }
 
 // get single
-const getOrchestraMemberById = async (req, res) => {
+const getOrchestraMember = async (req, res) => {
     const id = req.params.id
     try {
         const orchestraMember =
             await OrchestraMemberModel.getOrchestraMemberById(id)
-        console.log('getOrchestraMemberById')
         if (!orchestraMember) {
             return res.status(404).json({ msg: 'Orchestra member not found.' })
         }
@@ -35,10 +35,41 @@ const getOrchestraMemberById = async (req, res) => {
 }
 
 // delete single
+const deleteOrchestraMember = async (req, res) => {
+    const id = req.params.id
+    try {
+        const orchestraMember = await OrchestraMemberModel.findById(id)
+        if (!orchestraMember) {
+            return res.status(404).json({ msg: 'Orchestra member not found.' })
+        }
+
+        // delete all related instruments first
+        await InstrumentModel.deleteInstrumentsByOrchestraMemberId(id)
+
+        // now delete the orchestra member
+        const deletedMember =
+            await OrchestraMemberModel.deleteOrchestraMemberById(id)
+        if (!deletedMember) {
+            return res
+                .status(404)
+                .json({ msg: 'Orchestra member not found or already deleted.' })
+        }
+
+        res.status(200).json({
+            msg: `Orchestra member with ID: '${id}' deleted successfully!`,
+        })
+    } catch (err) {
+        console.error('Error deleting orchestra member:', err)
+        res.status(500).json({
+            msg: 'Server error while deleting orchestra member by id.',
+        })
+    }
+}
 
 // update single
 
 module.exports = {
     getAllOrchestraMembers,
-    getOrchestraMemberById,
+    getOrchestraMember,
+    deleteOrchestraMember,
 }
