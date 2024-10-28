@@ -116,36 +116,6 @@ const addInstrumentWithMember = async (req, res) => {
     }
 }
 
-// const updateUserInstruments = async (req, res) => {
-//     const { orchestraMemberId } = req.params
-//     const { instrumentNames } = req.body // Expecting an array of instrument names
-
-//     try {
-//         await InstrumentModel.updateOrchestraMemberInstruments(
-//             orchestraMemberId,
-//             instrumentNames
-//         )
-//         res.status(200).json({ msg: 'Instruments updated successfully' })
-//     } catch (err) {
-//         res.status(500).json({ msg: 'Server error while updating instruments' })
-//     }
-// }
-
-// const patchUserInstruments = async (req, res) => {
-//     const { orchestraMemberId } = req.params
-//     const { instrumentNames } = req.body // Expecting an array of instrument names
-
-//     try {
-//         await InstrumentModel.patchOrchestraMemberInstruments(
-//             orchestraMemberId,
-//             instrumentNames
-//         )
-//         res.status(200).json({ msg: 'Instruments patched successfully' })
-//     } catch (err) {
-//         res.status(500).json({ msg: 'Server error while patching instruments' })
-//     }
-// }
-
 const deleteInstrumentsByOrchestraMemberId = async (req, res) => {
     const { id } = req.params
     try {
@@ -163,7 +133,5 @@ module.exports = {
     deleteInstrumentsByName,
     addInstrumentWithoutMember,
     addInstrumentWithMember,
-    // updateUserInstruments,
-    // patchUserInstruments,
     deleteInstrumentsByOrchestraMemberId,
 }
