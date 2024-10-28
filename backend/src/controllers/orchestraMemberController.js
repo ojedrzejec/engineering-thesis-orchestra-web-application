@@ -110,7 +110,7 @@ const patchOrchestraMember = async (req, res) => {
             await InstrumentModel.deleteInstrumentsByOrchestraMemberId(id)
             // Add new instruments
             for (const instrumentName of instrumentNames) {
-                await InstrumentModel.createNewInstrumentWithMember(
+                await InstrumentModel.createInstrumentWithMember(
                     id,
                     instrumentName
                 )

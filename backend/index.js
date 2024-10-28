@@ -27,6 +27,7 @@ const express = require('express')
 const authRoutes = require('./src/routes/authRoutes')
 const orchestraMemberRoutes = require('./src/routes/orchestraMemberRoutes')
 const orchestraRoutes = require('./src/routes/orchestraRoutes')
+const instrumentRoutes = require('./src/routes/instrumentRoutes')
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -39,6 +40,7 @@ app.use(express.urlencoded({ limit: '100mb', extended: true })) // Increase the 
 app.use('/auth', authRoutes)
 app.use('/orchestraMember', orchestraMemberRoutes)
 app.use('/orchestra', orchestraRoutes)
+app.use('/instrument', instrumentRoutes)
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
 

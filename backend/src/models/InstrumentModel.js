@@ -16,14 +16,19 @@ const findByName = async (name) => {
     return result.rows[0]
 }
 
-// get all instruments but do not repeat the same instrument if there are few instruments with the same name
 const getAllInstruments = async () => {
+    const result = await pool.query('SELECT * FROM instrument')
+    return result.rows
+}
+
+// get all instruments but do not repeat the same instrument if there are few instruments with the same name
+const getAllInstrumentsDistincted = async () => {
     const result = await pool.query('SELECT DISTINCT name FROM instrument')
     return result.rows
 }
 
-// Get a single instrument associated with the specific orchestra member
-const getInstrumentByMemberId = async (orchestraMemberId) => {
+// Get all instruments associated with the specified orchestra member
+const getInstrumentsByMemberId = async (orchestraMemberId) => {
     const result = await pool.query(
         'SELECT * FROM instrument WHERE id_orchestra_member = $1',
         [orchestraMemberId]
@@ -54,8 +59,8 @@ const deleteAllInstrumentsByName = async (name) => {
     return result.rows
 }
 
-// for owner
-const createInstrument = async (instrumentName) => {
+// For owner: create a new row with instrument name, leaving the id_orchestra_member empty
+const createInstrumentWithoutMember = async (instrumentName) => {
     const id = uuidv4()
     const result = await pool.query(
         `
@@ -84,7 +89,7 @@ const createInstrument = async (instrumentName) => {
 //         )
 //     } else {
 //         // If the instrument already has an orchestra member, create a new instrument with the same name
-//         await createNewInstrumentWithMember(orchestraMemberId, instrumentName)
+//         await createInstrumentWithMember(orchestraMemberId, instrumentName)
 //     }
 // }
 
@@ -102,7 +107,7 @@ const createInstrument = async (instrumentName) => {
 // }
 
 // Utility function to create a new instrument entry with an orchestra member
-const createNewInstrumentWithMember = async (
+const createInstrumentWithMember = async (
     orchestraMemberId,
     instrumentName
 ) => {
@@ -147,44 +152,44 @@ const createNewInstrumentWithMember = async (
 //     }
 // }
 
-const patchOrchestraMemberInstruments = async (
-    orchestraMemberId,
-    newInstruments
-) => {
-    // Get current instruments
-    const currentInstrumentsResult = await pool.query(
-        'SELECT * FROM instrument WHERE id_orchestra_member = $1',
-        [orchestraMemberId]
-    )
-    const currentInstruments = currentInstrumentsResult.rows.map(
-        (row) => row.name
-    )
+// const patchOrchestraMemberInstruments = async (
+//     orchestraMemberId,
+//     newInstruments
+// ) => {
+//     // Get current instruments
+//     const currentInstrumentsResult = await pool.query(
+//         'SELECT * FROM instrument WHERE id_orchestra_member = $1',
+//         [orchestraMemberId]
+//     )
+//     const currentInstruments = currentInstrumentsResult.rows.map(
+//         (row) => row.name
+//     )
 
-    // Determine which instruments to add or remove
-    const toAdd = newInstruments.filter(
-        (name) => !currentInstruments.includes(name)
-    )
-    const toRemove = currentInstruments.filter(
-        (name) => !newInstruments.includes(name)
-    )
+//     // Determine which instruments to add or remove
+//     const toAdd = newInstruments.filter(
+//         (name) => !currentInstruments.includes(name)
+//     )
+//     const toRemove = currentInstruments.filter(
+//         (name) => !newInstruments.includes(name)
+//     )
 
-    // Perform removal and addition
-    for (const name of toRemove) {
-        await pool.query(
-            'DELETE FROM instrument WHERE id_orchestra_member = $1 AND name = $2',
-            [orchestraMemberId, name]
-        )
-    }
+//     // Perform removal and addition
+//     for (const name of toRemove) {
+//         await pool.query(
+//             'DELETE FROM instrument WHERE id_orchestra_member = $1 AND name = $2',
+//             [orchestraMemberId, name]
+//         )
+//     }
 
-    for (const name of toAdd) {
-        const id = uuidv4()
-        await pool.query(
-            `INSERT INTO instrument (id, id_orchestra_member, name)
-             VALUES ($1, $2, $3)`,
-            [id, orchestraMemberId, name]
-        )
-    }
-}
+//     for (const name of toAdd) {
+//         const id = uuidv4()
+//         await pool.query(
+//             `INSERT INTO instrument (id, id_orchestra_member, name)
+//              VALUES ($1, $2, $3)`,
+//             [id, orchestraMemberId, name]
+//         )
+//     }
+// }
 
 // 'DELETE FROM instrument WHERE id_orchestra_member = $1'
 const deleteInstrumentsByOrchestraMemberId = async (orchestraMemberId) => {
@@ -197,13 +202,14 @@ module.exports = {
     // findById,
     findByName,
     getAllInstruments,
-    getInstrumentByMemberId,
+    getAllInstrumentsDistincted,
+    getInstrumentsByMemberId,
     updateAllInstrumentsByName,
     deleteAllInstrumentsByName,
-    createInstrument,
     // addOrchestraMemberToInstrument,
-    createNewInstrumentWithMember,
+    createInstrumentWithoutMember,
+    createInstrumentWithMember,
     // updateOrchestraMemberInstruments,
-    patchOrchestraMemberInstruments,
+    // patchOrchestraMemberInstruments,
     deleteInstrumentsByOrchestraMemberId,
 }
