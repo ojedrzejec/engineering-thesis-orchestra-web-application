@@ -1,7 +1,9 @@
 <template>
-  <div class="home-view">
-    <h1>This is a home view</h1>
-  </div>
+  <main>
+    <div class="home">
+      <h1>This is an home page</h1>
+    </div>
+  </main>
 </template>
 
 <script setup lang="ts">
@@ -9,7 +11,7 @@
 
 <style>
 /* @media (min-width: 1024px) {
-  .home-view {
+  .home {
     min-height: 100vh;
     display: flex;
     align-items: center;
