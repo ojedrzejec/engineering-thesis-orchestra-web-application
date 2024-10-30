@@ -6,22 +6,27 @@
     <div class="login-view__form">
       <div class="login-view__form-input">
         <FloatLabel variant="on">
-          <InputText id="username" v-model="username" :invalid="!validateUsername" ></InputText>
-          <label for="username">Username</label>
+          <InputText id="email" v-model="email" :invalid="!validateEmail()" ></InputText>
+          <label for="email">Email</label>
         </FloatLabel>
         <div class="login-view__form-error-messages">
-          <Message severity="error" v-if="!validateLength()">{{messageValidationLength}}</Message>
-          <Message severity="error" v-if="!validateSmallCapitalLetters()">{{messageValidationSmallCapitalLetters}}</Message>
+          <Message severity="error" v-if="!validateInput(email)">{{messageValidationInput}}</Message>
+          <Message severity="error" v-if="!validateEmail()">{{messageValidationEmail}}</Message>
         </div>
       </div>
       <div class="login-view__form-input">
         <FloatLabel variant="on">
-          <InputText id="password" v-model="password" :invalid="!validatePassword" ></InputText>
+          <InputText id="password" v-model="password" :invalid="!validatePassword()" ></InputText>
           <label for="password">Password</label>
         </FloatLabel>
         <div class="login-view__form-error-messages">
-          <Message severity="error" v-if="!validateLength()">{{messageValidationLength}}</Message>
-          <Message severity="error" v-if="!validateSmallCapitalLetters()">{{messageValidationSmallCapitalLetters}}</Message>
+          <Message severity="error" v-if="!validateInput(password)">{{messageValidationInput}}</Message>
+          <Message severity="error" v-if="!validateLength(password)">{{messageValidationLength}}</Message>
+          <Message severity="error" v-if="!validateSpecialCharacter(password)">{{messageValidationSpecialCharacter}}</Message>
+          <Message severity="error" v-if="!validateDigitNumber(password)">{{messageValidationDigitNumber}}</Message>
+          <Message severity="error" v-if="!validateCapitalLetter(password)">{{messageValidationCapitalLetter}}</Message>
+          <Message severity="error" v-if="!validateSmallLetter(password)">{{messageValidationSmallLetter}}</Message>
+          <!-- <Message severity="error" v-if="!validateSmallCapitalLetters(password)">{{messageValidationSmallCapitalLetters}}</Message> -->
         </div>
       </div>
       <div>
@@ -41,25 +46,56 @@ import InputText from 'primevue/inputtext';
 import FloatLabel from 'primevue/floatlabel';
 import Message from 'primevue/message';
 
-const username = ref('');
+const email = ref('');
 const password = ref('');
 
-const messageValidationLength = "Input must be at least 2 characters long.";
-const validateLength = () => {
-  return username.value.length >= 2;
+// validation messages
+const messageValidationInput = "Input is required.";
+const messageValidationLength = "Password must be at least 8 characters long.";
+const messageValidationSpecialCharacter = "Password must be at least 1 special character.";
+const messageValidationDigitNumber = "Password must be at least 1 digit number.";
+// const messageValidationSmallCapitalLetters = "Input must contain only letters.";
+const messageValidationCapitalLetter = "Input must contain at least 1 capital letter.";
+const messageValidationSmallLetter = "Input must contain at least 1 small letter.";
+const messageValidationEmail = "Please enter a valid email address.";
+
+// validation functions
+const validateInput = (input: string) => {
+  return input.length > 0;
 }
 
-const messageValidationSmallCapitalLetters = "Input must contain only letters.";
-const validateSmallCapitalLetters = () => {
-  return username.value.match("^[a-zA-Z]+$");
+const validateLength = (input: string) => {
+  return input.length >= 8;
 }
 
-const validateUsername = () => {
-  return (validateLength() && validateSmallCapitalLetters());
+const validateSpecialCharacter = (input: string) => {
+  return /[!@#$%^&*(),.?":{}|<>]/.test(input);
+}
+
+const validateDigitNumber = (input: string) => {
+  return /[0-9]/.test(input);
+}
+
+const validateSmallCapitalLetters = (input: string) => {
+  return /^[a-zA-Z]+$/.test(input);
+}
+
+const validateCapitalLetter = (input: string) => {
+  return /[A-Z]/.test(input);
+}
+
+const validateSmallLetter = (input: string) => {
+  return /[a-z]/.test(input);
+}
+
+// email validation
+const validateEmail = () => {
+  // ensure email is not empty and matches basic email pattern
+  return email.value && /.+@.+\..+/.test(email.value);
 }
 
 const validatePassword = () => {
-  return (validateLength() && validateSmallCapitalLetters());
+  return validateInput(password.value) && validateLength(password.value) && validateSpecialCharacter(password.value) && validateDigitNumber(password.value) && validateCapitalLetter(password.value) && validateSmallLetter(password.value);
 }
 </script>
 
@@ -88,12 +124,4 @@ const validatePassword = () => {
   margin-top: 40px;
   text-align: center;
 }
-
-/* @media (min-width: 1024px) {
-  .login {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
-} */
 </style>
