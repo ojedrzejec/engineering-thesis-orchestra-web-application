@@ -3,13 +3,12 @@
     <div>
       <h1>Login to your account</h1>
     </div>
-    <div class="login-view__form" >
+    <div class="login-view__form">
       <div class="login-view__form-input">
         <FloatLabel variant="on">
           <InputText id="email" v-model="email" :invalid="!validateEmailInput()" ></InputText>
           <label for="email">Email</label>
         </FloatLabel>
-        {{ console.log(email) }}
         <div class="login-view__form-error-messages">
           <Message severity="error" v-if="!validateInput(email)">{{messageValidationInput}}</Message>
           <Message severity="error" v-if="!validateEmail(email)">{{messageValidationEmail}}</Message>
@@ -21,7 +20,6 @@
           <InputText id="password" v-model="password" :invalid="!validatePasswordInput()" ></InputText>
           <label for="password">Password</label>
         </FloatLabel>
-        {{ console.log(password) }}
         <div class="login-view__form-error-messages">
           <Message severity="error" v-if="!validateInput(password)">{{messageValidationInput}}</Message>
           <Message severity="error" v-if="!validateLength(password)">{{messageValidationLength}}</Message>
@@ -34,7 +32,11 @@
         </div>
       </div>
       <div>
-        <Button label="Login"></Button>
+        <Button 
+          @click.prevent="handleSubmit" 
+          :disabled="!(validateEmailInput() && validatePasswordInput())" 
+          label="Login">
+        </Button>
       </div>
     </div>
     <div class="login-view__info">
@@ -60,6 +62,15 @@ const validateEmailInput = () => {
 }
 const validatePasswordInput = () => {
   return validateInput(password.value) && validateNoWhitespaces(password.value) && validateLength(password.value) && validateSpecialCharacter(password.value) && validateDigitNumber(password.value) && validateCapitalLetter(password.value) && validateSmallLetter(password.value);
+}
+
+const handleSubmit = () => {
+  console.log('Submit clicked');
+  const submitData = {
+    email: email.value,
+    password: password.value
+  }
+  console.log(JSON.stringify(submitData, null, 2));
 }
 </script>
 
