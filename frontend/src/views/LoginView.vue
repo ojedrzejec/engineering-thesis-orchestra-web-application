@@ -6,17 +6,18 @@
     <div class="login-view__form">
       <div class="login-view__form-input">
         <FloatLabel variant="on">
-          <InputText id="email" v-model="email" :invalid="!validateEmail()" ></InputText>
+          <InputText id="email" v-model="email" :invalid="!validateEmailInput()" ></InputText>
           <label for="email">Email</label>
         </FloatLabel>
         <div class="login-view__form-error-messages">
           <Message severity="error" v-if="!validateInput(email)">{{messageValidationInput}}</Message>
           <Message severity="error" v-if="!validateEmail()">{{messageValidationEmail}}</Message>
+          <Message severity="error" v-if="!validateNoWhitespaces(email)">{{messageValidateNoWhitespaces}}</Message>
         </div>
       </div>
       <div class="login-view__form-input">
         <FloatLabel variant="on">
-          <InputText id="password" v-model="password" :invalid="!validatePassword()" ></InputText>
+          <InputText id="password" v-model="password" :invalid="!validatePasswordInput()" ></InputText>
           <label for="password">Password</label>
         </FloatLabel>
         <div class="login-view__form-error-messages">
@@ -26,6 +27,7 @@
           <Message severity="error" v-if="!validateDigitNumber(password)">{{messageValidationDigitNumber}}</Message>
           <Message severity="error" v-if="!validateCapitalLetter(password)">{{messageValidationCapitalLetter}}</Message>
           <Message severity="error" v-if="!validateSmallLetter(password)">{{messageValidationSmallLetter}}</Message>
+          <Message severity="error" v-if="!validateNoWhitespaces(password)">{{messageValidateNoWhitespaces}}</Message>
           <!-- <Message severity="error" v-if="!validateSmallCapitalLetters(password)">{{messageValidationSmallCapitalLetters}}</Message> -->
         </div>
       </div>
@@ -58,6 +60,7 @@ const messageValidationDigitNumber = "Password must be at least 1 digit number."
 const messageValidationCapitalLetter = "Input must contain at least 1 capital letter.";
 const messageValidationSmallLetter = "Input must contain at least 1 small letter.";
 const messageValidationEmail = "Please enter a valid email address.";
+const messageValidateNoWhitespaces = "Input must not contain whitespaces.";
 
 // validation functions
 const validateInput = (input: string) => {
@@ -88,14 +91,20 @@ const validateSmallLetter = (input: string) => {
   return /[a-z]/.test(input);
 }
 
-// email validation
+const validateNoWhitespaces = (input: string) => {
+  return !/\s/.test(input);
+}
+
 const validateEmail = () => {
-  // ensure email is not empty and matches basic email pattern
   return email.value && /.+@.+\..+/.test(email.value);
 }
 
-const validatePassword = () => {
-  return validateInput(password.value) && validateLength(password.value) && validateSpecialCharacter(password.value) && validateDigitNumber(password.value) && validateCapitalLetter(password.value) && validateSmallLetter(password.value);
+const validateEmailInput = () => {
+  return validateInput(email.value) && validateNoWhitespaces(email.value) && validateEmail();
+}
+
+const validatePasswordInput = () => {
+  return validateInput(password.value) && validateNoWhitespaces(password.value) && validateLength(password.value) && validateSpecialCharacter(password.value) && validateDigitNumber(password.value) && validateCapitalLetter(password.value) && validateSmallLetter(password.value);
 }
 </script>
 
