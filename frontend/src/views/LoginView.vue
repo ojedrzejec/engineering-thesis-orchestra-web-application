@@ -3,6 +3,9 @@
     <div>
       <h1>Login to your account</h1>
     </div>
+    <div class="login-view__info">
+      Don't have an account? <RouterLink to="/registration">Go to REGISTRATION page.</RouterLink>
+    </div>
     <div class="login-view__form">
       <div class="login-view__form-input">
         <FloatLabel variant="on">
@@ -28,19 +31,15 @@
           <Message severity="error" v-if="!validateCapitalLetter(password)">{{messageValidationCapitalLetter}}</Message>
           <Message severity="error" v-if="!validateSmallLetter(password)">{{messageValidationSmallLetter}}</Message>
           <Message severity="error" v-if="!validateNoWhitespaces(password)">{{messageValidationNoWhitespaces}}</Message>
-          <!-- <Message severity="error" v-if="!validateSmallCapitalLetters(password)">{{messageValidationSmallCapitalLetters}}</Message> -->
         </div>
       </div>
       <div>
         <Button 
-          @click.prevent="handleSubmit" 
+          @click.prevent="handleLogin" 
           :disabled="!(validateEmailInput() && validatePasswordInput())" 
           label="Login">
         </Button>
       </div>
-    </div>
-    <div class="login-view__info">
-      Don't have an account? <RouterLink to="/registration">Go to REGISTRATION page.</RouterLink>
     </div>
   </div>
 </template>
@@ -53,9 +52,16 @@ import FloatLabel from 'primevue/floatlabel';
 import Message from 'primevue/message';
 import { messageValidationInput, messageValidationLength, messageValidationSpecialCharacter, messageValidationDigitNumber, messageValidationCapitalLetter, messageValidationSmallLetter, messageValidationEmail, messageValidationNoWhitespaces } from '@/constants/validation/loginValidation'
 import { validateInput, validateLength, validateSpecialCharacter, validateDigitNumber, validateCapitalLetter, validateSmallLetter, validateEmail, validateNoWhitespaces } from '@/constants/validation/loginValidation'
+import { useRouter, useRoute } from 'vue-router';
+import { useAuthStore } from '@/stores/useAuthStore';
+import { API_BASE_URL } from '@/constants/config';
+
+const router = useRouter();
+const route = useRoute();
 
 const email = ref('');
 const password = ref('');
+const authStore = useAuthStore()
 
 const validateEmailInput = () => {
   return validateInput(email.value) && validateNoWhitespaces(email.value) && validateEmail(email.value);
@@ -64,13 +70,39 @@ const validatePasswordInput = () => {
   return validateInput(password.value) && validateNoWhitespaces(password.value) && validateLength(password.value) && validateSpecialCharacter(password.value) && validateDigitNumber(password.value) && validateCapitalLetter(password.value) && validateSmallLetter(password.value);
 }
 
-const handleSubmit = () => {
-  console.log('Submit clicked');
-  const submitData = {
+const handleLogin = async () => {
+  console.log('Login button clicked');
+
+  const loginData = {
     email: email.value,
     password: password.value
   }
-  console.log(JSON.stringify(submitData, null, 2));
+  console.log(JSON.stringify(loginData, null, 2));
+
+  // TODO: replace this when backend is ready
+  const backendReady = false
+
+  if (backendReady) {
+    const response = await fetch(`${API_BASE_URL}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(loginData, null, 2),
+    })
+
+    const { token } = await response.json()
+    authStore.setToken(token)
+  } else {
+    authStore.setToken('fake-token')
+  }
+
+  if (route.query.redirect) {
+    router.push(route.query.redirect.toString())
+    return
+  }
+
+  router.push({ name: 'home' })
 }
 </script>
 
@@ -96,7 +128,7 @@ const handleSubmit = () => {
 }
 
 .login-view__info {
-  margin-top: 40px;
+  margin-bottom: 40px;
   text-align: center;
 }
 </style>

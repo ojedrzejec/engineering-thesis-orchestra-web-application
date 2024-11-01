@@ -16,7 +16,29 @@
 </template>
 
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/useAuthStore'
+import { computed } from 'vue'
+
+
+const authStore = useAuthStore()
+const router = useRouter()
+
+const loginLogoutButtonLabel = computed(() => {
+  if (authStore.isSignedIn) {
+    return 'Sign out'
+  }
+
+  return 'Sign in'
+})
+
+const handleLoginLogoutButtonClick = () => {
+  if (authStore.isSignedIn) {
+    authStore.removeToken()
+  }
+
+  router.push({ name: 'login' })
+}
 </script>
 
 <style>
