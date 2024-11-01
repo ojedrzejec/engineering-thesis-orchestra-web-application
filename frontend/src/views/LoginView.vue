@@ -76,34 +76,36 @@ const handleLogin = async () => {
   const loginData = {
     email: email.value,
     password: password.value
-  }
+  };
   console.log(JSON.stringify(loginData, null, 2));
 
-  // TODO: replace this when backend is ready
-  const backendReady = false
-
-  if (backendReady) {
+  try {
     const response = await fetch(`${API_BASE_URL}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(loginData, null, 2),
-    })
+    });
 
-    const { token } = await response.json()
-    authStore.setToken(token)
-  } else {
-    authStore.setToken('fake-token')
+    if (!response.ok) {
+      throw new Error('Login failed. Please check your credentials and try again.');
+    }
+
+    const { token } = await response.json();
+
+    // Set the token in the store for persistence
+    authStore.setToken(token);
+
+    // Redirect the user after successful login
+    const redirectPath = route.query.redirect?.toString() || '/';
+    router.push(redirectPath);
+
+  } catch (error) {
+    console.error(error);
+    // Optional: Display error feedback to the user (e.g., via a Message component)
   }
-
-  if (route.query.redirect) {
-    router.push(route.query.redirect.toString())
-    return
-  }
-
-  router.push({ name: 'home' })
-}
+};
 </script>
 
 <style>

@@ -24,19 +24,19 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView,
-      meta: { signedOutOnly: true },
+      meta: { logOutOnly: true },
     },
     {
       path: '/registration',
       name: 'registration',
       component: RegistrationView,
-      meta: { signedOutOnly: true },
+      meta: { logOutOnly: true },
     },
     // {
     //   path: '/orchestra-member-edit-info',
     //   name: 'orchestra-member-edit-info',
     //   component: OrchestraMemberEditInfoView,
-    //   meta: { signedInOnly: true },
+    //   meta: { logInOnly: true },
     // },
   ],
 })
@@ -44,14 +44,14 @@ const router = createRouter({
 router.beforeEach((to, from) => {
   const authStore = useAuthStore()
 
-  if (to.meta?.signedInOnly && !authStore.isSignedIn) {
+  if (to.meta?.logInOnly && !authStore.isLoggedIn) {
     return {
       path: '/login',
       query: { redirect: to.fullPath },
     }
   }
 
-  if (to.meta?.signedOutOnly && authStore.isSignedIn) {
+  if (to.meta?.logOutOnly && authStore.isLoggedIn) {
     return {
       path: '/',
     }

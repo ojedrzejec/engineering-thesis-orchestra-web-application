@@ -6,7 +6,7 @@ const LOCAL_STORAGE_KEY_TOKEN = 'token'
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(null)
 
-  const isSignedIn = computed(() => !!token.value)
+  const isLoggedIn = computed(() => !!token.value)
 
   const setToken = (newValue: string) => {
     token.value = newValue
@@ -25,7 +25,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   return {
-    isSignedIn,
+    isLoggedIn,
     setToken,
     removeToken,
   }
