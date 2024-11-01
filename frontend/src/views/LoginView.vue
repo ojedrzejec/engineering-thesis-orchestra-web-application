@@ -33,11 +33,14 @@
           <Message severity="error" v-if="!validateNoWhitespaces(password)">{{messageValidationNoWhitespaces}}</Message>
         </div>
       </div>
+      <div v-if="errorMessage" class="error-message">
+        <Message severity="error">{{ errorMessage }}</Message>
+      </div>
       <div>
         <Button 
-          @click.prevent="handleLogin" 
-          :disabled="!(validateEmailInput() && validatePasswordInput())" 
-          label="Login">
+          @click.prevent="handleLogin"
+          :disabled="loading || !(validateEmailInput() && validatePasswordInput())"
+          :label="loading ? 'Logging in...' : 'Login'" >
         </Button>
       </div>
     </div>
@@ -62,17 +65,20 @@ const route = useRoute();
 const email = ref('');
 const password = ref('');
 const authStore = useAuthStore()
+const loading = ref(false);
+const errorMessage = ref('');
 
 const validateEmailInput = () => {
   return validateInput(email.value) && validateNoWhitespaces(email.value) && validateEmail(email.value);
 }
 const validatePasswordInput = () => {
-  return validateInput(password.value) && validateNoWhitespaces(password.value) && validateLength(password.value) && validateSpecialCharacter(password.value) && validateDigitNumber(password.value) && validateCapitalLetter(password.value) && validateSmallLetter(password.value);
+  // return validateInput(password.value) && validateNoWhitespaces(password.value) && validateLength(password.value) && validateSpecialCharacter(password.value) && validateDigitNumber(password.value) && validateCapitalLetter(password.value) && validateSmallLetter(password.value);
+  return true
 }
 
 const handleLogin = async () => {
-  console.log('Login button clicked');
-
+  loading.value = true;
+  errorMessage.value = '';
   const loginData = {
     email: email.value,
     password: password.value
@@ -80,7 +86,7 @@ const handleLogin = async () => {
   console.log(JSON.stringify(loginData, null, 2));
 
   try {
-    const response = await fetch(`${API_BASE_URL}/login`, {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -93,17 +99,14 @@ const handleLogin = async () => {
     }
 
     const { token } = await response.json();
-
-    // Set the token in the store for persistence
     authStore.setToken(token);
-
-    // Redirect the user after successful login
     const redirectPath = route.query.redirect?.toString() || '/';
     router.push(redirectPath);
 
   } catch (error) {
-    console.error(error);
-    // Optional: Display error feedback to the user (e.g., via a Message component)
+    errorMessage.value = error.message || 'An error occurred during login.';
+  } finally {
+    loading.value = false;
   }
 };
 </script>
