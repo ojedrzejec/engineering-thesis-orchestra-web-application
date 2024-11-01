@@ -1,12 +1,21 @@
 require('dotenv').config()
 
 const express = require('express')
+const cors = require('cors')
 const authRoutes = require('./src/routes/authRoutes')
 const orchestraMemberRoutes = require('./src/routes/orchestraMemberRoutes')
 const orchestraRoutes = require('./src/routes/orchestraRoutes')
 const instrumentRoutes = require('./src/routes/instrumentRoutes')
 
 const app = express()
+
+app.use(cors())
+// app.use(
+//     cors({
+//         origin: process.env.CORS_ORIGIN,
+//     })
+// )
+
 const PORT = process.env.PORT || 3000
 
 // app.use(express.json())
