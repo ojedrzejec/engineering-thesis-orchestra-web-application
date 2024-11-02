@@ -3,7 +3,7 @@ export const messageValidationInput = "Input is required.";
 export const messageValidationLength = "Password must be at least 8 characters long.";
 export const messageValidationSpecialCharacter = "Password must be at least 1 special character.";
 export const messageValidationDigitNumber = "Password must be at least 1 digit number.";
-// export const messageValidationSmallCapitalLetters = "Input must contain only letters.";
+export const messageValidationSmallCapitalLetters = "Input must contain only letters.";
 export const messageValidationCapitalLetter = "Input must contain at least 1 capital letter.";
 export const messageValidationSmallLetter = "Input must contain at least 1 small letter.";
 export const messageValidationEmail = "Please enter a valid email address.";
@@ -26,9 +26,9 @@ export const validateDigitNumber = (input: string) => {
   return /[0-9]/.test(input);
 }
 
-// export const validateSmallCapitalLetters = (input: string) => {
-//   return /^[a-zA-Z]+$/.test(input);
-// }
+export const validateSmallCapitalLetters = (input: string) => {
+  return /^[a-zA-Z]+$/.test(input);
+}
 
 export const validateCapitalLetter = (input: string) => {
   return /[A-Z]/.test(input);

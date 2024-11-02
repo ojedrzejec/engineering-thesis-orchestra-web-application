@@ -14,13 +14,13 @@
             id="email" 
             v-model="email" 
             @input="validateEmailInput" 
-            :invalid="!isEmailValid" 
+            :invalid="!isEmailValid && showEmailErrors" 
           ></InputText>
           <label for="email">Email</label>
         </FloatLabel>
         <div class="login-view__form-error-messages">
-          <Message severity="error" v-if="!email && showErrors">{{ messageValidationInput }}</Message>
-          <Message severity="error" v-if="!isEmailValid && email && showErrors">{{ messageValidationEmail }}</Message>
+          <Message severity="error" v-if="!email && showEmailErrors">{{ messageValidationInput }}</Message>
+          <Message severity="error" v-if="email && !isEmailValid && showEmailErrors">{{ messageValidationEmail }}</Message>
         </div>
       </div>
 
@@ -32,18 +32,18 @@
             v-model="password" 
             type="password"
             @input="validatePasswordInput" 
-            :invalid="!isPasswordValid" 
+            :invalid="!isPasswordValid && showPasswordErrors" 
           ></InputText>
           <label for="password">Password</label>
         </FloatLabel>
         <div class="login-view__form-error-messages">
-          <Message severity="error" v-if="!password && showErrors">{{ messageValidationInput }}</Message>
-          <Message severity="error" v-if="password && !validateLength(password)">{{ messageValidationLength }}</Message>
-          <Message severity="error" v-if="password && !validateSpecialCharacter(password)">{{ messageValidationSpecialCharacter }}</Message>
-          <Message severity="error" v-if="password && !validateDigitNumber(password)">{{ messageValidationDigitNumber }}</Message>
-          <Message severity="error" v-if="password && !validateCapitalLetter(password)">{{ messageValidationCapitalLetter }}</Message>
-          <Message severity="error" v-if="password && !validateSmallLetter(password)">{{ messageValidationSmallLetter }}</Message>
-          <Message severity="error" v-if="password && !validateNoWhitespaces(password)">{{ messageValidationNoWhitespaces }}</Message>
+          <Message severity="error" v-if="!password && showPasswordErrors">{{ messageValidationInput }}</Message>
+          <Message severity="error" v-if="password && !validateLength(password) && showPasswordErrors">{{ messageValidationLength }}</Message>
+          <Message severity="error" v-if="password && !validateSpecialCharacter(password) && showPasswordErrors">{{ messageValidationSpecialCharacter }}</Message>
+          <Message severity="error" v-if="password && !validateDigitNumber(password) && showPasswordErrors">{{ messageValidationDigitNumber }}</Message>
+          <Message severity="error" v-if="password && !validateCapitalLetter(password) && showPasswordErrors">{{ messageValidationCapitalLetter }}</Message>
+          <Message severity="error" v-if="password && !validateSmallLetter(password) && showPasswordErrors">{{ messageValidationSmallLetter }}</Message>
+          <Message severity="error" v-if="password && !validateNoWhitespaces(password) && showPasswordErrors">{{ messageValidationNoWhitespaces }}</Message>
         </div>
       </div>
 
@@ -102,7 +102,8 @@ const email = ref<string | null>(null);
 const password = ref<string | null>(null);
 const loading = ref(false);
 const errorMessage = ref('');
-const showErrors = ref(false); // Controls if error messages should be displayed
+const showEmailErrors = ref(false); // Controls if error messages should be displayed for email
+const showPasswordErrors = ref(false); // Controls if error messages should be displayed for password
 
 // Computed Properties for Validation
 const isEmailValid = computed(() => email.value && validateEmail(email.value) && validateNoWhitespaces(email.value));
@@ -111,17 +112,23 @@ const isPasswordValid = computed(() => password.value && validateLength(password
 
 // Validation Methods
 const validateEmailInput = () => {
-  showErrors.value = true; // Enable error display when user types
+  showEmailErrors.value = true; // Enable error display for email when user types
 };
 const validatePasswordInput = () => {
-  showErrors.value = true; // Enable error display when user types
+  showPasswordErrors.value = true; // Enable error display for password when user types
+};
+
+const showErrors = () => {
+  showEmailErrors.value = true;
+  showPasswordErrors.value = true;
 };
 
 // Login Handler
 const handleLogin = async () => {
+  // Check if all fields are valid before proceeding with login
   if (!isEmailValid.value || !isPasswordValid.value) {
-    validateEmailInput();
-    validatePasswordInput();
+    // errorMessage.value = 'Please correct the errors before logging in.';
+    showErrors();
     return;
   }
   
@@ -160,7 +167,7 @@ const handleLogin = async () => {
 };
 </script>
 
-<style scoped>
+<style>
 .login-view__form {
   display: flex;
   flex-direction: column;
