@@ -196,35 +196,37 @@ const handleLogin = async () => {
 };
 </script>
 
-<style>
-.login-view__form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 25px;
-}
-
-.login-view__form-input {
-  display: flex;
-  flex-direction: column;
-  /* align-items: center; */
-  gap: 5px;
-  min-width: 300px;
-}
-
-.login-view__form-error-messages {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.login-view__info {
-  margin-bottom: 40px;
-  text-align: center;
-}
-
-.login-view__form-button {
-  width: 100%;
-  min-width: 200px;
+<style setup lang="scss">
+.login-view {
+  &__form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+  }
+  
+  &__form-input {
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+    gap: 5px;
+    min-width: 300px;
+  }
+  
+  &__form-error-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  &__info {
+    margin-bottom: 40px;
+    text-align: center;
+  }
+  
+  &__form-button {
+    width: 100%;
+    min-width: 200px;
+  }
 }
 </style>
