@@ -7,87 +7,83 @@
       Don't have an account? <RouterLink to="/registration">Go to REGISTRATION page.</RouterLink>
     </div>
     <Form>
-      <div class="login-view__form">
-        <!-- Email Input Field -->
-        <div class="login-view__form-input">
-          <FloatLabel variant="on">
-            <InputText 
-              class="login-view__form-input-field"
-              id="email" 
-              v-model="email" 
-              @input="validateEmailInput" 
-              :invalid="!isEmailValid && showEmailErrors" 
-            ></InputText>
-            <label for="email">Email</label>
-          </FloatLabel>
-          <div class="login-view__form-error-messages">
-            <Message severity="error" v-if="!email && showEmailErrors">{{ messageInputRequired }}</Message>
-            <Message severity="error" v-if="email && !isEmailValid && showEmailErrors">{{ messageValidationEmail }}</Message>
+      <Fluid>
+        <div class="login-view__form">
+          <div class="login-view__form-input">
+            <FloatLabel variant="on">
+              <InputText 
+                class="login-view__form-input-field"
+                id="email" 
+                v-model="email" 
+                @input="validateEmailInput" 
+                :invalid="!isEmailValid && showEmailErrors"
+              ></InputText>
+              <label for="email">Email</label>
+            </FloatLabel>
+            <div class="login-view__form-error-messages">
+              <Message severity="error" v-if="!email && showEmailErrors">{{ messageInputRequired }}</Message>
+              <Message severity="error" v-if="email && !isEmailValid && showEmailErrors">{{ messageValidationEmail }}</Message>
+            </div>
+          </div>
+
+          <div class="login-view__form-input">
+            <FloatLabel variant="on">
+              <Password 
+                id="password" 
+                v-model="password" 
+                toggleMask
+                @input="validatePasswordInput" 
+                :invalid="!isPasswordValid && showPasswordErrors"
+                autocomplete="current-password"
+              >
+                <template #footer>
+                  <div class="login-view__form-error-messages">
+                    <Divider />
+                    <Message severity="error" v-if="!password && showPasswordErrors">{{ messageInputRequired }}</Message>
+                    <Message severity="error" v-if="password && !validateLength(password) && showPasswordErrors">{{ messageValidationLength }}</Message>
+                    <Message severity="error" v-if="password && !validateSpecialCharacter(password) && showPasswordErrors">{{ messageValidationSpecialCharacter }}</Message>
+                    <Message severity="error" v-if="password && !validateDigitNumber(password) && showPasswordErrors">{{ messageValidationDigitNumber }}</Message>
+                    <Message severity="error" v-if="password && !validateCapitalLetter(password) && showPasswordErrors">{{ messageValidationCapitalLetter }}</Message>
+                    <Message severity="error" v-if="password && !validateSmallLetter(password) && showPasswordErrors">{{ messageValidationSmallLetter }}</Message>
+                    <Message severity="error" v-if="password && !validateNoWhitespaces(password) && showPasswordErrors">{{ messageValidationNoWhitespaces }}</Message>
+                  </div>
+                </template>
+              </Password>
+              <label for="password">Password</label>
+            </FloatLabel>
+            <div class="login-view__form-error-messages">
+              <!-- <Message severity="error" v-if="!password && showPasswordErrors">{{ messageValidationInput }}</Message> -->
+              <Message severity="error" v-if="!password && showPasswordErrors" >
+                {{ messageInputRequired }}
+              </Message>
+              <Message 
+                severity="error" 
+                v-if="password && showPasswordErrors && (
+                    !validateLength(password) 
+                    || !validateSpecialCharacter(password) 
+                    || !validateDigitNumber(password) 
+                    || !validateCapitalLetter(password) 
+                    || !validateSmallLetter(password) 
+                    || !validateNoWhitespaces(password)
+                  )"
+              > {{ messageValidationInput }}
+              </Message>
+            </div>
+          </div>
+          <div v-if="errorMessage" class="error-message">
+            <Message severity="error">{{ errorMessage }}</Message>
+          </div>
+
+          <div>
+            <Button 
+              class="login-view__form-button"
+              @click.prevent="handleLogin"
+              :disabled="loading"
+              :label="loading ? 'Logging in...' : 'Log in'" 
+            ></Button>
           </div>
         </div>
-
-        <!-- Password Input Field -->
-        <div class="login-view__form-input">
-          <FloatLabel variant="on">
-            <Password 
-              id="password" 
-              v-model="password" 
-              toggleMask
-              @input="validatePasswordInput" 
-              :invalid="!isPasswordValid && showPasswordErrors"
-              autocomplete="current-password"
-            >
-              <template #footer>
-                <div class="login-view__form-error-messages">
-                  <Divider />
-                  <Message severity="error" v-if="!password && showPasswordErrors">{{ messageInputRequired }}</Message>
-                  <Message severity="error" v-if="password && !validateLength(password) && showPasswordErrors">{{ messageValidationLength }}</Message>
-                  <Message severity="error" v-if="password && !validateSpecialCharacter(password) && showPasswordErrors">{{ messageValidationSpecialCharacter }}</Message>
-                  <Message severity="error" v-if="password && !validateDigitNumber(password) && showPasswordErrors">{{ messageValidationDigitNumber }}</Message>
-                  <Message severity="error" v-if="password && !validateCapitalLetter(password) && showPasswordErrors">{{ messageValidationCapitalLetter }}</Message>
-                  <Message severity="error" v-if="password && !validateSmallLetter(password) && showPasswordErrors">{{ messageValidationSmallLetter }}</Message>
-                  <Message severity="error" v-if="password && !validateNoWhitespaces(password) && showPasswordErrors">{{ messageValidationNoWhitespaces }}</Message>
-                </div>
-              </template>
-            </Password>
-            <label for="password">Password</label>
-          </FloatLabel>
-          <div class="login-view__form-error-messages">
-            <!-- <Message severity="error" v-if="!password && showPasswordErrors">{{ messageValidationInput }}</Message> -->
-            <Message severity="error" v-if="!password && showPasswordErrors" >
-              {{ messageInputRequired }}
-            </Message>
-            <Message 
-              severity="error" 
-              v-if="password && showPasswordErrors && (
-                  !validateLength(password) 
-                  || !validateSpecialCharacter(password) 
-                  || !validateDigitNumber(password) 
-                  || !validateCapitalLetter(password) 
-                  || !validateSmallLetter(password) 
-                  || !validateNoWhitespaces(password)
-                )"
-            >
-              {{ messageValidationInput }}
-            </Message>
-          </div>
-          
-        </div>
-
-        <!-- Error Message -->
-        <div v-if="errorMessage" class="error-message">
-          <Message severity="error">{{ errorMessage }}</Message>
-        </div>
-
-        <!-- Login Button -->
-        <div>
-          <Button 
-            @click.prevent="handleLogin"
-            :disabled="loading"
-            :label="loading ? 'Logging in...' : 'Log in'" 
-          ></Button>
-        </div>
-      </div>
+      </Fluid>
     </Form>
   </div>
 </template>
@@ -100,6 +96,7 @@ import FloatLabel from 'primevue/floatlabel';
 import Message from 'primevue/message';
 import Password from 'primevue/password';
 import Divider from 'primevue/divider';
+import Fluid from 'primevue/fluid';
 import { Form } from '@primevue/forms';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/useAuthStore';
@@ -204,14 +201,15 @@ const handleLogin = async () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 25px;
 }
 
 .login-view__form-input {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  /* align-items: center; */
   gap: 5px;
+  min-width: 300px;
 }
 
 .login-view__form-error-messages {
@@ -223,5 +221,10 @@ const handleLogin = async () => {
 .login-view__info {
   margin-bottom: 40px;
   text-align: center;
+}
+
+.login-view__form-button {
+  width: 100%;
+  min-width: 200px;
 }
 </style>
