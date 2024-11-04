@@ -1,5 +1,6 @@
 // validation messages
-export const messageValidationInput = "Input is required.";
+export const messageValidationInput = "Invalid input.";
+export const messageInputRequired = "Input is required.";
 export const messageValidationLength = "Password must be at least 8 characters long.";
 export const messageValidationSpecialCharacter = "Password must be at least 1 special character.";
 export const messageValidationDigitNumber = "Password must be at least 1 digit number.";
@@ -10,7 +11,7 @@ export const messageValidationEmail = "Please enter a valid email address.";
 export const messageValidationNoWhitespaces = "Input must not contain whitespaces.";
 
 // validation functions
-export const validateInput = (input: string) => {
+export const requireInput = (input: string) => {
   return input.length > 0;
 }
 
