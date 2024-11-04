@@ -1,7 +1,7 @@
 <template>
   <main>
-    <div class="home">
-      <h1>This is an home page</h1>
+    <div class="home-view">
+      <h1>This is a home page</h1>
     </div>
   </main>
 </template>
@@ -11,7 +11,7 @@
 
 <style>
 /* @media (min-width: 1024px) {
-  .home {
+  .home-view {
     min-height: 100vh;
     display: flex;
     align-items: center;
