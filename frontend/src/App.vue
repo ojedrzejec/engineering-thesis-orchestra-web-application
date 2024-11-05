@@ -1,7 +1,7 @@
 <template>
   <div class="app-view">
     <header>
-      <div class="card">
+      <div class="app-view__navigation-menu-horizontal">
         <Menubar :model="menubarItems">
           <template #start>
             <svg width="35" height="40" viewBox="0 0 35 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-8">
@@ -29,6 +29,7 @@
               <Button 
                 class="w-32 sm:w-auto"
                 @click.prevent="handleLoginLogoutButtonClick"
+                :icon=loginLogoutIcon
                 :label=loginLogoutButtonLabel
               ></Button>
             </div>
@@ -36,9 +37,15 @@
         </Menubar>
       </div>
     </header>
+    <div class="app-view__app-content">
       <div v-if="authStore.isLoggedIn" class="app-view__navigation-menu-vertical-left">
         <PanelMenu :model="panelMenuItems" multiple class="w-full md:w-80" />
       </div>
+      <div class="app-view__router-view">
+        <RouterView />
+      </div>
+    </div>
+    <footer></footer>
   </div>
 </template>
 
@@ -70,6 +77,14 @@ const handleLoginLogoutButtonClick = () => {
 
   router.push({ name: 'login' })
 }
+
+const loginLogoutIcon = computed(() => {
+  if (authStore.isLoggedIn) {
+    return 'pi pi-sign-out'
+  }
+
+  return 'pi pi-sign-in'
+})
 
 const menubarItems = computed(() => {
   if (authStore.isLoggedIn) {
@@ -345,8 +360,24 @@ const panelMenuItems = computed(() => {
 
 <style setup lang="scss">
 .app-view {
+  &__navigation-menu-horizontal {
+    margin: 20px;
+  }
+
+  &__app-content {
+    display: flex;
+    flex-direction: row;
+    gap: 50px;
+    margin: 20px;
+  }
+
+  &__navigation-menu-vertical-left {
+    min-width: 300px;
+  }
+
   &__router-view {
     margin: 20px;
+    width: 100%;
   }
 }
 </style>
