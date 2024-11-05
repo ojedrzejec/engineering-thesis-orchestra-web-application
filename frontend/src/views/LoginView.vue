@@ -1,6 +1,6 @@
 <template>
   <div class="login-view">
-    <div>
+    <div class="login-view__title">
       <h1>Login to your account</h1>
     </div>
     <div class="login-view__info">
@@ -198,6 +198,15 @@ const handleLogin = async () => {
 
 <style setup lang="scss">
 .login-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  
+  &__title {
+    margin-bottom: 20px;
+  }
+
   &__form {
     display: flex;
     flex-direction: column;
@@ -226,7 +235,7 @@ const handleLogin = async () => {
   
   &__form-button {
     width: 100%;
-    min-width: 200px;
+    min-width: 300px;
   }
 }
 </style>
