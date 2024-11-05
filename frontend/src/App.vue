@@ -36,9 +36,9 @@
         </Menubar>
       </div>
     </header>
-    <div class="app-view__router-view">
-      <RouterView />
-    </div>
+      <div v-if="authStore.isLoggedIn" class="app-view__navigation-menu-vertical-left">
+        <PanelMenu :model="panelMenuItems" multiple class="w-full md:w-80" />
+      </div>
   </div>
 </template>
 
@@ -50,6 +50,7 @@ import { computed } from 'vue'
 import Menubar from 'primevue/menubar';
 import Badge from 'primevue/badge';
 import Button from 'primevue/button';
+import PanelMenu from 'primevue/panelmenu';
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -220,6 +221,124 @@ const menubarItems = computed(() => {
   ]);
 
   return isLoggedOutMenubarItems.value
+})
+
+const panelMenuItems = computed(() => {
+  // if the user role => OWNER
+  // if ("owner") { 
+  //   const panelMenuItemsOwner = ref([
+  //     {
+  //       label: 'My Availability',
+  //       icon: 'pi pi-calendar',
+  //       command: () => {
+  //         router.push({ name: 'availability' })
+  //       }
+  //     },
+  //     {
+  //       label: 'Pieces Of Music',
+  //       icon: 'pi pi-play',
+  //       command: () => {
+  //         router.push({ name: 'pieces-of-music' })
+  //       }
+  //     },
+  //     {
+  //       label: 'Owner Panel',
+  //       icon: 'pi pi-face-smile',
+  //       items: [
+  //         {
+  //           label: 'Orchestra Information',
+  //           icon: 'pi pi-info'
+  //         },
+  //         {
+  //           label: 'Concerts',
+  //           icon: 'pi pi-ticket'
+  //         },
+  //         {
+  //           label: 'Members',
+  //           icon: 'pi pi-address-book'
+  //         },
+  //         {
+  //           label: 'Groups',
+  //           icon: 'pi pi-users'
+  //         },
+  //         {
+  //           label: 'Instruments',
+  //           icon: 'pi pi-megaphone'
+  //         },
+  //         {
+  //           label: 'Pieces of Music',
+  //           icon: 'pi pi-file'
+  //         },
+  //         {
+  //           label: 'Manage Access',
+  //           icon: 'pi pi-unlock'
+  //         }
+  //       ]
+  //     },
+  //   ]);
+
+  //   return panelMenuItemsOwner.value
+  // }
+
+  // if the user role => MANAGER
+  // if ("manager") { 
+  //   const panelMenuItemsManager = ref([
+  //     {
+  //       label: 'My Availability',
+  //       icon: 'pi pi-calendar',
+  //       command: () => {
+  //         router.push({ name: 'availability' })
+  //       }
+  //     },
+  //     {
+  //       label: 'Pieces Of Music',
+  //       icon: 'pi pi-play',
+  //       command: () => {
+  //         router.push({ name: 'pieces-of-music' })
+  //       }
+  //     },
+  //     {
+  //       label: 'Manager Panel',
+  //       icon: 'pi pi-face-smile',
+  //       items: [
+  //         {
+  //           label: 'Orchestra Information',
+  //           icon: 'pi pi-info'
+  //         },
+  //         {
+  //           label: 'Concerts',
+  //           icon: 'pi pi-ticket'
+  //         },
+  //         {
+  //           label: 'Members',
+  //           icon: 'pi pi-address-book'
+  //         },
+  //       ]
+  //     },
+  //   ]);
+
+  //   return panelMenuItemsManager.value
+  // }
+
+  // if the user role => PLAYER
+  const panelMenuItems = ref([
+    {
+      label: 'My Availability',
+      icon: 'pi pi-calendar',
+      command: () => {
+        router.push({ name: 'availability' })
+      }
+    },
+    {
+      label: 'Pieces Of Music',
+      icon: 'pi pi-play',
+      command: () => {
+        router.push({ name: 'pieces-of-music' })
+      }
+    },
+  ]);
+
+  return panelMenuItems.value
 })
 
 </script>

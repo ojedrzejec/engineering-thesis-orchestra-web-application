@@ -7,6 +7,8 @@ import HistoryAboutView from '@/views/guest/aboutUs/HistoryAboutView.vue'
 import InstrumentsAboutView from '@/views/guest/aboutUs/InstrumentsAboutView.vue'
 import PhotosGalleryView from '@/views/guest/gallery/PhotosGalleryView.vue'
 import VideosGalleryView from '@/views/guest/gallery/VideosGalleryView.vue'
+import PreviousConcertsView from '@/views/guest/concerts/PreviousConcertsView.vue'
+import UpcomingConcertsView from '@/views/guest/concerts/UpcomingConcertsView.vue'
 import CreateOrchestraView from '@/views/CreateOrchestraView.vue'
 
 import { useAuthStore } from '@/stores/useAuthStore'
@@ -71,15 +73,15 @@ const router = createRouter({
       meta: { logOutOnly: true },
     },
     {
-      path: '/previous-events',
-      name: 'previous-events',
-      component: PreviousEventsView,
+      path: '/previous-concerts',
+      name: 'previous-concerts',
+      component: PreviousConcertsView,
       meta: { logOutOnly: true },
     },
     {
-      path: '/upcoming-events',
-      name: 'upcoming-events',
-      component: UpcomingEventsView,
+      path: '/upcoming-concerts',
+      name: 'upcoming-concerts',
+      component: UpcomingConcertsView,
       meta: { logOutOnly: true },
     },
     {
@@ -88,6 +90,24 @@ const router = createRouter({
       component: CreateOrchestraView,
       meta: { logInOnly: true },
     },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('@/views/player/ProfileView.vue'),
+      meta: { logInOnly: true },
+    },
+    {
+      path: '/availability',
+      name: 'availability',
+      component: () => import('@/views/player/AvailabilityView.vue'),
+      meta: { logInOnly: true },
+    },
+    {
+      path: '/pieces-of-music',
+      name: 'pieces-of-music',
+      component: () => import('@/views/player/PiecesOfMusicView.vue'),
+      meta: { logInOnly: true },
+    }
   ],
 })
 
