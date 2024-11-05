@@ -2,7 +2,7 @@
   <div class="app-view">
     <header>
       <div class="card">
-        <Menubar :model="items">
+        <Menubar :model="menubarItems">
           <template #start>
             <svg width="35" height="40" viewBox="0 0 35 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-8">
               <path
@@ -70,114 +70,157 @@ const handleLoginLogoutButtonClick = () => {
   router.push({ name: 'login' })
 }
 
-const items = ref([
-  {
-    label: 'Orchestra One',
-    icon: 'pi pi-folder-open',
-    badge: 3,
-    items: [
+const menubarItems = computed(() => {
+  if (authStore.isLoggedIn) {
+    const isLoggedInMenubarItems = ref([
       {
-        label: 'Orchestra Two',
-        icon: 'pi pi-folder'
+        label: 'Orchestra One',
+        icon: 'pi pi-folder-open',
+        badge: 3,
+        items: [
+          {
+            label: 'Orchestra Two',
+            icon: 'pi pi-folder'
+          },
+          {
+            label: 'Orchestra Three',
+            icon: 'pi pi-folder'
+          },
+          {
+            separator: true
+          },
+          {
+            label: 'Create Orchestra',
+            icon: 'pi pi-plus-circle',
+            command: () => {
+              router.push({ name: 'create-orchestra' })
+            }
+          },
+        ]
       },
       {
-        label: 'Orchestra Three',
-        icon: 'pi pi-folder'
-      },
-      {
-        separator: true
-      },
-      {
-        label: 'Create Orchestra',
-        icon: 'pi pi-plus-circle',
+        label: 'My Profile',
+        icon: 'pi pi-user',
         command: () => {
-          router.push({ name: 'create-orchestra' })
+          router.push({ name: 'profile' });
         }
       },
-    ]
-  },
-  {
-    label: 'Home',
-    icon: 'pi pi-home',
-    command: () => {
-      router.push({ name: 'home' });
-    }
-  },
-  {
-    label: 'Events',
-    icon: 'pi pi-calendar',
-    items: [
-      {
-        label: 'Upcoming Events',
-        icon: 'pi pi-star',
-        command: () => {
-          router.push({ name: 'upcoming-events' });
-        }
-      },
-      {
-        label: 'Previous Events',
-        icon: 'pi pi-history',
-        command: () => {
-          router.push({ name: 'previous-events' });
-        }
-      },
-    ]
-  },
-  {
-    label: 'Gallery',
-    icon: 'pi pi-images',
-    items: [
-      {
-        label: 'Photos',
-        icon: 'pi pi-image',
-        command: () => {
-          router.push({ name: 'photos' });
-        }
-      },
-      {
-        label: 'YT Videos',
-        icon: 'pi pi-video',
-        command: () => {
-          router.push({ name: 'videos' });
-        }
-      },
-    ]
-  },
-  {
-    label: 'About Us',
-    icon: 'pi pi-id-card',
-    items: [
-      {
-        label: 'Instruments',
-        icon: 'pi pi-list',
-        command: () => {
-          router.push({ name: 'instruments' });
-        }
-      },
-      {
-        label: 'Conductor and Board',
-        icon: 'pi pi-users',
-        command: () => {
-          router.push({ name: 'conductor-and-board' });
-        }
-      },
-      {
-        label: 'History',
-        icon: 'pi pi-building-columns',
-        command: () => {
-          router.push({ name: 'history' });
-        }
-      },
-    ]
-  },
-  {
-    label: 'Contact',
-    icon: 'pi pi-envelope',
-    command: () => {
-      router.push({ name: 'contact' });
-    }
+    ]);
+
+    return isLoggedInMenubarItems.value
   }
-]);
+
+  const isLoggedOutMenubarItems = ref([
+    {
+      label: 'Orchestra One',
+      icon: 'pi pi-folder-open',
+      badge: 3,
+      items: [
+        {
+          label: 'Orchestra Two',
+          icon: 'pi pi-folder'
+        },
+        {
+          label: 'Orchestra Three',
+          icon: 'pi pi-folder'
+        },
+        {
+          separator: true
+        },
+        {
+          label: 'Create Orchestra',
+          icon: 'pi pi-plus-circle',
+          command: () => {
+            router.push({ name: 'create-orchestra' })
+          }
+        },
+      ]
+    },
+    {
+      label: 'Home',
+      icon: 'pi pi-home',
+      command: () => {
+        router.push({ name: 'home' });
+      }
+    },
+    {
+      label: 'Concerts',
+      icon: 'pi pi-calendar',
+      items: [
+        {
+          label: 'Upcoming Concerts',
+          icon: 'pi pi-ticket',
+          command: () => {
+            router.push({ name: 'upcoming-concerts' });
+          }
+        },
+        {
+          label: 'Previous Concerts',
+          icon: 'pi pi-history',
+          command: () => {
+            router.push({ name: 'previous-concerts' });
+          }
+        },
+      ]
+    },
+    {
+      label: 'Gallery',
+      icon: 'pi pi-images',
+      items: [
+        {
+          label: 'Photos',
+          icon: 'pi pi-camera',
+          command: () => {
+            router.push({ name: 'photos' });
+          }
+        },
+        {
+          label: 'YT Videos',
+          icon: 'pi pi-video',
+          command: () => {
+            router.push({ name: 'videos' });
+          }
+        },
+      ]
+    },
+    {
+      label: 'About Us',
+      icon: 'pi pi-id-card',
+      items: [
+        {
+          label: 'Instruments',
+          icon: 'pi pi-megaphone',
+          command: () => {
+            router.push({ name: 'instruments' });
+          }
+        },
+        {
+          label: 'Conductor and Board',
+          icon: 'pi pi-users',
+          command: () => {
+            router.push({ name: 'conductor-and-board' });
+          }
+        },
+        {
+          label: 'History',
+          icon: 'pi pi-building-columns',
+          command: () => {
+            router.push({ name: 'history' });
+          }
+        },
+      ]
+    },
+    {
+      label: 'Contact',
+      icon: 'pi pi-envelope',
+      command: () => {
+        router.push({ name: 'contact' });
+      }
+    }
+  ]);
+
+  return isLoggedOutMenubarItems.value
+})
 
 </script>
 

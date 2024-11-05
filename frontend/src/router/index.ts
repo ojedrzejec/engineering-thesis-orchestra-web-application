@@ -7,8 +7,7 @@ import HistoryAboutView from '@/views/guest/aboutUs/HistoryAboutView.vue'
 import InstrumentsAboutView from '@/views/guest/aboutUs/InstrumentsAboutView.vue'
 import PhotosGalleryView from '@/views/guest/gallery/PhotosGalleryView.vue'
 import VideosGalleryView from '@/views/guest/gallery/VideosGalleryView.vue'
-import PreviousEventsView from '@/views/guest/events/PreviousEventsView.vue'
-import UpcomingEventsView from '@/views/guest/events/UpcomingEventsView.vue'
+import CreateOrchestraView from '@/views/CreateOrchestraView.vue'
 
 import { useAuthStore } from '@/stores/useAuthStore'
 
@@ -83,12 +82,12 @@ const router = createRouter({
       component: UpcomingEventsView,
       meta: { logOutOnly: true },
     },
-    // {
-    //   path: '/orchestra-member-edit-info',
-    //   name: 'orchestra-member-edit-info',
-    //   component: OrchestraMemberEditInfoView,
-    //   meta: { logInOnly: true },
-    // },
+    {
+      path: '/create-orchestra',
+      name: 'create-orchestra',
+      component: CreateOrchestraView,
+      meta: { logInOnly: true },
+    },
   ],
 })
 
