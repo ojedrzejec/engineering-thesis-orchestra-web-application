@@ -12,7 +12,7 @@ const register = async (req, res) => {
         password,
         first_name,
         last_name,
-        instruments, // This is a string of instrument names separated by commas
+        instruments, // string of instrument names separated by commas
         phone,
         birth_date,
         are_you_student,
@@ -22,6 +22,7 @@ const register = async (req, res) => {
     } = req.body
 
     try {
+        // Check if user already exists
         const user = await OrchestraMemberModel.findByEmail(email)
         if (user) {
             return res.status(400).json({ msg: 'User already exists' })
@@ -46,21 +47,26 @@ const register = async (req, res) => {
         const createdOrchestraMember =
             await OrchestraMemberModel.createOrchestraMember(newOrchestraMember)
 
-        // Split instruments string into an array
+        // Split instruments string into an array and iterate
         const instrumentsArray = instruments
             .split(',')
             .map((instr) => instr.trim())
 
-        // Use `for...of` loop to handle async/await properly
         for (const instrument of instrumentsArray) {
-            await InstrumentModel.addOrchestraMemberToInstrument(
-                createdOrchestraMember.id,
-                instrument // instrument name
-            )
+            const createdInstrumentWithMember =
+                await InstrumentModel.createInstrumentWithMember(
+                    createdOrchestraMember.id,
+                    instrument
+                )
+
+            if (!createdInstrumentWithMember) {
+                throw new Error('Failed to create instrument with member')
+            }
         }
 
         res.json(createdOrchestraMember)
     } catch (err) {
+        console.error('Error during registration:', err)
         res.status(500).json({ msg: 'Server error while registration.' })
     }
 }

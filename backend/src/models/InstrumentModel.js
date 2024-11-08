@@ -74,11 +74,12 @@ const createInstrumentWithMember = async (
     instrumentName
 ) => {
     const id = uuidv4()
-    await pool.query(
+    const result = await pool.query(
         `INSERT INTO instrument (id, id_orchestra_member, name)
-         VALUES ($1, $2, $3)`,
+         VALUES ($1, $2, $3) RETURNING *`, // Add RETURNING * to get the result back
         [id, orchestraMemberId, instrumentName]
     )
+    return result.rows[0] // Return the inserted row
 }
 
 const deleteInstrumentsByOrchestraMemberId = async (orchestraMemberId) => {
