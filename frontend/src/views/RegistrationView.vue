@@ -70,6 +70,26 @@
               </Message>
             </div>
           </div>
+
+          <div class="registration-view__form-input">
+            <FloatLabel variant="on">
+              <Password 
+                id="passwordRepeated" 
+                v-model="passwordRepeated" 
+                toggleMask
+                @input="validatePasswordRepeatedInput" 
+                :invalid="!isPasswordRepeatedValid && showPasswordRepeatedErrors"
+                :feedback="false"
+              >
+              </Password>
+              <label for="passwordRepeated">Repeat Password</label>
+            </FloatLabel>
+            <div class="registration-view__form-error-messages">
+              <Message severity="error" v-if="!passwordRepeated && showPasswordRepeatedErrors">{{ messageInputRequired }}</Message>
+              <Message severity="error" v-if="passwordRepeated && (!password || !validatePasswordsMatch(password, passwordRepeated)) && showPasswordRepeatedErrors">{{ messageValidationPasswordsMatch }}</Message>
+            </div>
+          </div>
+
           <div v-if="errorMessage" class="error-message">
             <Message severity="error">{{ errorMessage }}</Message>
           </div>
@@ -110,10 +130,7 @@ import {
   messageValidationCapitalLetter, 
   messageValidationSmallLetter, 
   messageValidationEmail, 
-  messageValidationNoWhitespaces 
-} from '@/constants/validation/loginValidation';
-import { 
-  requireInput, 
+  messageValidationNoWhitespaces,
   validateLength, 
   validateSpecialCharacter, 
   validateDigitNumber, 
@@ -122,6 +139,10 @@ import {
   validateEmail, 
   validateNoWhitespaces 
 } from '@/constants/validation/loginValidation';
+import { 
+  messageValidationPasswordsMatch, 
+  validatePasswordsMatch
+} from '@/constants/validation/registrationValidation';
 
 const router = useRouter();
 const route = useRoute();
@@ -129,15 +150,20 @@ const authStore = useAuthStore();
 
 const email = ref<string | null>(null);
 const password = ref<string | null>(null);
+const passwordRepeated = ref<string | null>(null);
+
 const loading = ref(false);
 const errorMessage = ref('');
 const showEmailErrors = ref(false); // Controls if error messages should be displayed for email
 const showPasswordErrors = ref(false); // Controls if error messages should be displayed for password
+const showPasswordRepeatedErrors = ref(false);
 
 // Computed Properties for Validation
 const isEmailValid = computed(() => email.value && validateEmail(email.value) && validateNoWhitespaces(email.value));
 const isPasswordValid = computed(() => password.value && validateLength(password.value) && validateSpecialCharacter(password.value) &&
   validateDigitNumber(password.value) && validateCapitalLetter(password.value) && validateSmallLetter(password.value) && validateNoWhitespaces(password.value));
+// const isPasswordRepeatedValid = computed(() => passwordRepeated.value && password.value && validatePasswordsMatch(password.value, passwordRepeated.value));
+const isPasswordRepeatedValid = computed(() => passwordRepeated.value && (!password.value || validatePasswordsMatch(password.value, passwordRepeated.value)));
 
 // Validation Methods
 const validateEmailInput = () => {
@@ -146,16 +172,20 @@ const validateEmailInput = () => {
 const validatePasswordInput = () => {
   showPasswordErrors.value = true; // Enable error display for password when user types
 };
+const validatePasswordRepeatedInput = () => {
+  showPasswordRepeatedErrors.value = true; // Enable error display for password when user types
+};
 
 const showErrors = () => {
   showEmailErrors.value = true;
   showPasswordErrors.value = true;
+  showPasswordRepeatedErrors.value = true;
 };
 
 // Register Handler
 const handleRegister = async () => {
   // Check if all fields are valid before proceeding with register
-  if (!isEmailValid.value || !isPasswordValid.value) {
+  if (!isEmailValid.value || !isPasswordValid.value || !isPasswordRepeatedValid.value) {
     // errorMessage.value = 'Please correct the errors before registering in.';
     showErrors();
     return;

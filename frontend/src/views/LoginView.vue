@@ -110,10 +110,7 @@ import {
   messageValidationCapitalLetter, 
   messageValidationSmallLetter, 
   messageValidationEmail, 
-  messageValidationNoWhitespaces 
-} from '@/constants/validation/loginValidation';
-import { 
-  requireInput, 
+  messageValidationNoWhitespaces, 
   validateLength, 
   validateSpecialCharacter, 
   validateDigitNumber, 
