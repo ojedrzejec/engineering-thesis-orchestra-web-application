@@ -15,6 +15,7 @@
                 class="login-view__form-input-field"
                 id="email" 
                 v-model="email" 
+                v-keyfilter="/[^\s]/"
                 @input="validateEmailInput" 
                 :invalid="!isEmailValid && showEmailErrors"
               ></InputText>

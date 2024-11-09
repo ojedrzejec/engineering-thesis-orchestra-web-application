@@ -4,6 +4,7 @@ import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config';
 import Aura from '@primevue/themes/aura';
 import Ripple from 'primevue/ripple'
+import KeyFilter from 'primevue/keyfilter';
 
 import App from './App.vue'
 import router from './router'
@@ -20,7 +21,7 @@ app.use(PrimeVue, {
         }
     },
 });
-
+app.directive('keyfilter', KeyFilter); // a keyfilter is a directive used to block individual keystrokes based on a pattern
 app.directive('ripple', Ripple) // Register the Ripple directive globally
 
 const pinia = createPinia()
