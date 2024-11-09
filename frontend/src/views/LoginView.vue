@@ -40,7 +40,7 @@
                   <div class="login-view__form-error-messages">
                     <Divider />
                     <Message severity="error" v-if="!password && showPasswordErrors">{{ messageInputRequired }}</Message>
-                    <Message severity="error" v-if="password && !validateLength(password) && showPasswordErrors">{{ messageValidationLength }}</Message>
+                    <Message severity="error" v-if="password && !validatePasswordLength(password) && showPasswordErrors">{{ messageValidationPasswordLength }}</Message>
                     <Message severity="error" v-if="password && !validateSpecialCharacter(password) && showPasswordErrors">{{ messageValidationSpecialCharacter }}</Message>
                     <Message severity="error" v-if="password && !validateDigitNumber(password) && showPasswordErrors">{{ messageValidationDigitNumber }}</Message>
                     <Message severity="error" v-if="password && !validateCapitalLetter(password) && showPasswordErrors">{{ messageValidationCapitalLetter }}</Message>
@@ -59,7 +59,7 @@
               <Message 
                 severity="error" 
                 v-if="password && showPasswordErrors && (
-                    !validateLength(password) 
+                    !validatePasswordLength(password) 
                     || !validateSpecialCharacter(password) 
                     || !validateDigitNumber(password) 
                     || !validateCapitalLetter(password) 
@@ -104,14 +104,14 @@ import { API_BASE_URL } from '@/constants/config';
 import { 
   messageValidationInput, 
   messageInputRequired,
-  messageValidationLength, 
+  messageValidationPasswordLength, 
   messageValidationSpecialCharacter, 
   messageValidationDigitNumber, 
   messageValidationCapitalLetter, 
   messageValidationSmallLetter, 
   messageValidationEmail, 
   messageValidationNoWhitespaces, 
-  validateLength, 
+  validatePasswordLength, 
   validateSpecialCharacter, 
   validateDigitNumber, 
   validateCapitalLetter, 
@@ -133,7 +133,7 @@ const showPasswordErrors = ref(false); // Controls if error messages should be d
 
 // Computed Properties for Validation
 const isEmailValid = computed(() => email.value && validateEmail(email.value) && validateNoWhitespaces(email.value));
-const isPasswordValid = computed(() => password.value && validateLength(password.value) && validateSpecialCharacter(password.value) &&
+const isPasswordValid = computed(() => password.value && validatePasswordLength(password.value) && validateSpecialCharacter(password.value) &&
   validateDigitNumber(password.value) && validateCapitalLetter(password.value) && validateSmallLetter(password.value) && validateNoWhitespaces(password.value));
 
 // Validation Methods

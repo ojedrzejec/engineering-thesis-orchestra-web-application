@@ -2,7 +2,7 @@
 
 export const messageValidationInput = "Invalid input.";
 export const messageInputRequired = "Input is required.";
-export const messageValidationLength = "Password must be at least 8 characters long.";
+export const messageValidationPasswordLength = "Password must be at least 8 characters long.";
 export const messageValidationSpecialCharacter = "Password must be at least 1 special character.";
 export const messageValidationDigitNumber = "Password must be at least 1 digit number.";
 export const messageValidationCapitalLetter = "Input must contain at least 1 capital letter.";
@@ -16,7 +16,7 @@ export const messageValidationNoWhitespaces = "Input must not contain whitespace
 //   return input.length > 0;
 // }
 
-export const validateLength = (input: string) => {
+export const validatePasswordLength = (input: string) => {
   return input.length >= 8;
 }
 

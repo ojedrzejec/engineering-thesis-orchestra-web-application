@@ -40,7 +40,7 @@
                   <div class="registration-view__form-error-messages">
                     <Divider />
                     <Message severity="error" v-if="!password && showPasswordErrors">{{ messageInputRequired }}</Message>
-                    <Message severity="error" v-if="password && !validateLength(password) && showPasswordErrors">{{ messageValidationLength }}</Message>
+                    <Message severity="error" v-if="password && !validatePasswordLength(password) && showPasswordErrors">{{ messageValidationPasswordLength }}</Message>
                     <Message severity="error" v-if="password && !validateSpecialCharacter(password) && showPasswordErrors">{{ messageValidationSpecialCharacter }}</Message>
                     <Message severity="error" v-if="password && !validateDigitNumber(password) && showPasswordErrors">{{ messageValidationDigitNumber }}</Message>
                     <Message severity="error" v-if="password && !validateCapitalLetter(password) && showPasswordErrors">{{ messageValidationCapitalLetter }}</Message>
@@ -59,7 +59,7 @@
               <Message 
                 severity="error" 
                 v-if="password && showPasswordErrors && (
-                    !validateLength(password) 
+                    !validatePasswordLength(password) 
                     || !validateSpecialCharacter(password) 
                     || !validateDigitNumber(password) 
                     || !validateCapitalLetter(password) 
@@ -87,6 +87,42 @@
             <div class="registration-view__form-error-messages">
               <Message severity="error" v-if="!passwordRepeated && showPasswordRepeatedErrors">{{ messageInputRequired }}</Message>
               <Message severity="error" v-if="passwordRepeated && (!password || !validatePasswordsMatch(password, passwordRepeated)) && showPasswordRepeatedErrors">{{ messageValidationPasswordsMatch }}</Message>
+            </div>
+          </div>
+
+          <div class="registration-view__form-input">
+            <FloatLabel variant="on">
+              <InputText 
+                class="registration-view__form-input-field"
+                id="firstName" 
+                v-model="orchestraMember.firstName" 
+                @input="validateFirstNameInput" 
+                :invalid="!isFirstNameValid && showFirstNameErrors"
+              ></InputText>
+              <label for="firstName">First Name</label>
+            </FloatLabel>
+            <div class="registration-view__form-error-messages">
+              <Message severity="error" v-if="!orchestraMember.firstName && showFirstNameErrors">{{ messageInputRequired }}</Message>
+              <Message severity="error" v-if="orchestraMember.firstName && !validateFirstLastNameLength(orchestraMember.firstName) && showFirstNameErrors">{{ messageValidationFirstLastNameLength("First Name") }}</Message>
+              <Message severity="error" v-if="orchestraMember.firstName && !validateSmallCapitalLetters(orchestraMember.firstName) && showFirstNameErrors">{{ messageValidationSmallCapitalLetters }}</Message>
+            </div>
+          </div>
+
+          <div class="registration-view__form-input">
+            <FloatLabel variant="on">
+              <InputText 
+                class="registration-view__form-input-field"
+                id="lastName" 
+                v-model="orchestraMember.lastName" 
+                @input="validateLastNameInput" 
+                :invalid="!isLastNameValid && showLastNameErrors"
+              ></InputText>
+              <label for="lastName">Last Name</label>
+            </FloatLabel>
+            <div class="registration-view__form-error-messages">
+              <Message severity="error" v-if="!orchestraMember.lastName && showLastNameErrors">{{ messageInputRequired }}</Message>
+              <Message severity="error" v-if="orchestraMember.lastName && !validateFirstLastNameLength(orchestraMember.lastName) && showLastNameErrors">{{ messageValidationFirstLastNameLength("Last Name") }}</Message>
+              <Message severity="error" v-if="orchestraMember.lastName && !validateSmallCapitalLetters(orchestraMember.lastName) && showFirstNameErrors">{{ messageValidationSmallCapitalLetters }}</Message>
             </div>
           </div>
 
@@ -124,14 +160,14 @@ import { API_BASE_URL } from '@/constants/config';
 import { 
   messageValidationInput, 
   messageInputRequired,
-  messageValidationLength, 
+  messageValidationPasswordLength, 
   messageValidationSpecialCharacter, 
   messageValidationDigitNumber, 
   messageValidationCapitalLetter, 
   messageValidationSmallLetter, 
   messageValidationEmail, 
   messageValidationNoWhitespaces,
-  validateLength, 
+  validatePasswordLength, 
   validateSpecialCharacter, 
   validateDigitNumber, 
   validateCapitalLetter, 
@@ -141,8 +177,14 @@ import {
 } from '@/constants/validation/loginValidation';
 import { 
   messageValidationPasswordsMatch, 
-  validatePasswordsMatch
+  messageValidationFirstLastNameLength,
+  messageValidationSmallCapitalLetters,
+  validatePasswordsMatch,
+  validateFirstLastNameLength,
+  validateSmallCapitalLetters,
 } from '@/constants/validation/registrationValidation';
+import type { TOrchestraMember } from '@/types/TOrchestraMember';
+import { initOrchestraMember } from '@/constants/initOrchestraMember';
 
 const router = useRouter();
 const route = useRoute();
@@ -151,19 +193,24 @@ const authStore = useAuthStore();
 const email = ref<string | null>(null);
 const password = ref<string | null>(null);
 const passwordRepeated = ref<string | null>(null);
+const orchestraMember = ref<TOrchestraMember>(initOrchestraMember);
 
 const loading = ref(false);
 const errorMessage = ref('');
 const showEmailErrors = ref(false); // Controls if error messages should be displayed for email
 const showPasswordErrors = ref(false); // Controls if error messages should be displayed for password
 const showPasswordRepeatedErrors = ref(false);
+const showFirstNameErrors = ref(false);
+const showLastNameErrors = ref(false);
 
 // Computed Properties for Validation
 const isEmailValid = computed(() => email.value && validateEmail(email.value) && validateNoWhitespaces(email.value));
-const isPasswordValid = computed(() => password.value && validateLength(password.value) && validateSpecialCharacter(password.value) &&
+const isPasswordValid = computed(() => password.value && validatePasswordLength(password.value) && validateSpecialCharacter(password.value) &&
   validateDigitNumber(password.value) && validateCapitalLetter(password.value) && validateSmallLetter(password.value) && validateNoWhitespaces(password.value));
 // const isPasswordRepeatedValid = computed(() => passwordRepeated.value && password.value && validatePasswordsMatch(password.value, passwordRepeated.value));
 const isPasswordRepeatedValid = computed(() => passwordRepeated.value && (!password.value || validatePasswordsMatch(password.value, passwordRepeated.value)));
+const isFirstNameValid = computed(() => orchestraMember.value.firstName && validateFirstLastNameLength(orchestraMember.value.firstName) && validateSmallCapitalLetters(orchestraMember.value.firstName));
+const isLastNameValid = computed(() => orchestraMember.value.lastName && validateFirstLastNameLength(orchestraMember.value.lastName) && validateSmallCapitalLetters(orchestraMember.value.lastName));
 
 // Validation Methods
 const validateEmailInput = () => {
@@ -175,28 +222,40 @@ const validatePasswordInput = () => {
 const validatePasswordRepeatedInput = () => {
   showPasswordRepeatedErrors.value = true; // Enable error display for password when user types
 };
+const validateFirstNameInput = () => {
+  showFirstNameErrors.value = true;
+};
+const validateLastNameInput = () => {
+  showLastNameErrors.value = true;
+};
 
 const showErrors = () => {
   showEmailErrors.value = true;
   showPasswordErrors.value = true;
   showPasswordRepeatedErrors.value = true;
+  showFirstNameErrors.value = true;
+  showLastNameErrors.value = true;
 };
 
 // Register Handler
 const handleRegister = async () => {
   // Check if all fields are valid before proceeding with register
-  if (!isEmailValid.value || !isPasswordValid.value || !isPasswordRepeatedValid.value) {
+  if (!isEmailValid.value || !isPasswordValid.value || !isPasswordRepeatedValid.value || !isFirstNameValid.value || !isLastNameValid.value) {
     // errorMessage.value = 'Please correct the errors before registering in.';
     showErrors();
     return;
   }
+
+  console.log("NO input ERRORS");
   
   loading.value = true;
   errorMessage.value = '';
 
   const registerData = {
     email: email.value,
-    password: password.value
+    password: password.value,
+    firstName: orchestraMember.value.firstName,
+    lastName: orchestraMember.value.lastName,
   };
   console.log(JSON.stringify(registerData, null, 2));
 
