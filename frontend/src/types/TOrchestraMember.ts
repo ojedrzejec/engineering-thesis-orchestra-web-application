@@ -4,9 +4,9 @@ export type TOrchestraMember = {
     phone: string;
     dateOfBirth: Date;
     isStudent: boolean | null;
-    university: string;
+    university: string | null;
     profilePicture: string;
-    description: string;
+    description: string | null;
     
     instrument: string;
     

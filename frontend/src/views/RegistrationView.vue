@@ -127,6 +127,10 @@
             </div>
           </div>
 
+          <!-- TODO - Add Instrument -->
+          <!-- TODO - Add Phone Number -->
+          <!-- TODO - Add Date of Birth -->
+
           <div class="registration-view__form-input">
             <SelectButton 
               v-model="orchestraMember.isStudent" 
@@ -139,6 +143,39 @@
             <div class="registration-view__form-error-messages">
               <Message severity="error" v-if="orchestraMember.isStudent === null && showIsStudentErrors">{{ messageInputRequired }}</Message>
             </div>
+          </div>
+
+          <div class="registration-view__form-input" v-if="orchestraMember.isStudent">
+            <FloatLabel variant="on">
+              <Textarea 
+                id="university" 
+                v-model="orchestraMember.university" 
+                rows="1" 
+                cols="30" 
+                autoResize
+                @input="validateUniversityInput"
+                :invalid="!orchestraMember.university && showUniversityErrors"
+              ></Textarea>
+              <label for="university">University Name</label>
+            </FloatLabel>
+            <div class="registration-view__form-error-messages">
+              <Message severity="error" v-if="!orchestraMember.university && showUniversityErrors">{{ messageInputRequired }}</Message>
+            </div>
+          </div>
+
+          <!-- TODO - Add profilePicture -->
+
+          <div class="registration-view__form-input">
+            <FloatLabel variant="on">
+              <Textarea 
+                id="description" 
+                v-model="orchestraMember.description" 
+                rows="5" 
+                cols="30" 
+                autoResize
+              ></Textarea>
+              <label for="description">Description - write a few words about yourself <i class="pi pi-face-smile"></i></label>
+            </FloatLabel>
           </div>
 
           <div v-if="errorMessage" class="error-message">
@@ -165,6 +202,7 @@ import Button from 'primevue/button';
 import SelectButton from 'primevue/selectbutton';
 import InputText from 'primevue/inputtext';
 import FloatLabel from 'primevue/floatlabel';
+import Textarea from 'primevue/textarea';
 import Message from 'primevue/message';
 import Password from 'primevue/password';
 import Divider from 'primevue/divider';
@@ -223,6 +261,7 @@ const showPasswordRepeatedErrors = ref(false);
 const showFirstNameErrors = ref(false);
 const showLastNameErrors = ref(false);
 const showIsStudentErrors = ref(false);
+const showUniversityErrors = ref(false);
 
 // Computed Properties for Validation
 const isEmailValid = computed(() => email.value && validateEmail(email.value) && validateNoWhitespaces(email.value));
@@ -251,6 +290,9 @@ const validateLastNameInput = () => {
 const validateIsStudentInput = () => {
   showIsStudentErrors.value = true;
 };
+const validateUniversityInput = () => {
+  showUniversityErrors.value = true;
+};
 
 const showErrors = () => {
   showEmailErrors.value = true;
@@ -259,12 +301,13 @@ const showErrors = () => {
   showFirstNameErrors.value = true;
   showLastNameErrors.value = true;
   showIsStudentErrors.value = true;
+  showUniversityErrors.value = true;
 };
 
 // Register Handler
 const handleRegister = async () => {
   // Check if all fields are valid before proceeding with register
-  if (!isEmailValid.value || !isPasswordValid.value || !isPasswordRepeatedValid.value || !isFirstNameValid.value || !isLastNameValid.value || orchestraMember.value.isStudent === null) {
+  if (!isEmailValid.value || !isPasswordValid.value || !isPasswordRepeatedValid.value || !isFirstNameValid.value || !isLastNameValid.value || orchestraMember.value.isStudent === null || (orchestraMember.value.isStudent && !orchestraMember.value.university)) {
     // errorMessage.value = 'Please correct the errors before registering in.';
     showErrors();
     return;
@@ -281,6 +324,8 @@ const handleRegister = async () => {
     firstName: orchestraMember.value.firstName,
     lastName: orchestraMember.value.lastName,
     isStudent: orchestraMember.value.isStudent,
+    university: orchestraMember.value.university,
+    description: orchestraMember.value.description,
   };
   console.log(JSON.stringify(registerData, null, 2));
 
