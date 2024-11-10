@@ -1,4 +1,6 @@
 export type TOrchestraMember = {
+    password: string | null;
+    email: string | null;
     firstName: string | null;
     lastName: string | null;
     phone: string;
@@ -7,9 +9,4 @@ export type TOrchestraMember = {
     university: string | null;
     profilePicture: string;
     description: string | null;
-    
-    instrument: string;
-    
-    is_owner: boolean;
-    is_manager: boolean;
 }

@@ -1,6 +1,8 @@
 import type { TOrchestraMember } from '../types/TOrchestraMember';
 
 export const initOrchestraMember: TOrchestraMember = {
+    password: null,
+    email: null,
     firstName: null,
     lastName: null,
     phone: '',
@@ -9,9 +11,4 @@ export const initOrchestraMember: TOrchestraMember = {
     university: null,
     profilePicture: '',
     description: null,
-    
-    instrument: '',
-    
-    is_owner: false,
-    is_manager: false,
 }

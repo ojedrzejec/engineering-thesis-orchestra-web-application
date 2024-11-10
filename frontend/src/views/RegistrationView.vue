@@ -127,7 +127,41 @@
             </div>
           </div>
 
-          <!-- TODO - Add Instrument -->
+          <div class="registration-view__form-input">
+            Instruments:
+            <div v-for="(instrument, ix) in instruments" :key="ix" class="registration-view__form-input-instruments">
+              <div class="registration-view__form-input-instrument-header">
+                Instrument: {{ ix + 1 }}
+                <i class="pi pi-trash" style="color: slateblue" @click="removeInstrument(ix)"></i>
+              </div>
+              <div>
+                <FloatLabel variant="on">
+                  <InputText 
+                    class="registration-view__form-input-field"
+                    id="instrument" 
+                    v-model="instrument.name"
+                    @input="validateInstrumentInput" 
+                    @update="handleInstrumentsUpdate(instrument, ix)"
+                    :invalid="!isInstrumentValid && showInstrumentErrors"
+                  ></InputText>
+                  <label for="instrument">Instrument Name</label>
+                </FloatLabel>
+                <div class="registration-view__form-error-messages">
+                  <Message severity="error" v-if="!instrument.name && showInstrumentErrors">{{ messageInputRequired }}</Message>
+                  <Message severity="error" v-if="instrument.name && !validateSmallCapitalLetters(instrument.name) && showInstrumentErrors">{{ messageValidationSmallCapitalLetters }}</Message>
+                </div>
+              </div>
+            </div>
+            <div>
+              <Button 
+                severity="secondary"
+                @click.prevent="addNewInstrument"
+                :disabled="instruments.length > 0 && !instruments[instruments.length - 1].name"
+                :label="loading ? 'Adding Instrument...' : 'Add Instrument'" 
+              ></Button>
+            </div>
+          </div>
+
           <!-- TODO - Add Phone Number -->
           <!-- TODO - Add Date of Birth -->
 
@@ -239,6 +273,8 @@ import {
 } from '@/constants/validation/registrationValidation';
 import type { TOrchestraMember } from '@/types/TOrchestraMember';
 import { initOrchestraMember } from '@/constants/initOrchestraMember';
+import type { TInstrument } from '@/types/TInstrument';
+import { initInstrument } from '@/constants/initInstrument';
 
 const router = useRouter();
 const route = useRoute();
@@ -252,6 +288,23 @@ const options = ref([
     { name: 'I am a student currently.', value: true },
     { name: 'I am NOT a student currently.', value: false }
 ]);
+const instruments = ref<TInstrument[]>([]);
+
+const removeInstrument = (ix: number) => {
+  instruments.value = instruments.value.filter((_, index) => index !== ix)
+}
+const addNewInstrument = () => {
+  // instruments.value = [...instruments.value, initInstrument];
+  instruments.value = [...instruments.value, Object.assign({}, initInstrument)]
+}
+const handleInstrumentsUpdate = (instrument: TInstrument, ix: number) => {
+  instruments.value = instruments.value.map((inst, i) => i === ix ? instrument : inst)
+  // all instruments names toLowerCase()
+  instruments.value = instruments.value.map((inst) => {
+    inst.name = inst.name.toLowerCase();
+    return inst;
+  });
+}
 
 const loading = ref(false);
 const errorMessage = ref('');
@@ -262,6 +315,7 @@ const showFirstNameErrors = ref(false);
 const showLastNameErrors = ref(false);
 const showIsStudentErrors = ref(false);
 const showUniversityErrors = ref(false);
+const showInstrumentErrors = ref(false);
 
 // Computed Properties for Validation
 const isEmailValid = computed(() => email.value && validateEmail(email.value) && validateNoWhitespaces(email.value));
@@ -270,6 +324,7 @@ const isPasswordValid = computed(() => password.value && validatePasswordLength(
 const isPasswordRepeatedValid = computed(() => passwordRepeated.value && (!password.value || validatePasswordsMatch(password.value, passwordRepeated.value)));
 const isFirstNameValid = computed(() => orchestraMember.value.firstName && validateFirstLastNameLength(orchestraMember.value.firstName) && validateSmallCapitalLetters(orchestraMember.value.firstName));
 const isLastNameValid = computed(() => orchestraMember.value.lastName && validateFirstLastNameLength(orchestraMember.value.lastName) && validateSmallCapitalLetters(orchestraMember.value.lastName));
+const isInstrumentValid = computed(() => instruments.value.every(instrument => instrument.name && validateSmallCapitalLetters(instrument.name)));
 
 // Validation Methods
 const validateEmailInput = () => {
@@ -293,6 +348,9 @@ const validateIsStudentInput = () => {
 const validateUniversityInput = () => {
   showUniversityErrors.value = true;
 };
+const validateInstrumentInput = () => {
+  showInstrumentErrors.value = true;
+};
 
 const showErrors = () => {
   showEmailErrors.value = true;
@@ -302,12 +360,13 @@ const showErrors = () => {
   showLastNameErrors.value = true;
   showIsStudentErrors.value = true;
   showUniversityErrors.value = true;
+  showInstrumentErrors.value = true;
 };
 
 // Register Handler
 const handleRegister = async () => {
   // Check if all fields are valid before proceeding with register
-  if (!isEmailValid.value || !isPasswordValid.value || !isPasswordRepeatedValid.value || !isFirstNameValid.value || !isLastNameValid.value || orchestraMember.value.isStudent === null || (orchestraMember.value.isStudent && !orchestraMember.value.university)) {
+  if (!isEmailValid.value || !isPasswordValid.value || !isPasswordRepeatedValid.value || !isFirstNameValid.value || !isLastNameValid.value || orchestraMember.value.isStudent === null || (orchestraMember.value.isStudent && !orchestraMember.value.university) || !isInstrumentValid.value) {
     // errorMessage.value = 'Please correct the errors before registering in.';
     showErrors();
     return;
@@ -321,10 +380,14 @@ const handleRegister = async () => {
   const registerData = {
     email: email.value,
     password: password.value,
-    firstName: orchestraMember.value.firstName,
-    lastName: orchestraMember.value.lastName,
-    isStudent: orchestraMember.value.isStudent,
+    first_name: orchestraMember.value.firstName,
+    last_name: orchestraMember.value.lastName,
+    instruments: instruments.value,
+    // phone: orchestraMember.value.phone,
+    // birth_date: orchestraMember.value.birthDate,
+    are_you_student: orchestraMember.value.isStudent,
     university: orchestraMember.value.university,
+    // profile_picture: orchestraMember.value.profilePicture,
     description: orchestraMember.value.description,
   };
   console.log(JSON.stringify(registerData, null, 2));
@@ -370,7 +433,7 @@ const handleRegister = async () => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 25px;
+    gap: 30px;
   }
   
   &__form-input {
@@ -395,6 +458,16 @@ const handleRegister = async () => {
   &__form-button {
     width: 100%;
     min-width: 300px;
+  }
+
+  &__form-input-instruments {
+    margin: 10px 0 10px;
+  }
+
+  &__form-input-instrument-header {
+    display: flex; 
+    justify-content: space-between; 
+    margin-bottom: 8px
   }
 }
 </style>
