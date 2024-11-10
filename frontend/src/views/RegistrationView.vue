@@ -162,26 +162,41 @@
             </div>
           </div>
 
-          <!-- TODO - Add Phone Number -->
-          <!-- TODO - Add Date of Birth -->
+          <div class="registration-view__form-input">
+            <FloatLabel variant="on">
+              <InputText 
+                  class="registration-view__form-input-field"
+                  v-model="orchestraMember.phone"
+                  id="phone" 
+                  @input="validatePhoneInput" 
+                  :invalid="!isPhoneValid && showPhoneErrors"
+                  v-keyfilter="{ pattern: /^[\+]?([0-9]{1,11})?$/, validateOnly: true }"
+                ></InputText>
+              <label for="phone">Phone Number</label>
+            </FloatLabel>
+            <div class="registration-view__form-error-messages">
+              <Message severity="error" v-if="!orchestraMember.phone && showPhoneErrors">{{ messageInputRequired }}</Message>
+              <Message severity="error" v-if="orchestraMember.phone && !validatePhoneNumber(orchestraMember.phone) && showPhoneErrors">{{ messageValidationPhoneNumber }}</Message>
+            </div>
+          </div>
 
           <div class="registration-view__form-input">
-              <FloatLabel variant="on">
-                <DatePicker 
-                  v-model="orchestraMember.dateOfBirth" 
-                  dateFormat="dd/mm/yy" 
-                  showIcon 
-                  inputId="dateOfBirth" 
-                  iconDisplay="input" 
-                  @input="validateDateOfBirthInput"
-                  :invalid="!orchestraMember.dateOfBirth && showDateOfBirthErrors"
-                />
-                <label for="dateOfBirth">Date of Birth</label>
-              </FloatLabel>
-              <div class="registration-view__form-error-messages">
-                <Message severity="error" v-if="!orchestraMember.dateOfBirth && showDateOfBirthErrors">{{ messageInputRequired }}</Message>
-              </div>
+            <FloatLabel variant="on">
+              <DatePicker 
+                v-model="orchestraMember.dateOfBirth"
+                dateFormat="dd/mm/yy" 
+                showIcon 
+                inputId="dateOfBirth" 
+                iconDisplay="input" 
+                @input="validateDateOfBirthInput"
+                :invalid="!orchestraMember.dateOfBirth && showDateOfBirthErrors"
+              />
+              <label for="dateOfBirth">Date of Birth</label>
+            </FloatLabel>
+            <div class="registration-view__form-error-messages">
+              <Message severity="error" v-if="!orchestraMember.dateOfBirth && showDateOfBirthErrors">{{ messageInputRequired }}</Message>
             </div>
+          </div>
 
           <div class="registration-view__form-input">
             <SelectButton 
@@ -259,6 +274,7 @@ import Message from 'primevue/message';
 import Password from 'primevue/password';
 import Divider from 'primevue/divider';
 import Fluid from 'primevue/fluid';
+import InputOtp from 'primevue/inputotp';
 import DatePicker from 'primevue/datepicker';
 import { Form } from '@primevue/forms';
 import { useRouter, useRoute } from 'vue-router';
@@ -286,9 +302,11 @@ import {
   messageValidationPasswordsMatch, 
   messageValidationFirstLastNameLength,
   messageValidationSmallCapitalLetters,
+  messageValidationPhoneNumber,
   validatePasswordsMatch,
   validateFirstLastNameLength,
   validateSmallCapitalLetters,
+  validatePhoneNumber,
 } from '@/constants/validation/registrationValidation';
 import type { TOrchestraMember } from '@/types/TOrchestraMember';
 import { initOrchestraMember } from '@/constants/initOrchestraMember';
@@ -336,6 +354,7 @@ const showIsStudentErrors = ref(false);
 const showUniversityErrors = ref(false);
 const showInstrumentErrors = ref(false);
 const showDateOfBirthErrors = ref(false);
+const showPhoneErrors = ref(false);
 
 // Computed Properties for Validation
 const isEmailValid = computed(() => email.value && validateEmail(email.value) && validateNoWhitespaces(email.value));
@@ -345,6 +364,7 @@ const isPasswordRepeatedValid = computed(() => passwordRepeated.value && (!passw
 const isFirstNameValid = computed(() => orchestraMember.value.firstName && validateFirstLastNameLength(orchestraMember.value.firstName) && validateSmallCapitalLetters(orchestraMember.value.firstName));
 const isLastNameValid = computed(() => orchestraMember.value.lastName && validateFirstLastNameLength(orchestraMember.value.lastName) && validateSmallCapitalLetters(orchestraMember.value.lastName));
 const isInstrumentValid = computed(() => instruments.value.every(instrument => instrument.name && validateSmallCapitalLetters(instrument.name)));
+const isPhoneValid = computed(() => orchestraMember.value.phone && validatePhoneNumber(orchestraMember.value.phone));
 
 // Validation Methods
 const validateEmailInput = () => {
@@ -374,6 +394,9 @@ const validateIsStudentInput = () => {
 const validateUniversityInput = () => {
   showUniversityErrors.value = true;
 };
+const validatePhoneInput = () => {
+  showPhoneErrors.value = true;
+}
 
 const showErrors = () => {
   showEmailErrors.value = true;
@@ -382,6 +405,7 @@ const showErrors = () => {
   showFirstNameErrors.value = true;
   showLastNameErrors.value = true;
   showInstrumentErrors.value = true;
+  showPhoneErrors.value = true;
   showDateOfBirthErrors.value = true;
   showIsStudentErrors.value = true;
   showUniversityErrors.value = true;
@@ -393,7 +417,7 @@ const handleRegister = async () => {
   if (!isEmailValid.value || !isPasswordValid.value || !isPasswordRepeatedValid.value || 
     !isFirstNameValid.value || !isLastNameValid.value || orchestraMember.value.isStudent === null || 
     (orchestraMember.value.isStudent && !orchestraMember.value.university) || !isInstrumentValid.value ||
-    !orchestraMember.value.dateOfBirth) {
+    !orchestraMember.value.dateOfBirth || !isPhoneValid.value) {
     // errorMessage.value = 'Please correct the errors before registering in.';
     showErrors();
     return;
@@ -410,7 +434,7 @@ const handleRegister = async () => {
     first_name: orchestraMember.value.firstName,
     last_name: orchestraMember.value.lastName,
     instruments: instruments.value,
-    // phone: orchestraMember.value.phone,
+    phone: orchestraMember.value.phone,
     birth_date: orchestraMember.value.dateOfBirth,
     are_you_student: orchestraMember.value.isStudent,
     university: orchestraMember.value.university,
