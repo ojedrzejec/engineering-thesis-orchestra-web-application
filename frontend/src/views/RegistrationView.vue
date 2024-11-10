@@ -166,6 +166,24 @@
           <!-- TODO - Add Date of Birth -->
 
           <div class="registration-view__form-input">
+              <FloatLabel variant="on">
+                <DatePicker 
+                  v-model="orchestraMember.dateOfBirth" 
+                  dateFormat="dd/mm/yy" 
+                  showIcon 
+                  inputId="dateOfBirth" 
+                  iconDisplay="input" 
+                  @input="validateDateOfBirthInput"
+                  :invalid="!orchestraMember.dateOfBirth && showDateOfBirthErrors"
+                />
+                <label for="dateOfBirth">Date of Birth</label>
+              </FloatLabel>
+              <div class="registration-view__form-error-messages">
+                <Message severity="error" v-if="!orchestraMember.dateOfBirth && showDateOfBirthErrors">{{ messageInputRequired }}</Message>
+              </div>
+            </div>
+
+          <div class="registration-view__form-input">
             <SelectButton 
               v-model="orchestraMember.isStudent" 
               :options="options"
@@ -177,23 +195,23 @@
             <div class="registration-view__form-error-messages">
               <Message severity="error" v-if="orchestraMember.isStudent === null && showIsStudentErrors">{{ messageInputRequired }}</Message>
             </div>
-          </div>
 
-          <div class="registration-view__form-input" v-if="orchestraMember.isStudent">
-            <FloatLabel variant="on">
-              <Textarea 
-                id="university" 
-                v-model="orchestraMember.university" 
-                rows="1" 
-                cols="30" 
-                autoResize
-                @input="validateUniversityInput"
-                :invalid="!orchestraMember.university && showUniversityErrors"
-              ></Textarea>
-              <label for="university">University Name</label>
-            </FloatLabel>
-            <div class="registration-view__form-error-messages">
-              <Message severity="error" v-if="!orchestraMember.university && showUniversityErrors">{{ messageInputRequired }}</Message>
+            <div v-if="orchestraMember.isStudent">
+              <FloatLabel variant="on">
+                <Textarea 
+                  id="university" 
+                  v-model="orchestraMember.university" 
+                  rows="1" 
+                  cols="30" 
+                  autoResize
+                  @input="validateUniversityInput"
+                  :invalid="!orchestraMember.university && showUniversityErrors"
+                ></Textarea>
+                <label for="university">University Name</label>
+              </FloatLabel>
+              <div class="registration-view__form-error-messages">
+                <Message severity="error" v-if="!orchestraMember.university && showUniversityErrors">{{ messageInputRequired }}</Message>
+              </div>
             </div>
           </div>
 
@@ -204,7 +222,7 @@
               <Textarea 
                 id="description" 
                 v-model="orchestraMember.description" 
-                rows="5" 
+                rows="6" 
                 cols="30" 
                 autoResize
               ></Textarea>
@@ -241,6 +259,7 @@ import Message from 'primevue/message';
 import Password from 'primevue/password';
 import Divider from 'primevue/divider';
 import Fluid from 'primevue/fluid';
+import DatePicker from 'primevue/datepicker';
 import { Form } from '@primevue/forms';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/useAuthStore';
@@ -316,6 +335,7 @@ const showLastNameErrors = ref(false);
 const showIsStudentErrors = ref(false);
 const showUniversityErrors = ref(false);
 const showInstrumentErrors = ref(false);
+const showDateOfBirthErrors = ref(false);
 
 // Computed Properties for Validation
 const isEmailValid = computed(() => email.value && validateEmail(email.value) && validateNoWhitespaces(email.value));
@@ -342,14 +362,17 @@ const validateFirstNameInput = () => {
 const validateLastNameInput = () => {
   showLastNameErrors.value = true;
 };
+const validateInstrumentInput = () => {
+  showInstrumentErrors.value = true;
+};
+const validateDateOfBirthInput = () => {
+  showDateOfBirthErrors.value = true;
+};
 const validateIsStudentInput = () => {
   showIsStudentErrors.value = true;
 };
 const validateUniversityInput = () => {
   showUniversityErrors.value = true;
-};
-const validateInstrumentInput = () => {
-  showInstrumentErrors.value = true;
 };
 
 const showErrors = () => {
@@ -358,15 +381,19 @@ const showErrors = () => {
   showPasswordRepeatedErrors.value = true;
   showFirstNameErrors.value = true;
   showLastNameErrors.value = true;
+  showInstrumentErrors.value = true;
+  showDateOfBirthErrors.value = true;
   showIsStudentErrors.value = true;
   showUniversityErrors.value = true;
-  showInstrumentErrors.value = true;
 };
 
 // Register Handler
 const handleRegister = async () => {
   // Check if all fields are valid before proceeding with register
-  if (!isEmailValid.value || !isPasswordValid.value || !isPasswordRepeatedValid.value || !isFirstNameValid.value || !isLastNameValid.value || orchestraMember.value.isStudent === null || (orchestraMember.value.isStudent && !orchestraMember.value.university) || !isInstrumentValid.value) {
+  if (!isEmailValid.value || !isPasswordValid.value || !isPasswordRepeatedValid.value || 
+    !isFirstNameValid.value || !isLastNameValid.value || orchestraMember.value.isStudent === null || 
+    (orchestraMember.value.isStudent && !orchestraMember.value.university) || !isInstrumentValid.value ||
+    !orchestraMember.value.dateOfBirth) {
     // errorMessage.value = 'Please correct the errors before registering in.';
     showErrors();
     return;
@@ -384,7 +411,7 @@ const handleRegister = async () => {
     last_name: orchestraMember.value.lastName,
     instruments: instruments.value,
     // phone: orchestraMember.value.phone,
-    // birth_date: orchestraMember.value.birthDate,
+    birth_date: orchestraMember.value.dateOfBirth,
     are_you_student: orchestraMember.value.isStudent,
     university: orchestraMember.value.university,
     // profile_picture: orchestraMember.value.profilePicture,
