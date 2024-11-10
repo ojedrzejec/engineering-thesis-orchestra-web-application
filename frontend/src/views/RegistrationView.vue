@@ -105,7 +105,7 @@
             <div class="registration-view__form-error-messages">
               <Message severity="error" v-if="!orchestraMember.firstName && showFirstNameErrors">{{ messageInputRequired }}</Message>
               <Message severity="error" v-if="orchestraMember.firstName && !validateFirstLastNameLength(orchestraMember.firstName) && showFirstNameErrors">{{ messageValidationFirstLastNameLength("First Name") }}</Message>
-              <Message severity="error" v-if="orchestraMember.firstName && !validateSmallCapitalLetters(orchestraMember.firstName) && showFirstNameErrors">{{ messageValidationSmallCapitalLetters }}</Message>
+              <Message severity="error" v-if="orchestraMember.firstName && !validateLettersAndWhitespaces(orchestraMember.firstName) && showFirstNameErrors">{{ messageValidationLettersAndWhitespaces }}</Message>
             </div>
           </div>
 
@@ -123,14 +123,14 @@
             <div class="registration-view__form-error-messages">
               <Message severity="error" v-if="!orchestraMember.lastName && showLastNameErrors">{{ messageInputRequired }}</Message>
               <Message severity="error" v-if="orchestraMember.lastName && !validateFirstLastNameLength(orchestraMember.lastName) && showLastNameErrors">{{ messageValidationFirstLastNameLength("Last Name") }}</Message>
-              <Message severity="error" v-if="orchestraMember.lastName && !validateSmallCapitalLetters(orchestraMember.lastName) && showFirstNameErrors">{{ messageValidationSmallCapitalLetters }}</Message>
+              <Message severity="error" v-if="orchestraMember.lastName && !validateLettersAndWhitespaces(orchestraMember.lastName) && showLastNameErrors">{{ messageValidationLettersAndWhitespaces }}</Message>
             </div>
           </div>
 
           <div class="registration-view__form-input">
-            Instruments:
+            <div class="registration-view__text-color">Instruments:</div>
             <div v-for="(instrument, ix) in instruments" :key="ix" class="registration-view__form-input-instruments">
-              <div class="registration-view__form-input-instrument-header">
+              <div class="registration-view__form-input-instrument-header registration-view__text-color">
                 Instrument: {{ ix + 1 }}
                 <i class="pi pi-trash" style="color: slateblue" @click="removeInstrument(ix)"></i>
               </div>
@@ -148,7 +148,7 @@
                 </FloatLabel>
                 <div class="registration-view__form-error-messages">
                   <Message severity="error" v-if="!instrument.name && showInstrumentErrors">{{ messageInputRequired }}</Message>
-                  <Message severity="error" v-if="instrument.name && !validateSmallCapitalLetters(instrument.name) && showInstrumentErrors">{{ messageValidationSmallCapitalLetters }}</Message>
+                  <Message severity="error" v-if="instrument.name && !validateLettersAndWhitespaces(instrument.name) && showInstrumentErrors">{{ messageValidationLettersAndWhitespaces }}</Message>
                 </div>
               </div>
             </div>
@@ -300,11 +300,11 @@ import {
 import { 
   messageValidationPasswordsMatch, 
   messageValidationFirstLastNameLength,
-  messageValidationSmallCapitalLetters,
+  messageValidationLettersAndWhitespaces,
   messageValidationPhoneNumber,
   validatePasswordsMatch,
   validateFirstLastNameLength,
-  validateSmallCapitalLetters,
+  validateLettersAndWhitespaces,
   validatePhoneNumber,
 } from '@/constants/validation/registrationValidation';
 import type { TOrchestraMember } from '@/types/TOrchestraMember';
@@ -358,9 +358,9 @@ const isEmailValid = computed(() => orchestraMember.value.email && validateEmail
 const isPasswordValid = computed(() => orchestraMember.value.password && validatePasswordLength(orchestraMember.value.password) && validateSpecialCharacter(orchestraMember.value.password) &&
   validateDigitNumber(orchestraMember.value.password) && validateCapitalLetter(orchestraMember.value.password) && validateSmallLetter(orchestraMember.value.password) && validateNoWhitespaces(orchestraMember.value.password));
 const isPasswordRepeatedValid = computed(() => passwordRepeated.value && (!orchestraMember.value.password || validatePasswordsMatch(orchestraMember.value.password, passwordRepeated.value)));
-const isFirstNameValid = computed(() => orchestraMember.value.firstName && validateFirstLastNameLength(orchestraMember.value.firstName) && validateSmallCapitalLetters(orchestraMember.value.firstName));
-const isLastNameValid = computed(() => orchestraMember.value.lastName && validateFirstLastNameLength(orchestraMember.value.lastName) && validateSmallCapitalLetters(orchestraMember.value.lastName));
-const isInstrumentValid = computed(() => instruments.value.every(instrument => instrument.name && validateSmallCapitalLetters(instrument.name)));
+const isFirstNameValid = computed(() => orchestraMember.value.firstName && validateFirstLastNameLength(orchestraMember.value.firstName) && validateLettersAndWhitespaces(orchestraMember.value.firstName));
+const isLastNameValid = computed(() => orchestraMember.value.lastName && validateFirstLastNameLength(orchestraMember.value.lastName) && validateLettersAndWhitespaces(orchestraMember.value.lastName));
+const isInstrumentValid = computed(() => instruments.value.every(instrument => instrument.name && validateLettersAndWhitespaces(instrument.name)));
 const isPhoneValid = computed(() => orchestraMember.value.phone && validatePhoneNumber(orchestraMember.value.phone));
 
 // Validation Methods
@@ -518,4 +518,8 @@ const handleRegister = async () => {
     margin-bottom: 8px
   }
 
-  }
+  &__text-color {
+    color: #424242;
+  }   
+}
+</style>
