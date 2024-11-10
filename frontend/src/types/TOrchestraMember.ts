@@ -3,7 +3,7 @@ export type TOrchestraMember = {
     lastName: string | null;
     phone: string;
     dateOfBirth: Date;
-    isStudent: boolean;
+    isStudent: boolean | null;
     university: string;
     profilePicture: string;
     description: string;

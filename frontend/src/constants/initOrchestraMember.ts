@@ -5,7 +5,7 @@ export const initOrchestraMember: TOrchestraMember = {
     lastName: null,
     phone: '',
     dateOfBirth: new Date(),
-    isStudent: false,
+    isStudent: null,
     university: '',
     profilePicture: '',
     description: '',

@@ -127,6 +127,20 @@
             </div>
           </div>
 
+          <div class="registration-view__form-input">
+            <SelectButton 
+              v-model="orchestraMember.isStudent" 
+              :options="options"
+              optionLabel="name"
+              optionValue="value"
+              @click="validateIsStudentInput"
+              :invalid="orchestraMember.isStudent === null && showIsStudentErrors" 
+            />
+            <div class="registration-view__form-error-messages">
+              <Message severity="error" v-if="orchestraMember.isStudent === null && showIsStudentErrors">{{ messageInputRequired }}</Message>
+            </div>
+          </div>
+
           <div v-if="errorMessage" class="error-message">
             <Message severity="error">{{ errorMessage }}</Message>
           </div>
@@ -148,6 +162,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import Button from 'primevue/button';
+import SelectButton from 'primevue/selectbutton';
 import InputText from 'primevue/inputtext';
 import FloatLabel from 'primevue/floatlabel';
 import Message from 'primevue/message';
@@ -195,6 +210,10 @@ const email = ref<string | null>(null);
 const password = ref<string | null>(null);
 const passwordRepeated = ref<string | null>(null);
 const orchestraMember = ref<TOrchestraMember>(initOrchestraMember);
+const options = ref([
+    { name: 'I am a student currently.', value: true },
+    { name: 'I am NOT a student currently.', value: false }
+]);
 
 const loading = ref(false);
 const errorMessage = ref('');
@@ -203,12 +222,12 @@ const showPasswordErrors = ref(false); // Controls if error messages should be d
 const showPasswordRepeatedErrors = ref(false);
 const showFirstNameErrors = ref(false);
 const showLastNameErrors = ref(false);
+const showIsStudentErrors = ref(false);
 
 // Computed Properties for Validation
 const isEmailValid = computed(() => email.value && validateEmail(email.value) && validateNoWhitespaces(email.value));
 const isPasswordValid = computed(() => password.value && validatePasswordLength(password.value) && validateSpecialCharacter(password.value) &&
   validateDigitNumber(password.value) && validateCapitalLetter(password.value) && validateSmallLetter(password.value) && validateNoWhitespaces(password.value));
-// const isPasswordRepeatedValid = computed(() => passwordRepeated.value && password.value && validatePasswordsMatch(password.value, passwordRepeated.value));
 const isPasswordRepeatedValid = computed(() => passwordRepeated.value && (!password.value || validatePasswordsMatch(password.value, passwordRepeated.value)));
 const isFirstNameValid = computed(() => orchestraMember.value.firstName && validateFirstLastNameLength(orchestraMember.value.firstName) && validateSmallCapitalLetters(orchestraMember.value.firstName));
 const isLastNameValid = computed(() => orchestraMember.value.lastName && validateFirstLastNameLength(orchestraMember.value.lastName) && validateSmallCapitalLetters(orchestraMember.value.lastName));
@@ -229,6 +248,9 @@ const validateFirstNameInput = () => {
 const validateLastNameInput = () => {
   showLastNameErrors.value = true;
 };
+const validateIsStudentInput = () => {
+  showIsStudentErrors.value = true;
+};
 
 const showErrors = () => {
   showEmailErrors.value = true;
@@ -236,12 +258,13 @@ const showErrors = () => {
   showPasswordRepeatedErrors.value = true;
   showFirstNameErrors.value = true;
   showLastNameErrors.value = true;
+  showIsStudentErrors.value = true;
 };
 
 // Register Handler
 const handleRegister = async () => {
   // Check if all fields are valid before proceeding with register
-  if (!isEmailValid.value || !isPasswordValid.value || !isPasswordRepeatedValid.value || !isFirstNameValid.value || !isLastNameValid.value) {
+  if (!isEmailValid.value || !isPasswordValid.value || !isPasswordRepeatedValid.value || !isFirstNameValid.value || !isLastNameValid.value || orchestraMember.value.isStudent === null) {
     // errorMessage.value = 'Please correct the errors before registering in.';
     showErrors();
     return;
@@ -257,6 +280,7 @@ const handleRegister = async () => {
     password: password.value,
     firstName: orchestraMember.value.firstName,
     lastName: orchestraMember.value.lastName,
+    isStudent: orchestraMember.value.isStudent,
   };
   console.log(JSON.stringify(registerData, null, 2));
 
