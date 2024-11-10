@@ -52,27 +52,7 @@ const deleteAllInstrumentsByName = async (name) => {
     return result.rows
 }
 
-// For owner: create a new row with instrument name, leaving the id_orchestra_member empty
-const createInstrumentWithoutMember = async (instrumentName) => {
-    const id = uuidv4()
-    const result = await pool.query(
-        `
-      INSERT INTO instrument (
-        id,
-        name
-      )
-      VALUES ($1, $2)
-      RETURNING *;
-    `,
-        [id, instrumentName]
-    )
-    return result.rows[0]
-}
-
-const createInstrumentWithMember = async (
-    orchestraMemberId,
-    instrumentName
-) => {
+const createInstrument = async (orchestraMemberId, instrumentName) => {
     const id = uuidv4()
     const result = await pool.query(
         `INSERT INTO instrument (id, id_orchestra_member, name)
@@ -95,7 +75,6 @@ module.exports = {
     getInstrumentsByMemberId,
     updateAllInstrumentsByName,
     deleteAllInstrumentsByName,
-    createInstrumentWithoutMember,
-    createInstrumentWithMember,
+    createInstrument,
     deleteInstrumentsByOrchestraMemberId,
 }

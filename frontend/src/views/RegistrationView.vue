@@ -333,11 +333,6 @@ const addNewInstrument = () => {
 }
 const handleInstrumentsUpdate = (instrument: TInstrument, ix: number) => {
   instruments.value = instruments.value.map((inst, i) => i === ix ? instrument : inst)
-  // all instruments names toLowerCase()
-  instruments.value = instruments.value.map((inst) => {
-    inst.name = inst.name.toLowerCase();
-    return inst;
-  });
 }
 
 const loading = ref(false);
@@ -425,12 +420,14 @@ const handleRegister = async () => {
   loading.value = true;
   errorMessage.value = '';
 
+  const instrumentNamesArray = instruments.value.map(instrument => instrument.name?.toLowerCase());
+  
   const registerData = {
     email: orchestraMember.value.email,
     password: orchestraMember.value.password,
     first_name: orchestraMember.value.firstName,
     last_name: orchestraMember.value.lastName,
-    instruments: instruments.value,
+    instruments: instrumentNamesArray,
     phone: orchestraMember.value.phone,
     birth_date: orchestraMember.value.dateOfBirth,
     are_you_student: orchestraMember.value.isStudent,

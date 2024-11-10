@@ -91,22 +91,11 @@ const deleteInstrumentsByName = async (req, res) => {
     }
 }
 
-const addInstrumentWithoutMember = async (req, res) => {
-    const { instrumentName } = req.body
-    try {
-        const newInstrument =
-            await InstrumentModel.createInstrumentWithoutMember(instrumentName)
-        res.status(201).json(newInstrument)
-    } catch (err) {
-        res.status(500).json({ msg: 'Server error while adding instrument.' })
-    }
-}
-
-const addInstrumentWithMember = async (req, res) => {
+const addInstrumentByOrchestraMemberId = async (req, res) => {
     const orchestraMemberId = req.params.id
     const { instrumentName } = req.body
     try {
-        const newInstrument = await InstrumentModel.createInstrumentWithMember(
+        const newInstrument = await InstrumentModel.createInstrument(
             orchestraMemberId,
             instrumentName
         )
@@ -131,7 +120,6 @@ module.exports = {
     getInstrumentsForUser,
     updateAllInstrumentsNames,
     deleteInstrumentsByName,
-    addInstrumentWithoutMember,
-    addInstrumentWithMember,
+    addInstrumentByOrchestraMemberId,
     deleteInstrumentsByOrchestraMemberId,
 }

@@ -12,7 +12,7 @@ const register = async (req, res) => {
         password,
         first_name,
         last_name,
-        instruments, // string of instrument names separated by commas
+        instruments, // array strings of instrument names
         phone,
         birth_date,
         are_you_student,
@@ -47,14 +47,9 @@ const register = async (req, res) => {
         const createdOrchestraMember =
             await OrchestraMemberModel.createOrchestraMember(newOrchestraMember)
 
-        // Split instruments string into an array and iterate
-        const instrumentsArray = instruments
-            .split(',')
-            .map((instr) => instr.trim())
-
-        for (const instrument of instrumentsArray) {
+        for (const instrument of instruments) {
             const createdInstrumentWithMember =
-                await InstrumentModel.createInstrumentWithMember(
+                await InstrumentModel.createInstrument(
                     createdOrchestraMember.id,
                     instrument
                 )
