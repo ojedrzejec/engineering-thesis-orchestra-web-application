@@ -10,6 +10,7 @@ import VideosGalleryView from '@/views/guest/gallery/VideosGalleryView.vue'
 import PreviousConcertsView from '@/views/guest/concerts/PreviousConcertsView.vue'
 import UpcomingConcertsView from '@/views/guest/concerts/UpcomingConcertsView.vue'
 import CreateOrchestraView from '@/views/CreateOrchestraView.vue'
+import ProfileView from '@/views/player/ProfileView.vue'
 
 import { useAuthStore } from '@/stores/useAuthStore'
 
@@ -93,7 +94,7 @@ const router = createRouter({
     {
       path: '/profile',
       name: 'profile',
-      component: () => import('@/views/player/ProfileView.vue'),
+      component: ProfileView,
       meta: { logInOnly: true },
     },
     {

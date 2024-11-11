@@ -183,8 +183,9 @@ const handleLogin = async () => {
 
     const { token } = await response.json();
     authStore.setToken(token);
-    const redirectPath = route.query.redirect?.toString() || '/';
+    const redirectPath = route.query.redirect?.toString() || '/profile';
     router.push(redirectPath);
+    window.location.reload();
 
   } catch (error) {
     errorMessage.value = error.message || 'An error occurred during login.';

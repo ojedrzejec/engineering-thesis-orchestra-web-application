@@ -244,23 +244,16 @@
               class="p-button-outlined" 
               :showCancelButton=false
               :show-upload-button=false
-              @cancel="orchestraMember.profilePicture = null"
-              :chooseLabel="orchestraMember.profilePicture ? 'Change Picture' : 'Choose Picture'"
-              @remove-uploaded-file="removeFileCallback"
+              :chooseLabel="orchestraMember.profilePicture ? 'Change Profile Picture' : 'Choose Your Profile Picture'"
               @remove="removeFileCallback"
-              @input="validateProfilePictureInput"
             >
               <template #empty>
-                <span :invalid="!orchestraMember.profilePicture">Drag and drop files to here to upload.</span>
+                <span>Drag and drop files to here to upload.</span>
               </template>
             </FileUpload>
-            <div class="registration-view__form-error-messages">
-              <Message severity="error" v-if="!orchestraMember.profilePicture && showProfilePictureErrors">{{ messageInputRequired }}</Message>
-            </div>
           </div>
-          
-          {{orchestraMember.profilePicture}}
-          {{typeof orchestraMember.profilePicture}}
+
+          {{ orchestraMember.profilePicture }}
 
           <div class="registration-view__form-input">
             <FloatLabel variant="on">
@@ -358,17 +351,6 @@ const options = ref([
 ]);
 const instruments = ref<TInstrument[]>([]);
 
-const removeInstrument = (ix: number) => {
-  instruments.value = instruments.value.filter((_, index) => index !== ix)
-}
-const addNewInstrument = () => {
-  // instruments.value = [...instruments.value, initInstrument];
-  instruments.value = [...instruments.value, Object.assign({}, initInstrument)]
-}
-const handleInstrumentsUpdate = (instrument: TInstrument, ix: number) => {
-  instruments.value = instruments.value.map((inst, i) => i === ix ? instrument : inst)
-}
-
 const loading = ref(false);
 const errorMessage = ref('');
 const showEmailErrors = ref(false); // Controls if error messages should be displayed for email
@@ -381,7 +363,6 @@ const showUniversityErrors = ref(false);
 const showInstrumentErrors = ref(false);
 const showDateOfBirthErrors = ref(false);
 const showPhoneErrors = ref(false);
-const showProfilePictureErrors = ref(false);
 
 // Computed Properties for Validation
 const isEmailValid = computed(() => orchestraMember.value.email && validateEmail(orchestraMember.value.email) && validateNoWhitespaces(orchestraMember.value.email));
@@ -424,9 +405,6 @@ const validateUniversityInput = () => {
 const validatePhoneInput = () => {
   showPhoneErrors.value = true;
 }
-const validateProfilePictureInput = () => {
-  showProfilePictureErrors.value = true;
-}
 
 const showErrors = () => {
   showEmailErrors.value = true;
@@ -439,8 +417,19 @@ const showErrors = () => {
   showDateOfBirthErrors.value = true;
   showIsStudentErrors.value = true;
   showUniversityErrors.value = true;
-  showProfilePictureErrors.value = true;
 };
+
+const removeInstrument = (ix: number) => {
+  instruments.value = instruments.value.filter((_, index) => index !== ix)
+}
+
+const addNewInstrument = () => {
+  instruments.value = [...instruments.value, Object.assign({}, initInstrument)]
+}
+
+const handleInstrumentsUpdate = (instrument: TInstrument, ix: number) => {
+  instruments.value = instruments.value.map((inst, i) => i === ix ? instrument : inst)
+}
 
 const onFileSelect = async (event) => {
   const file = event.files[0];
@@ -448,6 +437,7 @@ const onFileSelect = async (event) => {
     orchestraMember.value.profilePicture = await fileToBase64(file);
   }
 };
+
 const removeFileCallback = (file) => {
   console.log(file);
   orchestraMember.value.profilePicture = null;
@@ -468,16 +458,18 @@ const handleRegister = async () => {
   if (!isEmailValid.value || !isPasswordValid.value || !isPasswordRepeatedValid.value || 
     !isFirstNameValid.value || !isLastNameValid.value || orchestraMember.value.isStudent === null || 
     (orchestraMember.value.isStudent && !orchestraMember.value.university) || !isInstrumentValid.value ||
-    !orchestraMember.value.dateOfBirth || !isPhoneValid.value || !orchestraMember.value.profilePicture) {
+    !orchestraMember.value.dateOfBirth || !isPhoneValid.value) {
     // errorMessage.value = 'Please correct the errors before registering in.';
     showErrors();
     return;
   }
 
-  console.log("NO input ERRORS");
-  
   loading.value = true;
   errorMessage.value = '';
+
+  if (orchestraMember.value.isStudent === false) {
+    orchestraMember.value.university = null
+  }
 
   const instrumentNamesArray = instruments.value.map(instrument => instrument.name?.toLowerCase());
   
@@ -488,7 +480,7 @@ const handleRegister = async () => {
     last_name: orchestraMember.value.lastName,
     instruments: instrumentNamesArray,
     phone: orchestraMember.value.phone,
-    birth_date: orchestraMember.value.dateOfBirth,
+    birth_date: orchestraMember.value.dateOfBirth.toISOString().split('T')[0],
     are_you_student: orchestraMember.value.isStudent,
     university: orchestraMember.value.university,
     profile_picture: orchestraMember.value.profilePicture,
@@ -506,6 +498,7 @@ const handleRegister = async () => {
     });
 
     if (!response.ok) {
+      toast.add({ severity: 'error', summary: 'Register failed', detail: 'Apologies for the inconvenience', life: 3000 });
       throw new Error('Register failed. Please try again later.');
     }
 
@@ -513,8 +506,10 @@ const handleRegister = async () => {
 
     const { token } = await response.json();
     authStore.setToken(token);
-    const redirectPath = route.query.redirect?.toString() || '/';
+    // await authStore.fetchUserProfile(); // Optionally fetch user profile data
+    const redirectPath = route.query.redirect?.toString() || '/profile';
     router.push(redirectPath);
+    window.location.reload();
 
   } catch (error) {
     errorMessage.value = error.message || 'An error occurred during register.';
