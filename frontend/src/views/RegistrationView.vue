@@ -1,5 +1,6 @@
 <template>
   <div class="registration-view">
+    <Toast />
     <div class="registration-view__title">
       <h1>Create your account</h1>
     </div>
@@ -276,6 +277,9 @@ import Divider from 'primevue/divider';
 import Fluid from 'primevue/fluid';
 import DatePicker from 'primevue/datepicker';
 import { Form } from '@primevue/forms';
+import Toast from 'primevue/toast';
+import { useToast } from 'primevue/usetoast';
+const toast = useToast();
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { API_BASE_URL } from '@/constants/config';
@@ -449,6 +453,8 @@ const handleRegister = async () => {
     if (!response.ok) {
       throw new Error('Register failed. Please try again later.');
     }
+
+    toast.add({ severity: 'info', summary: 'Registered successfully!', detail: 'Now log in to your account! :)', life: 3000 });
 
     const { token } = await response.json();
     authStore.setToken(token);
