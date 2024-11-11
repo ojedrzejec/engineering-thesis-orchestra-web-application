@@ -155,7 +155,7 @@
             </div>
             <div>
               <Button 
-                severity="secondary"
+                class="p-button-outlined"
                 @click.prevent="addNewInstrument"
                 :disabled="instruments.length > 0 && !instruments[instruments.length - 1].name"
                 :label="loading ? 'Adding Instrument...' : 'Add Instrument'" 
@@ -231,7 +231,36 @@
             </div>
           </div>
 
-          <!-- TODO - Add profilePicture -->
+          <div class="registration-view__form-input registration-view__file">
+            <FileUpload
+              mode="advanced"
+              accept="image/*"
+              :maxFileSize="1000000"
+              ref="fileupload"
+              name="demo[]"
+              @select="onFileSelect"
+              customUpload
+              :invalid="!orchestraMember.profilePicture"
+              class="p-button-outlined" 
+              :showCancelButton=false
+              :show-upload-button=false
+              @cancel="orchestraMember.profilePicture = null"
+              :chooseLabel="orchestraMember.profilePicture ? 'Change Picture' : 'Choose Picture'"
+              @remove-uploaded-file="removeFileCallback"
+              @remove="removeFileCallback"
+              @input="validateProfilePictureInput"
+            >
+              <template #empty>
+                <span :invalid="!orchestraMember.profilePicture">Drag and drop files to here to upload.</span>
+              </template>
+            </FileUpload>
+            <div class="registration-view__form-error-messages">
+              <Message severity="error" v-if="!orchestraMember.profilePicture && showProfilePictureErrors">{{ messageInputRequired }}</Message>
+            </div>
+          </div>
+          
+          {{orchestraMember.profilePicture}}
+          {{typeof orchestraMember.profilePicture}}
 
           <div class="registration-view__form-input">
             <FloatLabel variant="on">
@@ -276,6 +305,7 @@ import Password from 'primevue/password';
 import Divider from 'primevue/divider';
 import Fluid from 'primevue/fluid';
 import DatePicker from 'primevue/datepicker';
+import FileUpload from 'primevue/fileupload';
 import { Form } from '@primevue/forms';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
@@ -351,6 +381,7 @@ const showUniversityErrors = ref(false);
 const showInstrumentErrors = ref(false);
 const showDateOfBirthErrors = ref(false);
 const showPhoneErrors = ref(false);
+const showProfilePictureErrors = ref(false);
 
 // Computed Properties for Validation
 const isEmailValid = computed(() => orchestraMember.value.email && validateEmail(orchestraMember.value.email) && validateNoWhitespaces(orchestraMember.value.email));
@@ -393,6 +424,9 @@ const validateUniversityInput = () => {
 const validatePhoneInput = () => {
   showPhoneErrors.value = true;
 }
+const validateProfilePictureInput = () => {
+  showProfilePictureErrors.value = true;
+}
 
 const showErrors = () => {
   showEmailErrors.value = true;
@@ -405,6 +439,27 @@ const showErrors = () => {
   showDateOfBirthErrors.value = true;
   showIsStudentErrors.value = true;
   showUniversityErrors.value = true;
+  showProfilePictureErrors.value = true;
+};
+
+const onFileSelect = async (event) => {
+  const file = event.files[0];
+  if (file) {
+    orchestraMember.value.profilePicture = await fileToBase64(file);
+  }
+};
+const removeFileCallback = (file) => {
+  console.log(file);
+  orchestraMember.value.profilePicture = null;
+};
+
+const fileToBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
 };
 
 // Register Handler
@@ -413,7 +468,7 @@ const handleRegister = async () => {
   if (!isEmailValid.value || !isPasswordValid.value || !isPasswordRepeatedValid.value || 
     !isFirstNameValid.value || !isLastNameValid.value || orchestraMember.value.isStudent === null || 
     (orchestraMember.value.isStudent && !orchestraMember.value.university) || !isInstrumentValid.value ||
-    !orchestraMember.value.dateOfBirth || !isPhoneValid.value) {
+    !orchestraMember.value.dateOfBirth || !isPhoneValid.value || !orchestraMember.value.profilePicture) {
     // errorMessage.value = 'Please correct the errors before registering in.';
     showErrors();
     return;
@@ -436,7 +491,7 @@ const handleRegister = async () => {
     birth_date: orchestraMember.value.dateOfBirth,
     are_you_student: orchestraMember.value.isStudent,
     university: orchestraMember.value.university,
-    // profile_picture: orchestraMember.value.profilePicture,
+    profile_picture: orchestraMember.value.profilePicture,
     description: orchestraMember.value.description,
   };
   console.log(JSON.stringify(registerData, null, 2));
@@ -522,7 +577,13 @@ const handleRegister = async () => {
   }
 
   &__text-color {
-    color: #424242;
-  }   
+    color: #475569;
+  }
+
+  &__file {
+    .p-fileupload-file-badge {
+      display: none !important;
+    }
+  }
 }
 </style>
