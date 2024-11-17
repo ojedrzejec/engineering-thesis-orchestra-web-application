@@ -50,9 +50,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { RouterLink, RouterView, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/useAuthStore'
+import { useOrchestraStore } from '@/stores/useOrchestraStore'
 import { computed } from 'vue'
 import Menubar from 'primevue/menubar';
 import Badge from 'primevue/badge';
@@ -60,6 +61,7 @@ import Button from 'primevue/button';
 import PanelMenu from 'primevue/panelmenu';
 
 const authStore = useAuthStore()
+const orchestraStore = useOrchestraStore()
 const router = useRouter()
 
 const loginLogoutButtonLabel = computed(() => {
@@ -86,22 +88,31 @@ const loginLogoutIcon = computed(() => {
   return 'pi pi-sign-in'
 })
 
+onMounted(async () => {
+  await orchestraStore.fetchOrchestras();
+  if (orchestraStore.availableOrchestras.length > 0) {
+    console.log('Orchestras fetched')
+    console.log('orchestraStore.availableOrchestras: ', orchestraStore.availableOrchestras)
+  } else {
+    console.log('Orchestras not fetched OR no orchestras available')
+  }
+})
+
 const menubarItems = computed(() => {
   if (authStore.isLoggedIn) {
     const isLoggedInMenubarItems = ref([
       {
-        label: 'Orchestra One',
+        label: orchestraStore.availableOrchestras[0]?.name || 'You do not belong to any orchestra',
         icon: 'pi pi-folder-open',
-        badge: 3,
-        items: [
-          {
-            label: 'Orchestra Two',
-            icon: 'pi pi-folder'
-          },
-          {
-            label: 'Orchestra Three',
-            icon: 'pi pi-folder'
-          },
+        badge: orchestraStore.availableOrchestras.length,
+        items: orchestraStore.availableOrchestras.map((orchestra) => ({
+          label: orchestra.name,
+          icon: 'pi pi-folder',
+          command: () => {
+            // Add your command logic here if needed
+            router.push({ name: 'orchestra', params: { id: orchestra.id } });
+          }
+        })).concat([
           {
             separator: true
           },
@@ -109,10 +120,10 @@ const menubarItems = computed(() => {
             label: 'Create Orchestra',
             icon: 'pi pi-plus-circle',
             command: () => {
-              router.push({ name: 'create-orchestra' })
+              router.push({ name: 'create-orchestra' });
             }
-          },
-        ]
+          }
+        ])
       },
       {
         label: 'My Profile',

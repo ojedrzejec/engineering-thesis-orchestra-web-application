@@ -80,33 +80,34 @@ const login = async (req, res) => {
             return res.status(400).json({ msg: 'Invalid credentials' })
         }
 
-        // Generate JWT token with user's ID and associated role
-        const accessToken = generateJsonWebToken(user.id, 'player') // Default role to 'player'
+        const token = generateJsonWebToken(user)
 
-        res.json({ accessToken: accessToken })
+        res.json({ token })
     } catch (err) {
-        res.status(500).json({ msg: 'Server error while login.' })
+        console.error('Error during login:', err)
+        res.status(500).json({ msg: 'Server error while logging in.' })
     }
 }
 
-const generateJsonWebToken = (userId, userRole) => {
-    return jwt.sign(
-        { id: userId, role: userRole }, // Default role to 'player'
-        process.env.ACCESS_JWT_TOKEN_SECRET,
-        { expiresIn: '30m' }
-    )
+const generateJsonWebToken = (user) => {
+    // Generate JWT token with user's ID
+    const payload = {
+        id: user.id,
+    }
+
+    return jwt.sign(payload, process.env.ACCESS_JWT_TOKEN_SECRET, {
+        expiresIn: '1h', // Token expires in 1 hour
+    })
 }
 
-const updateJsonWebToken = (userId, userRole, orchestraId) => {
-    return jwt.sign(
-        { id: userId, role: userRole, orchestraId }, // For roles: 'owner' and 'manager'
-        process.env.ACCESS_JWT_TOKEN_SECRET,
-        { expiresIn: '30m' }
-    )
-}
+// const updateJsonWebToken = (userId) => {
+//     return jwt.sign({ id: userId }, process.env.ACCESS_JWT_TOKEN_SECRET, {
+//         expiresIn: '30m',
+//     })
+// }
 
 module.exports = {
     register,
     login,
-    updateJsonWebToken,
+    // updateJsonWebToken,
 }

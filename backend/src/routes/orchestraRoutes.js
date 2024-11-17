@@ -1,8 +1,12 @@
 const { Router } = require('express')
 const router = Router()
-const { createOrchestra } = require('../controllers/orchestraController')
+const {
+    getAllOrchestras,
+    createOrchestra,
+} = require('../controllers/orchestraController')
 const authMiddleware = require('../middlewares/authMiddleware')
 
-router.post('/create', authMiddleware.authenticateToken, createOrchestra)
+router.get('/', authMiddleware.authenticateToken, getAllOrchestras)
+router.post('/', authMiddleware.authenticateToken, createOrchestra)
 
 module.exports = router

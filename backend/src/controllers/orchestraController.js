@@ -1,6 +1,28 @@
 const Orchestra_OrchestraOrchestraMember_Owner_Model = require('../models/OrchestraModel_OrchestraOrchestraMember_OWNER')
+const OrchestraOrchestraMemberModel = require('../models/OrchestraOrchestraMemberModel')
 // const jwt = require('jsonwebtoken')
-const { updateJsonWebToken } = require('../controllers/authController')
+// const { updateJsonWebToken } = require('../controllers/authController')
+
+const getAllOrchestras = async (req, res) => {
+    const orchestras =
+        await Orchestra_OrchestraOrchestraMember_Owner_Model.getAllOrchestras()
+    res.json(orchestras)
+}
+
+const getOrchestrasWithMemberId = async (req, res) => {
+    const orchestrasWithOrchestraMember =
+        await Orchestra_OrchestraOrchestraMember_Owner_Model.getOrchestrasWithMemberId(
+            req.user.id
+        )
+    console.log(orchestrasWithOrchestraMember)
+    res.json(orchestrasWithOrchestraMember)
+}
+
+const getAllOrchestraOrchestraMember = async (req, res) => {
+    const orchestraOrchestraMember =
+        await OrchestraOrchestraMemberModel.getAllOrchestraOrchestraMember()
+    res.json(orchestraOrchestraMember)
+}
 
 const createOrchestra = async (req, res) => {
     const {
@@ -30,13 +52,7 @@ const createOrchestra = async (req, res) => {
                 }
             )
 
-        // Update user role to owner for this specific orchestra
-        const token = updateJsonWebToken(req.user.id, 'owner', orchestra.id)
-        // const token = jwt.sign(
-        //     { id: req.user.id, role: 'owner', orchestraId: orchestra.id },
-        //     process.env.JWT_SECRET,
-        //     { expiresIn: '1h' }
-        // )
+        // const token = updateJsonWebToken(req.user.id)
 
         res.json({ token, orchestra })
     } catch (err) {
@@ -45,5 +61,8 @@ const createOrchestra = async (req, res) => {
 }
 
 module.exports = {
+    getAllOrchestras,
+    getOrchestrasWithMemberId,
+    getAllOrchestraOrchestraMember,
     createOrchestra,
 }

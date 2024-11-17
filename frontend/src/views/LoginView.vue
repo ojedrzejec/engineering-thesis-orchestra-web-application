@@ -181,8 +181,12 @@ const handleLogin = async () => {
       throw new Error('Login failed. Please check your credentials and try again.');
     }
 
-    const { token } = await response.json();
+    const data = await response.json();
+    console.log('Login response:', data); // Log the response
+    const { token } = data;
+    console.log('Received token:', token); // Log the token
     authStore.setToken(token);
+    console.log('Token set in authStore:', authStore.getToken());
     const redirectPath = route.query.redirect?.toString() || '/profile';
     router.push(redirectPath);
     window.location.reload();

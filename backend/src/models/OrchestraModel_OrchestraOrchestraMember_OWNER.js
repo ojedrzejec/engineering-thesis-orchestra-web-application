@@ -1,6 +1,33 @@
 const pool = require('../config/database')
 const { v4: uuidv4 } = require('uuid')
 
+const getAllOrchestras = async () => {
+    const result = await pool.query('SELECT * FROM orchestra')
+    return result.rows
+}
+
+const getOrchestrasWithMemberId = async (userId) => {
+    const result = await pool.query(
+        `
+        SELECT 
+            o.id, 
+            o.name,
+            oom.is_owner,
+            oom.is_manager
+        FROM 
+            orchestra o
+        LEFT JOIN 
+            orchestra_orchestra_member oom 
+        ON 
+            o.id = oom.id_orchestra
+        WHERE 
+            oom.id_orchestra_member = $1
+    `,
+        [userId]
+    )
+    return result.rows
+}
+
 // Method to create a new orchestra and associate it with the owner
 const createOrchestra = async ({
     name,
@@ -60,5 +87,7 @@ const createOrchestra = async ({
 }
 
 module.exports = {
+    getAllOrchestras,
+    getOrchestrasWithMemberId,
     createOrchestra,
 }

@@ -9,9 +9,12 @@ export const useAuthStore = defineStore('auth', () => {
   const isLoggedIn = computed(() => !!token.value)
 
   const setToken = (newValue: string) => {
+    console.log('Setting token:', newValue)
     token.value = newValue
     localStorage.setItem(LOCAL_STORAGE_KEY_TOKEN, newValue)
   }
+
+  const getToken = () => token.value
 
   const removeToken = () => {
     token.value = null
@@ -27,6 +30,7 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     isLoggedIn,
     setToken,
+    getToken,
     removeToken,
   }
 })
