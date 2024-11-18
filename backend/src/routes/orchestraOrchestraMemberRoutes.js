@@ -7,10 +7,10 @@ const {
 const authMiddleware = require('../middlewares/authMiddleware')
 
 router.get('/', authMiddleware.authenticateToken, getOrchestrasWithMemberId)
-// router.get(
-//     '/getAll',
-//     authMiddleware.authenticateToken,
-//     getAllOrchestraOrchestraMember
-// )
+router.get(
+    '/getAll',
+    authMiddleware.authenticateToken,
+    getAllOrchestraOrchestraMember
+)
 
 module.exports = router

@@ -38,7 +38,7 @@ export const useOrchestraStore = defineStore('orchestra', () => {
             }
     
             const data = await response.json()
-            console.log('Fetched orchestras: ', data)
+            // console.log('Fetched orchestras: ', data)
             if (Array.isArray(data)) {
                 availableOrchestras.value = data.map((orchestra: any) => ({
                     id: orchestra.id,
@@ -83,6 +83,7 @@ export const useOrchestraStore = defineStore('orchestra', () => {
 
             const data = await response.json()
             selectedOrchestra.value = {
+                id: data.id,
                 name: data.name,
                 logo: data.logo,
                 email: data.email,
@@ -92,8 +93,8 @@ export const useOrchestraStore = defineStore('orchestra', () => {
                 instagramUrl: data.instagram_url,
                 youtubeUrl: data.youtube_url,
             };
-            console.log('Selected orchestra: ', JSON.parse(JSON.stringify(selectedOrchestra.value, null, 2)));
-            console.log('Selected orchestra\'s name: ', selectedOrchestra.value.name)
+            // console.log('Selected orchestra: ', JSON.parse(JSON.stringify(selectedOrchestra.value, null, 2)));
+            // console.log('Selected orchestra\'s name: ', selectedOrchestra.value.name)
         } catch (error) {
             console.error('Failed to fetch orchestra: ', error)
             selectedOrchestra.value = null

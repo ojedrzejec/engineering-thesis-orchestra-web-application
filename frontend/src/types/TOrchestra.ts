@@ -1,4 +1,5 @@
 export type TOrchestra = {
+    id: string;
     name: string;
     logo: string;
     email: string;

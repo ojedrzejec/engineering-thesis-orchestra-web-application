@@ -50,15 +50,17 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { RouterLink, RouterView, useRouter } from 'vue-router'
+import { onMounted, ref, watch } from 'vue'
+import { RouterView, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useOrchestraStore } from '@/stores/useOrchestraStore'
+import { EOrchestraRole } from '@/constants/enums/EOrchestraRole';
 import { computed } from 'vue'
 import Menubar from 'primevue/menubar';
 import Badge from 'primevue/badge';
 import Button from 'primevue/button';
 import PanelMenu from 'primevue/panelmenu';
+import type { MenuItem } from 'primevue/menuitem'
 
 const authStore = useAuthStore()
 const orchestraStore = useOrchestraStore()
@@ -92,9 +94,6 @@ onMounted(async () => {
   await orchestraStore.fetchOrchestras();
   if (orchestraStore.availableOrchestras.length > 0) {
     console.log('Orchestras fetched')
-    console.log('orchestraStore.availableOrchestras: ', orchestraStore.availableOrchestras)
-    console.log('orchestraStore.availableOrchestras[0]?.id: ', orchestraStore.availableOrchestras[0]?.id)
-    // orchestraStore.selectOrchestra(orchestraStore.availableOrchestras[0]?.id)
   } else {
     console.log('Orchestras not fetched OR no orchestras available')
   }
@@ -102,7 +101,7 @@ onMounted(async () => {
 
 const menubarItems = computed(() => {
   if (authStore.isLoggedIn) {
-    const isLoggedInMenubarItems = ref([
+    return [
       {
         label: orchestraStore.selectedOrchestra?.name || 'You do not belong to any orchestra',
         icon: 'pi pi-folder-open',
@@ -111,6 +110,7 @@ const menubarItems = computed(() => {
           label: orchestra.name,
           icon: 'pi pi-folder',
           command: () => {
+            router.push({ name: 'availability' });
             orchestraStore.selectOrchestra(orchestra.id)
           }
         })).concat([
@@ -133,12 +133,10 @@ const menubarItems = computed(() => {
           router.push({ name: 'profile' });
         }
       },
-    ]);
-
-    return isLoggedInMenubarItems.value
+    ]
   }
 
-  const isLoggedOutMenubarItems = ref([
+  return [
     {
       label: orchestraStore.selectedOrchestra?.name || 'No orchestras available',
       icon: 'pi pi-folder-open',
@@ -147,8 +145,8 @@ const menubarItems = computed(() => {
         label: orchestra.name,
         icon: 'pi pi-folder',
         command: () => {
-          // Add your command logic here if needed
           router.push({ name: 'home' });
+          orchestraStore.selectOrchestra(orchestra.id)
         }
       })).concat([
         {
@@ -244,129 +242,130 @@ const menubarItems = computed(() => {
         router.push({ name: 'contact' });
       }
     }
-  ]);
-
-  return isLoggedOutMenubarItems.value
+  ]
 })
 
-const panelMenuItems = computed(() => {
-  // if the user role => OWNER
-  // if ("owner") { 
-  //   const panelMenuItemsOwner = ref([
-  //     {
-  //       label: 'My Availability',
-  //       icon: 'pi pi-calendar',
-  //       command: () => {
-  //         router.push({ name: 'availability' })
-  //       }
-  //     },
-  //     {
-  //       label: 'Pieces Of Music',
-  //       icon: 'pi pi-play',
-  //       command: () => {
-  //         router.push({ name: 'pieces-of-music' })
-  //       }
-  //     },
-  //     {
-  //       label: 'Owner Panel',
-  //       icon: 'pi pi-face-smile',
-  //       items: [
-  //         {
-  //           label: 'Orchestra Information',
-  //           icon: 'pi pi-info'
-  //         },
-  //         {
-  //           label: 'Concerts',
-  //           icon: 'pi pi-ticket'
-  //         },
-  //         {
-  //           label: 'Members',
-  //           icon: 'pi pi-address-book'
-  //         },
-  //         {
-  //           label: 'Groups',
-  //           icon: 'pi pi-users'
-  //         },
-  //         {
-  //           label: 'Instruments',
-  //           icon: 'pi pi-megaphone'
-  //         },
-  //         {
-  //           label: 'Pieces of Music',
-  //           icon: 'pi pi-file'
-  //         },
-  //         {
-  //           label: 'Manage Access',
-  //           icon: 'pi pi-unlock'
-  //         }
-  //       ]
-  //     },
-  //   ]);
+const defineAccessType = () => {
+  const orchestra = orchestraStore.availableOrchestras.find(o => o.id === orchestraStore.selectedOrchestra?.id);
+  return orchestra ? orchestra.accessType : null;
+}
 
-  //   return panelMenuItemsOwner.value
-  // }
+const panelMenuItems = ref<MenuItem>([])
 
-  // if the user role => MANAGER
-  // if ("manager") { 
-  //   const panelMenuItemsManager = ref([
-  //     {
-  //       label: 'My Availability',
-  //       icon: 'pi pi-calendar',
-  //       command: () => {
-  //         router.push({ name: 'availability' })
-  //       }
-  //     },
-  //     {
-  //       label: 'Pieces Of Music',
-  //       icon: 'pi pi-play',
-  //       command: () => {
-  //         router.push({ name: 'pieces-of-music' })
-  //       }
-  //     },
-  //     {
-  //       label: 'Manager Panel',
-  //       icon: 'pi pi-face-smile',
-  //       items: [
-  //         {
-  //           label: 'Orchestra Information',
-  //           icon: 'pi pi-info'
-  //         },
-  //         {
-  //           label: 'Concerts',
-  //           icon: 'pi pi-ticket'
-  //         },
-  //         {
-  //           label: 'Members',
-  //           icon: 'pi pi-address-book'
-  //         },
-  //       ]
-  //     },
-  //   ]);
+const updatePanelMenuItems = () => {
+  const accessType = defineAccessType()
+  console.log("selectedOrchestra: ", orchestraStore.selectedOrchestra?.name)
+  console.log("accessType: ", accessType)
+  
+  if (accessType === EOrchestraRole.OWNER) { 
+    panelMenuItems.value = [
+      {
+        label: 'My Availability',
+        icon: 'pi pi-calendar',
+        command: () => {
+          router.push({ name: 'availability' })
+        }
+      },
+      {
+        label: 'Pieces Of Music',
+        icon: 'pi pi-play',
+        command: () => {
+          router.push({ name: 'pieces-of-music' })
+        }
+      },
+      {
+        label: 'Owner Panel',
+        icon: 'pi pi-face-smile',
+        items: [
+          {
+            label: 'Orchestra Information',
+            icon: 'pi pi-info'
+          },
+          {
+            label: 'Concerts',
+            icon: 'pi pi-ticket'
+          },
+          {
+            label: 'Members',
+            icon: 'pi pi-address-book'
+          },
+          {
+            label: 'Groups',
+            icon: 'pi pi-users'
+          },
+          {
+            label: 'Instruments',
+            icon: 'pi pi-megaphone'
+          },
+          {
+            label: 'Pieces of Music',
+            icon: 'pi pi-file'
+          },
+          {
+            label: 'Manage Access',
+            icon: 'pi pi-unlock'
+          }
+        ]
+      },
+    ]
+  } else if (accessType === EOrchestraRole.MANAGER) { 
+    panelMenuItems.value = [
+      {
+        label: 'My Availability',
+        icon: 'pi pi-calendar',
+        command: () => {
+          router.push({ name: 'availability' })
+        }
+      },
+      {
+        label: 'Pieces Of Music',
+        icon: 'pi pi-play',
+        command: () => {
+          router.push({ name: 'pieces-of-music' })
+        }
+      },
+      {
+        label: 'Manager Panel',
+        icon: 'pi pi-face-smile',
+        items: [
+          {
+            label: 'Orchestra Information',
+            icon: 'pi pi-info'
+          },
+          {
+            label: 'Concerts',
+            icon: 'pi pi-ticket'
+          },
+          {
+            label: 'Members',
+            icon: 'pi pi-address-book'
+          },
+        ]
+      },
+    ]
+  } else {
+    panelMenuItems.value = [
+      {
+        label: 'My Availability',
+        icon: 'pi pi-calendar',
+        command: () => {
+          router.push({ name: 'availability' })
+        }
+      },
+      {
+        label: 'Pieces Of Music',
+        icon: 'pi pi-play',
+        command: () => {
+          router.push({ name: 'pieces-of-music' })
+        }
+      },
+    ]
+  }
+}
 
-  //   return panelMenuItemsManager.value
-  // }
-
-  // if the user role => PLAYER
-  const panelMenuItems = ref([
-    {
-      label: 'My Availability',
-      icon: 'pi pi-calendar',
-      command: () => {
-        router.push({ name: 'availability' })
-      }
-    },
-    {
-      label: 'Pieces Of Music',
-      icon: 'pi pi-play',
-      command: () => {
-        router.push({ name: 'pieces-of-music' })
-      }
-    },
-  ]);
-
-  return panelMenuItems.value
+watch(() => orchestraStore.selectedOrchestra, () => {
+  updatePanelMenuItems()
 })
-
 </script>
 
 <style setup lang="scss">
