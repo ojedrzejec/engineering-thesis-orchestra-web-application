@@ -187,7 +187,7 @@ const handleLogin = async () => {
     console.log('Received token:', token); // Log the token
     authStore.setToken(token);
     console.log('Token set in authStore:', authStore.getToken());
-    const redirectPath = route.query.redirect?.toString() || '/profile';
+    const redirectPath = route.query.redirect?.toString() || '/availability';
     router.push(redirectPath);
     window.location.reload();
 

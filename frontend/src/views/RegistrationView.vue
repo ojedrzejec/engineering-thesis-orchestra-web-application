@@ -502,12 +502,12 @@ const handleRegister = async () => {
       throw new Error('Register failed. Please try again later.');
     }
 
-    toast.add({ severity: 'info', summary: 'Registered successfully!', detail: 'Now log in to your account! :)', life: 3000 });
+    toast.add({ severity: 'info', summary: 'Registered successfully!', detail: 'Explore your account! :)', life: 3000 });
 
     const { token } = await response.json();
     authStore.setToken(token);
     // await authStore.fetchUserProfile(); // Optionally fetch user profile data
-    const redirectPath = route.query.redirect?.toString() || '/profile';
+    const redirectPath = route.query.redirect?.toString() || '/availability';
     router.push(redirectPath);
     window.location.reload();
 

@@ -124,7 +124,7 @@ router.beforeEach((to, from) => {
 
   if (to.meta?.logOutOnly && authStore.isLoggedIn) {
     return {
-      path: '/',
+      path: '/availability',
     }
   }
 })
