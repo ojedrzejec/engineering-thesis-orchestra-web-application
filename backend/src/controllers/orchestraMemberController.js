@@ -34,6 +34,21 @@ const getOrchestraMember = async (req, res) => {
     }
 }
 
+const getOrchestraMemberSingle = async (req, res) => {
+    try {
+        const orchestraMember =
+            await OrchestraMemberModel.getOrchestraMemberById(req.user.id)
+        if (!orchestraMember) {
+            return res.status(404).json({ msg: 'Orchestra member not found.' })
+        }
+        res.status(200).json(orchestraMember)
+    } catch (err) {
+        res.status(500).json({
+            msg: 'Server error while getting orchestra member by id.',
+        })
+    }
+}
+
 // delete single
 const deleteOrchestraMember = async (req, res) => {
     const id = req.params.id
@@ -129,6 +144,7 @@ const patchOrchestraMember = async (req, res) => {
 module.exports = {
     getAllOrchestraMembers,
     getOrchestraMember,
+    getOrchestraMemberSingle,
     deleteOrchestraMember,
     patchOrchestraMember,
 }

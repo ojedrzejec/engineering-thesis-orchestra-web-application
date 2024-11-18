@@ -507,7 +507,7 @@ const handleRegister = async () => {
     const { token } = await response.json();
     authStore.setToken(token);
     // await authStore.fetchUserProfile(); // Optionally fetch user profile data
-    const redirectPath = route.query.redirect?.toString() || '/availability';
+    const redirectPath = route.query.redirect?.toString() || '/profile';
     router.push(redirectPath);
     window.location.reload();
 

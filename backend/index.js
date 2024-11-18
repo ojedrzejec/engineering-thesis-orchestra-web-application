@@ -25,7 +25,7 @@ app.use(express.json({ limit: '100mb' }))
 app.use(express.urlencoded({ limit: '100mb', extended: true })) // Increase the limit for URL-encoded payloads
 
 app.use('/auth', authRoutes)
-app.use('/orchestraMember', orchestraMemberRoutes)
+app.use('/orchestra-member', orchestraMemberRoutes)
 app.use('/orchestra', orchestraRoutes)
 app.use('/orchestra-orchestra-member', orchestraOrchestraMemberRoutes)
 app.use('/instrument', instrumentRoutes)

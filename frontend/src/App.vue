@@ -110,7 +110,7 @@ const menubarItems = computed(() => {
           label: orchestra.name,
           icon: 'pi pi-folder',
           command: () => {
-            router.push({ name: 'availability' });
+            router.push({ name: 'profile' });
             orchestraStore.selectOrchestra(orchestra.id)
           }
         })).concat([

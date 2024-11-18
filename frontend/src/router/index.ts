@@ -10,7 +10,7 @@ import VideosGalleryView from '@/views/guest/gallery/VideosGalleryView.vue'
 import PreviousConcertsView from '@/views/guest/concerts/PreviousConcertsView.vue'
 import UpcomingConcertsView from '@/views/guest/concerts/UpcomingConcertsView.vue'
 import CreateOrchestraView from '@/views/CreateOrchestraView.vue'
-import ProfileView from '@/views/player/ProfileView.vue'
+import ProfileView from '@/views/ProfileView.vue'
 
 import { useAuthStore } from '@/stores/useAuthStore'
 
@@ -124,7 +124,7 @@ router.beforeEach((to, from) => {
 
   if (to.meta?.logOutOnly && authStore.isLoggedIn) {
     return {
-      path: '/availability',
+      path: '/profile',
     }
   }
 })
