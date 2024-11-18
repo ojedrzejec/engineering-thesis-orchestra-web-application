@@ -36,8 +36,9 @@
                 @input="validatePasswordInput" 
                 :invalid="!isPasswordValid && showPasswordErrors"
                 autocomplete="current-password"
+                :feedback="false"
               >
-                <template #footer>
+                <!-- <template #footer>
                   <div class="login-view__form-error-messages">
                     <Divider />
                     <Message severity="error" v-if="!password && showPasswordErrors">{{ messageInputRequired }}</Message>
@@ -48,7 +49,7 @@
                     <Message severity="error" v-if="password && !validateSmallLetter(password) && showPasswordErrors">{{ messageValidationSmallLetter }}</Message>
                     <Message severity="error" v-if="password && !validateNoWhitespaces(password) && showPasswordErrors">{{ messageValidationNoWhitespaces }}</Message>
                   </div>
-                </template>
+                </template> -->
               </Password>
               <label for="password">Password</label>
             </FloatLabel>

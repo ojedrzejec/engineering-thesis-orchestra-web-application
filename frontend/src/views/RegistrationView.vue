@@ -15,7 +15,7 @@
               <InputText 
                 class="registration-view__form-input-field"
                 id="email" 
-                v-model="orchestraMember.email" 
+                v-model="email" 
                 v-keyfilter="/[^\s]/"
                 @input="validateEmailInput" 
                 :invalid="!isEmailValid && showEmailErrors"
@@ -23,8 +23,8 @@
               <label for="email">Email</label>
             </FloatLabel>
             <div class="registration-view__form-error-messages">
-              <Message severity="error" v-if="!orchestraMember.email && showEmailErrors">{{ messageInputRequired }}</Message>
-              <Message severity="error" v-if="orchestraMember.email && !isEmailValid && showEmailErrors">{{ messageValidationEmail }}</Message>
+              <Message severity="error" v-if="!email && showEmailErrors">{{ messageInputRequired }}</Message>
+              <Message severity="error" v-if="email && !isEmailValid && showEmailErrors">{{ messageValidationEmail }}</Message>
             </div>
           </div>
 
@@ -32,7 +32,7 @@
             <FloatLabel variant="on">
               <Password 
                 id="password" 
-                v-model="orchestraMember.password" 
+                v-model="password" 
                 toggleMask
                 @input="validatePasswordInput" 
                 :invalid="!isPasswordValid && showPasswordErrors"
@@ -41,13 +41,13 @@
                 <template #footer>
                   <div class="registration-view__form-error-messages">
                     <Divider />
-                    <Message severity="error" v-if="!orchestraMember.password && showPasswordErrors">{{ messageInputRequired }}</Message>
-                    <Message severity="error" v-if="orchestraMember.password && !validatePasswordLength(orchestraMember.password) && showPasswordErrors">{{ messageValidationPasswordLength }}</Message>
-                    <Message severity="error" v-if="orchestraMember.password && !validateSpecialCharacter(orchestraMember.password) && showPasswordErrors">{{ messageValidationSpecialCharacter }}</Message>
-                    <Message severity="error" v-if="orchestraMember.password && !validateDigitNumber(orchestraMember.password) && showPasswordErrors">{{ messageValidationDigitNumber }}</Message>
-                    <Message severity="error" v-if="orchestraMember.password && !validateCapitalLetter(orchestraMember.password) && showPasswordErrors">{{ messageValidationCapitalLetter }}</Message>
-                    <Message severity="error" v-if="orchestraMember.password && !validateSmallLetter(orchestraMember.password) && showPasswordErrors">{{ messageValidationSmallLetter }}</Message>
-                    <Message severity="error" v-if="orchestraMember.password && !validateNoWhitespaces(orchestraMember.password) && showPasswordErrors">{{ messageValidationNoWhitespaces }}</Message>
+                    <Message severity="error" v-if="!password && showPasswordErrors">{{ messageInputRequired }}</Message>
+                    <Message severity="error" v-if="password && !validatePasswordLength(password) && showPasswordErrors">{{ messageValidationPasswordLength }}</Message>
+                    <Message severity="error" v-if="password && !validateSpecialCharacter(password) && showPasswordErrors">{{ messageValidationSpecialCharacter }}</Message>
+                    <Message severity="error" v-if="password && !validateDigitNumber(password) && showPasswordErrors">{{ messageValidationDigitNumber }}</Message>
+                    <Message severity="error" v-if="password && !validateCapitalLetter(password) && showPasswordErrors">{{ messageValidationCapitalLetter }}</Message>
+                    <Message severity="error" v-if="password && !validateSmallLetter(password) && showPasswordErrors">{{ messageValidationSmallLetter }}</Message>
+                    <Message severity="error" v-if="password && !validateNoWhitespaces(password) && showPasswordErrors">{{ messageValidationNoWhitespaces }}</Message>
                   </div>
                 </template>
               </Password>
@@ -55,18 +55,18 @@
             </FloatLabel>
             <div class="registration-view__form-error-messages">
               <!-- <Message severity="error" v-if="!password && showPasswordErrors">{{ messageValidationInput }}</Message> -->
-              <Message severity="error" v-if="!orchestraMember.password && showPasswordErrors" >
+              <Message severity="error" v-if="!password && showPasswordErrors" >
                 {{ messageInputRequired }}
               </Message>
               <Message 
                 severity="error" 
-                v-if="orchestraMember.password && showPasswordErrors && (
-                    !validatePasswordLength(orchestraMember.password) 
-                    || !validateSpecialCharacter(orchestraMember.password) 
-                    || !validateDigitNumber(orchestraMember.password) 
-                    || !validateCapitalLetter(orchestraMember.password) 
-                    || !validateSmallLetter(orchestraMember.password) 
-                    || !validateNoWhitespaces(orchestraMember.password)
+                v-if="password && showPasswordErrors && (
+                    !validatePasswordLength(password) 
+                    || !validateSpecialCharacter(password) 
+                    || !validateDigitNumber(password) 
+                    || !validateCapitalLetter(password) 
+                    || !validateSmallLetter(password) 
+                    || !validateNoWhitespaces(password)
                   )"
               > {{ messageValidationInput }}
               </Message>
@@ -88,7 +88,7 @@
             </FloatLabel>
             <div class="registration-view__form-error-messages">
               <Message severity="error" v-if="!passwordRepeated && showPasswordRepeatedErrors">{{ messageInputRequired }}</Message>
-              <Message severity="error" v-if="passwordRepeated && (!orchestraMember.password || !validatePasswordsMatch(orchestraMember.password, passwordRepeated)) && showPasswordRepeatedErrors">{{ messageValidationPasswordsMatch }}</Message>
+              <Message severity="error" v-if="passwordRepeated && (!password || !validatePasswordsMatch(password, passwordRepeated)) && showPasswordRepeatedErrors">{{ messageValidationPasswordsMatch }}</Message>
             </div>
           </div>
 
@@ -106,7 +106,7 @@
             <div class="registration-view__form-error-messages">
               <Message severity="error" v-if="!orchestraMember.firstName && showFirstNameErrors">{{ messageInputRequired }}</Message>
               <Message severity="error" v-if="orchestraMember.firstName && !validateFirstLastNameLength(orchestraMember.firstName) && showFirstNameErrors">{{ messageValidationFirstLastNameLength("First Name") }}</Message>
-              <Message severity="error" v-if="orchestraMember.firstName && !validateLettersAndWhitespaces(orchestraMember.firstName) && showFirstNameErrors">{{ messageValidationLettersAndWhitespaces }}</Message>
+              <Message severity="error" v-if="orchestraMember.firstName && !validatePolishLettersAndWhitespaces(orchestraMember.firstName) && showFirstNameErrors">{{ messageValidationLettersAndWhitespaces }}</Message>
             </div>
           </div>
 
@@ -124,7 +124,7 @@
             <div class="registration-view__form-error-messages">
               <Message severity="error" v-if="!orchestraMember.lastName && showLastNameErrors">{{ messageInputRequired }}</Message>
               <Message severity="error" v-if="orchestraMember.lastName && !validateFirstLastNameLength(orchestraMember.lastName) && showLastNameErrors">{{ messageValidationFirstLastNameLength("Last Name") }}</Message>
-              <Message severity="error" v-if="orchestraMember.lastName && !validateLettersAndWhitespaces(orchestraMember.lastName) && showLastNameErrors">{{ messageValidationLettersAndWhitespaces }}</Message>
+              <Message severity="error" v-if="orchestraMember.lastName && !validatePolishLettersAndWhitespaces(orchestraMember.lastName) && showLastNameErrors">{{ messageValidationLettersAndWhitespaces }}</Message>
             </div>
           </div>
 
@@ -149,7 +149,7 @@
                 </FloatLabel>
                 <div class="registration-view__form-error-messages">
                   <Message severity="error" v-if="!instrument.name && showInstrumentErrors">{{ messageInputRequired }}</Message>
-                  <Message severity="error" v-if="instrument.name && !validateLettersAndWhitespaces(instrument.name) && showInstrumentErrors">{{ messageValidationLettersAndWhitespaces }}</Message>
+                  <Message severity="error" v-if="instrument.name && !validatePolishLettersAndWhitespaces(instrument.name) && showInstrumentErrors">{{ messageValidationLettersAndWhitespaces }}</Message>
                 </div>
               </div>
             </div>
@@ -253,8 +253,6 @@
             </FileUpload>
           </div>
 
-          {{ orchestraMember.profilePicture }}
-
           <div class="registration-view__form-input">
             <FloatLabel variant="on">
               <Textarea 
@@ -331,7 +329,7 @@ import {
   messageValidationPhoneNumber,
   validatePasswordsMatch,
   validateFirstLastNameLength,
-  validateLettersAndWhitespaces,
+  validatePolishLettersAndWhitespaces,
   validatePhoneNumber,
 } from '@/constants/validation/registrationValidation';
 import type { TOrchestraMember } from '@/types/TOrchestraMember';
@@ -343,8 +341,10 @@ const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
 
-const orchestraMember = ref<TOrchestraMember>(initOrchestraMember);
+const email = ref<string | null>(null);
+const password = ref<string | null>(null);
 const passwordRepeated = ref<string | null>(null);
+const orchestraMember = ref<TOrchestraMember>(initOrchestraMember);
 const options = ref([
     { name: 'I am a student currently.', value: true },
     { name: 'I am NOT a student currently.', value: false }
@@ -365,13 +365,13 @@ const showDateOfBirthErrors = ref(false);
 const showPhoneErrors = ref(false);
 
 // Computed Properties for Validation
-const isEmailValid = computed(() => orchestraMember.value.email && validateEmail(orchestraMember.value.email) && validateNoWhitespaces(orchestraMember.value.email));
-const isPasswordValid = computed(() => orchestraMember.value.password && validatePasswordLength(orchestraMember.value.password) && validateSpecialCharacter(orchestraMember.value.password) &&
-  validateDigitNumber(orchestraMember.value.password) && validateCapitalLetter(orchestraMember.value.password) && validateSmallLetter(orchestraMember.value.password) && validateNoWhitespaces(orchestraMember.value.password));
-const isPasswordRepeatedValid = computed(() => passwordRepeated.value && (!orchestraMember.value.password || validatePasswordsMatch(orchestraMember.value.password, passwordRepeated.value)));
-const isFirstNameValid = computed(() => orchestraMember.value.firstName && validateFirstLastNameLength(orchestraMember.value.firstName) && validateLettersAndWhitespaces(orchestraMember.value.firstName));
-const isLastNameValid = computed(() => orchestraMember.value.lastName && validateFirstLastNameLength(orchestraMember.value.lastName) && validateLettersAndWhitespaces(orchestraMember.value.lastName));
-const isInstrumentValid = computed(() => instruments.value.every(instrument => instrument.name && validateLettersAndWhitespaces(instrument.name)));
+const isEmailValid = computed(() => email.value && validateEmail(email.value) && validateNoWhitespaces(email.value));
+const isPasswordValid = computed(() => password.value && validatePasswordLength(password.value) && validateSpecialCharacter(password.value) &&
+  validateDigitNumber(password.value) && validateCapitalLetter(password.value) && validateSmallLetter(password.value) && validateNoWhitespaces(password.value));
+const isPasswordRepeatedValid = computed(() => passwordRepeated.value && (!password.value || validatePasswordsMatch(password.value, passwordRepeated.value)));
+const isFirstNameValid = computed(() => orchestraMember.value.firstName && validateFirstLastNameLength(orchestraMember.value.firstName) && validatePolishLettersAndWhitespaces(orchestraMember.value.firstName));
+const isLastNameValid = computed(() => orchestraMember.value.lastName && validateFirstLastNameLength(orchestraMember.value.lastName) && validatePolishLettersAndWhitespaces(orchestraMember.value.lastName));
+const isInstrumentValid = computed(() => instruments.value.every(instrument => instrument.name && validatePolishLettersAndWhitespaces(instrument.name)));
 const isPhoneValid = computed(() => orchestraMember.value.phone && validatePhoneNumber(orchestraMember.value.phone));
 
 // Validation Methods
@@ -474,8 +474,8 @@ const handleRegister = async () => {
   const instrumentNamesArray = instruments.value.map(instrument => instrument.name?.toLowerCase());
   
   const registerData = {
-    email: orchestraMember.value.email,
-    password: orchestraMember.value.password,
+    email: email.value,
+    password: password.value,
     first_name: orchestraMember.value.firstName,
     last_name: orchestraMember.value.lastName,
     instruments: instrumentNamesArray,

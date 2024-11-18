@@ -19,6 +19,10 @@ export const validateLettersAndWhitespaces = (value: string) => {
   return /^[a-zA-Z\s]+$/.test(value);
 }
 
+export const validatePolishLettersAndWhitespaces = (value: string) => {
+  return /^[\s\p{L}]+$/u.test(value);
+}
+
 export const validatePhoneNumber = (value: string) => {
   return /^(\+)[0-9]{11}$/.test(value);  
 }

@@ -21,7 +21,7 @@
                     <div class="profile-view__form-error-messages">
                     <Message severity="error" v-if="!orchestraMember.firstName && showFirstNameErrors">{{ messageInputRequired }}</Message>
                     <Message severity="error" v-if="orchestraMember.firstName && !validateFirstLastNameLength(orchestraMember.firstName) && showFirstNameErrors">{{ messageValidationFirstLastNameLength("First Name") }}</Message>
-                    <Message severity="error" v-if="orchestraMember.firstName && !validateLettersAndWhitespaces(orchestraMember.firstName) && showFirstNameErrors">{{ messageValidationLettersAndWhitespaces }}</Message>
+                    <Message severity="error" v-if="orchestraMember.firstName && !validatePolishLettersAndWhitespaces(orchestraMember.firstName) && showFirstNameErrors">{{ messageValidationLettersAndWhitespaces }}</Message>
                     </div>
                 </div>
 
@@ -39,7 +39,7 @@
                     <div class="profile-view__form-error-messages">
                     <Message severity="error" v-if="!orchestraMember.lastName && showLastNameErrors">{{ messageInputRequired }}</Message>
                     <Message severity="error" v-if="orchestraMember.lastName && !validateFirstLastNameLength(orchestraMember.lastName) && showLastNameErrors">{{ messageValidationFirstLastNameLength("Last Name") }}</Message>
-                    <Message severity="error" v-if="orchestraMember.lastName && !validateLettersAndWhitespaces(orchestraMember.lastName) && showLastNameErrors">{{ messageValidationLettersAndWhitespaces }}</Message>
+                    <Message severity="error" v-if="orchestraMember.lastName && !validatePolishLettersAndWhitespaces(orchestraMember.lastName) && showLastNameErrors">{{ messageValidationLettersAndWhitespaces }}</Message>
                     </div>
                 </div>
 
@@ -64,7 +64,7 @@
                         </FloatLabel>
                         <div class="profile-view__form-error-messages">
                         <Message severity="error" v-if="!instrument.name && showInstrumentErrors">{{ messageInputRequired }}</Message>
-                        <Message severity="error" v-if="instrument.name && !validateLettersAndWhitespaces(instrument.name) && showInstrumentErrors">{{ messageValidationLettersAndWhitespaces }}</Message>
+                        <Message severity="error" v-if="instrument.name && !validatePolishLettersAndWhitespaces(instrument.name) && showInstrumentErrors">{{ messageValidationLettersAndWhitespaces }}</Message>
                         </div>
                     </div>
                     </div>
@@ -215,7 +215,7 @@ import {
   messageValidationLettersAndWhitespaces,
   messageValidationPhoneNumber,
   validateFirstLastNameLength,
-  validateLettersAndWhitespaces,
+  validatePolishLettersAndWhitespaces,
   validatePhoneNumber,
 } from '@/constants/validation/registrationValidation';
 import Button from 'primevue/button';
@@ -224,7 +224,6 @@ import InputText from 'primevue/inputtext';
 import FloatLabel from 'primevue/floatlabel';
 import Textarea from 'primevue/textarea';
 import Message from 'primevue/message';
-import Divider from 'primevue/divider';
 import Fluid from 'primevue/fluid';
 import DatePicker from 'primevue/datepicker';
 import FileUpload from 'primevue/fileupload';
@@ -287,9 +286,9 @@ const showDateOfBirthErrors = ref(false);
 const showPhoneErrors = ref(false);
 
 // Computed Properties for Validation
-const isFirstNameValid = computed(() => orchestraMember.value.firstName && validateFirstLastNameLength(orchestraMember.value.firstName) && validateLettersAndWhitespaces(orchestraMember.value.firstName));
-const isLastNameValid = computed(() => orchestraMember.value.lastName && validateFirstLastNameLength(orchestraMember.value.lastName) && validateLettersAndWhitespaces(orchestraMember.value.lastName));
-const isInstrumentValid = computed(() => instruments.value.every(instrument => instrument.name && validateLettersAndWhitespaces(instrument.name)));
+const isFirstNameValid = computed(() => orchestraMember.value.firstName && validateFirstLastNameLength(orchestraMember.value.firstName) && validatePolishLettersAndWhitespaces(orchestraMember.value.firstName));
+const isLastNameValid = computed(() => orchestraMember.value.lastName && validateFirstLastNameLength(orchestraMember.value.lastName) && validatePolishLettersAndWhitespaces(orchestraMember.value.lastName));
+const isInstrumentValid = computed(() => instruments.value.every(instrument => instrument.name && validatePolishLettersAndWhitespaces(instrument.name)));
 const isPhoneValid = computed(() => orchestraMember.value.phone && validatePhoneNumber(orchestraMember.value.phone));
 
 // Validation Methods
