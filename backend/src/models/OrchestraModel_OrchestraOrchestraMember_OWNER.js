@@ -6,6 +6,13 @@ const getAllOrchestras = async () => {
     return result.rows
 }
 
+const getOrchestraByMemberId = async (orchestraId) => {
+    const result = await pool.query('SELECT * FROM orchestra WHERE id = $1', [
+        orchestraId,
+    ])
+    return result.rows[0]
+}
+
 const getOrchestrasWithMemberId = async (userId) => {
     const result = await pool.query(
         `
@@ -88,6 +95,7 @@ const createOrchestra = async ({
 
 module.exports = {
     getAllOrchestras,
+    getOrchestraByMemberId,
     getOrchestrasWithMemberId,
     createOrchestra,
 }

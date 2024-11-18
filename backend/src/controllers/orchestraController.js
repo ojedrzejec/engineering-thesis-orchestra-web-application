@@ -9,6 +9,15 @@ const getAllOrchestras = async (req, res) => {
     res.json(orchestras)
 }
 
+const getOrchestra = async (req, res) => {
+    const orchestraId = req.params.id
+    const orchestra =
+        await Orchestra_OrchestraOrchestraMember_Owner_Model.getOrchestraByMemberId(
+            orchestraId
+        )
+    res.json(orchestra)
+}
+
 const getOrchestrasWithMemberId = async (req, res) => {
     const orchestrasWithOrchestraMember =
         await Orchestra_OrchestraOrchestraMember_Owner_Model.getOrchestrasWithMemberId(
@@ -62,6 +71,7 @@ const createOrchestra = async (req, res) => {
 
 module.exports = {
     getAllOrchestras,
+    getOrchestra,
     getOrchestrasWithMemberId,
     getAllOrchestraOrchestraMember,
     createOrchestra,

@@ -93,6 +93,8 @@ onMounted(async () => {
   if (orchestraStore.availableOrchestras.length > 0) {
     console.log('Orchestras fetched')
     console.log('orchestraStore.availableOrchestras: ', orchestraStore.availableOrchestras)
+    console.log('orchestraStore.availableOrchestras[0]?.id: ', orchestraStore.availableOrchestras[0]?.id)
+    // orchestraStore.selectOrchestra(orchestraStore.availableOrchestras[0]?.id)
   } else {
     console.log('Orchestras not fetched OR no orchestras available')
   }
@@ -102,15 +104,14 @@ const menubarItems = computed(() => {
   if (authStore.isLoggedIn) {
     const isLoggedInMenubarItems = ref([
       {
-        label: orchestraStore.availableOrchestras[0]?.name || 'You do not belong to any orchestra',
+        label: orchestraStore.selectedOrchestra?.name || 'You do not belong to any orchestra',
         icon: 'pi pi-folder-open',
         badge: orchestraStore.availableOrchestras.length,
         items: orchestraStore.availableOrchestras.map((orchestra) => ({
           label: orchestra.name,
           icon: 'pi pi-folder',
           command: () => {
-            // Add your command logic here if needed
-            router.push({ name: 'orchestra', params: { id: orchestra.id } });
+            orchestraStore.selectOrchestra(orchestra.id)
           }
         })).concat([
           {
@@ -139,18 +140,17 @@ const menubarItems = computed(() => {
 
   const isLoggedOutMenubarItems = ref([
     {
-      label: 'Orchestra One',
+      label: orchestraStore.selectedOrchestra?.name || 'No orchestras available',
       icon: 'pi pi-folder-open',
-      badge: 3,
-      items: [
-        {
-          label: 'Orchestra Two',
-          icon: 'pi pi-folder'
-        },
-        {
-          label: 'Orchestra Three',
-          icon: 'pi pi-folder'
-        },
+      badge: orchestraStore.availableOrchestras.length,
+      items: orchestraStore.availableOrchestras.map((orchestra) => ({
+        label: orchestra.name,
+        icon: 'pi pi-folder',
+        command: () => {
+          // Add your command logic here if needed
+          router.push({ name: 'home' });
+        }
+      })).concat([
         {
           separator: true
         },
@@ -158,10 +158,10 @@ const menubarItems = computed(() => {
           label: 'Create Orchestra',
           icon: 'pi pi-plus-circle',
           command: () => {
-            router.push({ name: 'create-orchestra' })
+            router.push({ name: 'create-orchestra' });
           }
-        },
-      ]
+        }
+      ])
     },
     {
       label: 'Home',
