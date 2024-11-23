@@ -130,7 +130,7 @@
 
           <div class="registration-view__form-input">
             <div class="registration-view__text-color">Instruments:</div>
-            <div v-for="(instrument, ix) in instruments" :key="ix" class="registration-view__form-input-instruments">
+            <div v-for="(instrument, ix) in orchestraMember.instruments" :key="ix" class="registration-view__form-input-instruments">
               <div class="registration-view__form-input-instrument-header registration-view__text-color">
                 Instrument: {{ ix + 1 }}
                 <i class="pi pi-trash" style="color: slateblue" @click="removeInstrument(ix)"></i>
@@ -157,7 +157,7 @@
               <Button 
                 class="p-button-outlined"
                 @click.prevent="addNewInstrument"
-                :disabled="instruments.length > 0 && !instruments[instruments.length - 1].name"
+                :disabled="orchestraMember.instruments.length > 0 && !orchestraMember.instruments[orchestraMember.instruments.length - 1].name"
                 :label="loading ? 'Adding Instrument...' : 'Add Instrument'" 
               ></Button>
             </div>
@@ -349,7 +349,6 @@ const options = ref([
     { name: 'I am a student currently.', value: true },
     { name: 'I am NOT a student currently.', value: false }
 ]);
-const instruments = ref<TInstrument[]>([]);
 
 const loading = ref(false);
 const errorMessage = ref('');
@@ -371,7 +370,7 @@ const isPasswordValid = computed(() => password.value && validatePasswordLength(
 const isPasswordRepeatedValid = computed(() => passwordRepeated.value && (!password.value || validatePasswordsMatch(password.value, passwordRepeated.value)));
 const isFirstNameValid = computed(() => orchestraMember.value.firstName && validateFirstLastNameLength(orchestraMember.value.firstName) && validatePolishLettersAndWhitespaces(orchestraMember.value.firstName));
 const isLastNameValid = computed(() => orchestraMember.value.lastName && validateFirstLastNameLength(orchestraMember.value.lastName) && validatePolishLettersAndWhitespaces(orchestraMember.value.lastName));
-const isInstrumentValid = computed(() => instruments.value.every(instrument => instrument.name && validatePolishLettersAndWhitespaces(instrument.name)));
+const isInstrumentValid = computed(() => orchestraMember.value.instruments.every(instrument => instrument.name && validatePolishLettersAndWhitespaces(instrument.name)));
 const isPhoneValid = computed(() => orchestraMember.value.phone && validatePhoneNumber(orchestraMember.value.phone));
 
 // Validation Methods
@@ -420,15 +419,15 @@ const showErrors = () => {
 };
 
 const removeInstrument = (ix: number) => {
-  instruments.value = instruments.value.filter((_, index) => index !== ix)
+  orchestraMember.value.instruments = orchestraMember.value.instruments.filter((_, index) => index !== ix)
 }
 
 const addNewInstrument = () => {
-  instruments.value = [...instruments.value, Object.assign({}, initInstrument)]
+  orchestraMember.value.instruments = [...orchestraMember.value.instruments, Object.assign({}, initInstrument)]
 }
 
 const handleInstrumentsUpdate = (instrument: TInstrument, ix: number) => {
-  instruments.value = instruments.value.map((inst, i) => i === ix ? instrument : inst)
+  orchestraMember.value.instruments = orchestraMember.value.instruments.map((inst, i) => i === ix ? instrument : inst)
 }
 
 const onFileSelect = async (event) => {
@@ -471,14 +470,12 @@ const handleRegister = async () => {
     orchestraMember.value.university = null
   }
 
-  const instrumentNamesArray = instruments.value.map(instrument => instrument.name?.toLowerCase());
-  
   const registerData = {
     email: email.value,
     password: password.value,
     first_name: orchestraMember.value.firstName,
     last_name: orchestraMember.value.lastName,
-    instruments: instrumentNamesArray,
+    instruments: orchestraMember.value.instruments.map(instrument => instrument.name?.toLowerCase()),
     phone: orchestraMember.value.phone,
     birth_date: orchestraMember.value.dateOfBirth.toISOString().split('T')[0],
     are_you_student: orchestraMember.value.isStudent,

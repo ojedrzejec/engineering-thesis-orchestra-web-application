@@ -12,7 +12,7 @@ const register = async (req, res) => {
         password,
         first_name,
         last_name,
-        instruments, // array strings of instrument names
+        instruments, // string array of instrument names
         phone,
         birth_date,
         are_you_student,
@@ -46,7 +46,13 @@ const register = async (req, res) => {
 
         const createdOrchestraMember =
             await OrchestraMemberModel.createOrchestraMember(newOrchestraMember)
+        if (!createdOrchestraMember) {
+            return res
+                .status(500)
+                .json({ msg: 'Failed to create orchestra member' })
+        }
 
+        const createdInstruments = []
         for (const instrument of instruments) {
             const createdInstrumentWithMember =
                 await InstrumentModel.createInstrument(
@@ -55,8 +61,11 @@ const register = async (req, res) => {
                 )
 
             if (!createdInstrumentWithMember) {
-                throw new Error('Failed to create instrument with member')
+                return res
+                    .status(500)
+                    .json({ msg: 'Failed to create instrument with member' })
             }
+            createdInstruments.push(createdInstrumentWithMember)
         }
 
         res.json(createdOrchestraMember)
