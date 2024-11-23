@@ -128,7 +128,7 @@
             </div>
           </div>
 
-          <div class="registration-view__form-input">
+          <div class="registration-view__form-input profile-view__form-section">
             <div class="registration-view__text-color">Instruments:</div>
             <div v-for="(instrument, ix) in orchestraMember.instruments" :key="ix" class="registration-view__form-input-instruments">
               <div class="registration-view__form-input-instrument-header registration-view__text-color">
@@ -576,6 +576,12 @@ const handleRegister = async () => {
     .p-fileupload-file-badge {
       display: none !important;
     }
+  }
+
+  &__form-section {
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 17px;
   }
 }
 </style>
