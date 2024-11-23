@@ -41,6 +41,15 @@ const getOrchestraMemberSingle = async (req, res) => {
         if (!orchestraMember) {
             return res.status(404).json({ msg: 'Orchestra member not found.' })
         }
+
+        // Get all instruments associated with this orchestra member
+        const instruments = await InstrumentModel.getInstrumentsByMemberId(
+            req.user.id
+        )
+        orchestraMember.instruments = instruments.map(
+            (instrument) => instrument.name
+        )
+
         res.status(200).json(orchestraMember)
     } catch (err) {
         res.status(500).json({
