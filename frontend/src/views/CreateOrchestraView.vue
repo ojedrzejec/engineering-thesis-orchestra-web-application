@@ -199,5 +199,47 @@ const handleOrchestraCreation = () => {
 }
 </script>
 
-<style>
+<style setup lang="scss">
+.create-orchestra-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  
+  &__title {
+    margin-bottom: 20px;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
+  
+  &__form-input {
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+    gap: 5px;
+    min-width: 300px;
+  }
+  
+  &__form-error-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  &__form-button {
+    width: 100%;
+    min-width: 300px;
+  }
+
+  &__file {
+    .p-fileupload-file-badge {
+      display: none !important;
+    }
+  }
+}
 </style>
