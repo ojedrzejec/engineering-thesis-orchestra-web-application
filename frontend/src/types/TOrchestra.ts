@@ -1,11 +1,11 @@
 export type TOrchestra = {
-    id: string;
-    name: string;
-    logo: string;
-    email: string;
-    address: string;
-    history: string;
-    facebookUrl: string;
-    instagramUrl: string;
-    youtubeUrl: string;
+    id: string | null;
+    name: string | null;
+    logo: string | null;
+    email: string | null;
+    address: string | null;
+    history: string | null;
+    facebookUrl: string | null;
+    instagramUrl: string | null;
+    youtubeUrl: string | null;
 }
