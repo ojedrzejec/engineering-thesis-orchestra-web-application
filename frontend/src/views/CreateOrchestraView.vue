@@ -27,6 +27,23 @@
             <Message severity="error" v-if="orchestra.name && !validateWhitespaces(orchestra.name) && showNameErrors">{{ messageValidationWhitespaces("Name") }}</Message>
           </div>
         </div>
+
+        <div class="registration-view__form-input">
+          <FloatLabel variant="on">
+            <InputText 
+              class="registration-view__form-input-field"
+              id="email" 
+              v-model="orchestra.email" 
+              v-keyfilter="/[^\s]/"
+              @input="validateEmailInput" 
+              :invalid="!isEmailValid && showEmailErrors"
+            ></InputText>
+            <label for="email">Email</label>
+          </FloatLabel>
+          <div class="registration-view__form-error-messages">
+            <Message severity="error" v-if="orchestra.email && !isEmailValid && showEmailErrors">{{ messageValidationEmail }}</Message>
+          </div>
+        </div>
         
         <div class="create-orchestra-view__form-input">
           <FloatLabel variant="on">
@@ -82,6 +99,7 @@ import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
 import Message from 'primevue/message';
+import FileUpload from 'primevue/fileupload';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
 const toast = useToast();
@@ -108,21 +126,27 @@ const orchestra = ref<TOrchestra>(initOrchestra);
 const loading = ref(false);
 const errorMessage = ref('');
 const showNameErrors = ref(false);
+const showEmailErrors = ref(false);
 
 const isNameValid = computed(() => orchestra.value.name && validateNameLength(orchestra.value.name) && validateWhitespaces(orchestra.value.name));
+const isEmailValid = computed(() => !orchestra.value.email || validateEmail(orchestra.value.email));
 
 const validateNameInput = () => {
   showNameErrors.value = true;
 }
+const validateEmailInput = () => {
+  showEmailErrors.value = true;
+}
 
 const showErrors = () => {
   showNameErrors.value = true;
+  showEmailErrors.value = true;
 };
 
 const handleOrchestraCreation = () => {
   console.log('Button clicked! Inside handleOrchestraCreation function');
 
-  if (!isNameValid.value ) {
+  if (!isNameValid.value || !isEmailValid.value) {
     showErrors();
     return;
   }
