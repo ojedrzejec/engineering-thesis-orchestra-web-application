@@ -17,6 +17,6 @@ router.get(
     getOrchestraMemberSingle
 )
 router.delete('/:id', authMiddleware.authenticateToken, deleteOrchestraMember)
-router.patch('/:id', authMiddleware.authenticateToken, patchOrchestraMember)
+router.patch('/', authMiddleware.authenticateToken, patchOrchestraMember)
 
 module.exports = router

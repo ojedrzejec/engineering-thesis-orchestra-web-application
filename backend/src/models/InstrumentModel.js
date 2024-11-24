@@ -63,9 +63,11 @@ const createInstrument = async (orchestraMemberId, instrumentName) => {
 }
 
 const deleteInstrumentsByOrchestraMemberId = async (orchestraMemberId) => {
-    await pool.query('DELETE FROM instrument WHERE id_orchestra_member = $1', [
-        orchestraMemberId,
-    ])
+    const result = await pool.query(
+        'DELETE FROM instrument WHERE id_orchestra_member = $1 RETURNING *',
+        [orchestraMemberId]
+    )
+    return result.rows
 }
 
 module.exports = {

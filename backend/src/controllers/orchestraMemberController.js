@@ -92,11 +92,10 @@ const deleteOrchestraMember = async (req, res) => {
 
 // patch single
 const patchOrchestraMember = async (req, res) => {
-    const id = req.params.id
     const {
         first_name,
         last_name,
-        instruments, // Expecting a comma-separated string of instrument names
+        instruments, // array of strings (instrument names)
         phone,
         birth_date,
         are_you_student,
@@ -107,14 +106,14 @@ const patchOrchestraMember = async (req, res) => {
 
     try {
         // Check if the orchestra member exists
-        const orchestraMember = await OrchestraMemberModel.findById(id)
+        const orchestraMember = await OrchestraMemberModel.findById(req.user.id)
         if (!orchestraMember) {
             return res.status(404).json({ msg: 'Orchestra member not found.' })
         }
 
         // Update the orchestra member details
         const updatedOrchestraMember =
-            await OrchestraMemberModel.updateOrchestraMemberById(id, {
+            await OrchestraMemberModel.updateOrchestraMemberById(req.user.id, {
                 first_name,
                 last_name,
                 phone,
@@ -126,21 +125,35 @@ const patchOrchestraMember = async (req, res) => {
             })
 
         // Handle instrument updates
-        if (instruments) {
-            const instrumentNames = instruments
-                .split(',')
-                .map((name) => name.trim())
-            // Delete existing instruments for this member
-            await InstrumentModel.deleteInstrumentsByOrchestraMemberId(id)
-            // Add new instruments
-            for (const instrumentName of instrumentNames) {
-                await InstrumentModel.createInstrumentWithMember(
-                    id,
-                    instrumentName
-                )
-            }
+
+        // delete instruments
+        const deletedInstruments =
+            await InstrumentModel.deleteInstrumentsByOrchestraMemberId(
+                req.user.id
+            )
+        if (!deletedInstruments) {
+            return res
+                .status(404)
+                .json({ msg: 'Error deleting user previous instruments.' })
         }
 
+        const updatedInstruments = []
+        for (const instrument of instruments) {
+            // create new instruments
+            const updatedInstrument = await InstrumentModel.createInstrument(
+                req.user.id,
+                instrument
+            )
+            if (!updatedInstrument) {
+                return res
+                    .status(404)
+                    .json({ msg: 'Error creating the instrument.' })
+            }
+            updatedInstruments.push(updatedInstrument)
+        }
+
+        updatedOrchestraMember.instruments = updatedInstruments
+        console.log(updatedOrchestraMember)
         res.status(200).json(updatedOrchestraMember)
     } catch (err) {
         console.error('Error updating orchestra member:', err)

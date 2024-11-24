@@ -77,6 +77,7 @@ const loginLogoutButtonLabel = computed(() => {
 const handleLoginLogoutButtonClick = () => {
   if (authStore.isLoggedIn) {
     authStore.removeToken()
+    window.location.reload();
   }
 
   router.push({ name: 'login' })

@@ -164,7 +164,10 @@
           </template>
           </FileUpload>
           <div v-if="orchestraMember.profilePicture">
-            <img :src="orchestraMember.profilePicture" alt="Profile Picture" style="box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); border-radius: 0.75rem; width: 100%; max-width: 10rem;" />
+            <img 
+              :src="orchestraMember.profilePicture" 
+              alt="Profile Picture" 
+              style="box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); border-radius: 0.75rem; width: 100%; max-width: 10rem;" />
           </div>
         </div>
         
@@ -187,10 +190,10 @@
 
         <div>
           <Button 
-          class="profile-view__form-button"
-          @click.prevent="handleUpdate"
-          :disabled="loading"
-          :label="loading ? 'Updating...' : 'Update'" 
+            class="profile-view__form-button"
+            @click.prevent="handleUpdate"
+            :disabled="loading"
+            :label="loading ? 'Updating...' : 'Update'" 
           ></Button>
         </div>
       </div>
@@ -201,7 +204,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { API_BASE_URL } from '@/constants/config';
 import type { TOrchestraMember } from '@/types/TOrchestraMember';
@@ -232,8 +234,6 @@ import { Form } from '@primevue/forms';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
 
-const router = useRouter();
-const route = useRoute();
 const authStore = useAuthStore()
 const toast = useToast();
 
@@ -255,8 +255,7 @@ onMounted(async() => {
   }
 
   const data = await response.json();
-  console.log("data");
-  console.log("data: ", data);
+  console.log("GET data: ", data);
   
   orchestraMember.value.firstName = data.first_name;
   orchestraMember.value.lastName = data.last_name;
@@ -266,17 +265,10 @@ onMounted(async() => {
   orchestraMember.value.isStudent = data.are_you_student;
   orchestraMember.value.university = data.university;
   orchestraMember.value.description = data.description;
-  orchestraMember.value.profilePicture = data.profile_picture;
+  orchestraMember.value.profilePicture = orchestraMember.value.profilePicture ? `data:image/jpeg;base64,${data.profile_picture}` : null;
 
-  orchestraMember.value.profilePicture = orchestraMember.value.profilePicture ? `data:image/jpeg;base64,${orchestraMember.value.profilePicture}` : null;
-
-  toast.add({ severity: 'success', summary: 'Success loading user data!', life: 3000 });
+  toast.add({ severity: 'success', summary: 'Your data loaded successfully!', life: 3000 });
 })
-
-// Computed property to generate data URL
-const profilePictureUrl = computed(() => {
-  return orchestraMember.value.profilePicture ? `data:image/jpeg;base64,${orchestraMember.value.profilePicture}` : null;
-});
 
 const options = ref([
   { name: 'I am a student currently.', value: true },
@@ -366,8 +358,57 @@ const fileToBase64 = (file) => {
   });
 };
 
-const handleUpdate = () => {
-    console.log("handleUpdate function");
+const handleUpdate = async () => {
+  if (!isFirstNameValid.value || !isLastNameValid.value || orchestraMember.value.isStudent === null || 
+    (orchestraMember.value.isStudent && !orchestraMember.value.university) || !isInstrumentValid.value ||
+    !orchestraMember.value.dateOfBirth || !isPhoneValid.value) {
+    showErrors();
+    return;
+  }
+
+  loading.value = true;
+  errorMessage.value = '';
+
+  if (orchestraMember.value.isStudent === false) {
+    orchestraMember.value.university = null
+  }
+
+  const updateData = {
+    first_name: orchestraMember.value.firstName,
+    last_name: orchestraMember.value.lastName,
+    instruments: orchestraMember.value.instruments.map(instrument => instrument.name?.toLowerCase()),
+    phone: orchestraMember.value.phone,
+    birth_date: orchestraMember.value.dateOfBirth.toISOString().split('T')[0],
+    are_you_student: orchestraMember.value.isStudent,
+    university: orchestraMember.value.university,
+    profile_picture: orchestraMember.value.profilePicture,
+    description: orchestraMember.value.description,
+  }
+  console.log("updateData: ", JSON.stringify(updateData, null, 2));
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/orchestra-member/`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json', // informs the server that the data being sent in the request body is formatted as JSON
+        Authorization: `Bearer ${authStore.getToken()}`,
+      },
+      body: JSON.stringify(updateData),
+    });
+
+    if(!response) {
+      toast.add({ severity: 'error', summary: 'Update failed', detail: 'Apologies for the inconvenience', life: 3000 });
+      throw new Error('Update failed. Please try again later.') 
+    } else {
+      toast.add({ severity: 'info', summary: 'Your data were updated successfully!', detail: 'Explore your account! :)', life: 3000 });
+    }
+    
+
+  } catch (error) {
+    errorMessage.value = error.message || 'An error occurred during update.'
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
