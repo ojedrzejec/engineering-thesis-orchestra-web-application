@@ -59,7 +59,7 @@ const updateOrchestraMemberById = async (id, fields) => {
              birth_date = COALESCE($4, birth_date),
              are_you_student = COALESCE($5, are_you_student),
              university = COALESCE($6, university),
-             profile_picture = COALESCE($7, profile_picture),
+             profile_picture = $7, -- Directly set profile_picture to allow null values
              description = COALESCE($8, description)
          WHERE id = $9
          RETURNING *;`,
@@ -70,7 +70,7 @@ const updateOrchestraMemberById = async (id, fields) => {
             birth_date,
             are_you_student,
             university,
-            profile_picture,
+            profile_picture, // Allow null values
             description,
             id,
         ]

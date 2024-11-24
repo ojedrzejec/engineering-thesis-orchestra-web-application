@@ -120,7 +120,7 @@ const patchOrchestraMember = async (req, res) => {
                 birth_date,
                 are_you_student,
                 university,
-                profile_picture,
+                profile_picture: profile_picture || null, // Ensure null is passed if profile_picture is empty
                 description,
             })
 

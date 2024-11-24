@@ -149,19 +149,22 @@
         <div class="profile-view__form-input profile-view__file" style="align-items: center;">
           <FileUpload
             mode="advanced"
+            name="profilePicture"
             accept="image/*"
             :maxFileSize="1000000"
-            @select="onFileSelect"
-            customUpload
             class="p-button-outlined" 
-            :showCancelButton=false
-            :show-upload-button=false
+            :auto="false"
+            :customUpload="true"
+            :show-cancel-button="false"
+            :show-upload-button="false"
             :chooseLabel="orchestraMember.profilePicture ? 'Change Profile Picture' : 'Choose Your Profile Picture'"
             @remove="removeFileCallback"
+            @select="onFileSelect"
+            @upload="onFileSelect"
           >
-          <template v-if="!orchestraMember.profilePicture" #empty>
-            <span>Drag and drop files to here to upload.</span>
-          </template>
+            <template v-if="!orchestraMember.profilePicture" #empty>
+              <span>Drag and drop files to here to upload.</span>
+            </template>
           </FileUpload>
           <div v-if="orchestraMember.profilePicture">
             <img 
@@ -261,7 +264,7 @@ onMounted(async() => {
   orchestraMember.value.isStudent = data.are_you_student;
   orchestraMember.value.university = data.university;
   orchestraMember.value.description = data.description;
-  orchestraMember.value.profilePicture = orchestraMember.value.profilePicture ? `data:image/jpeg;base64,${data.profile_picture}` : null;
+  orchestraMember.value.profilePicture = data.profile_picture || null; // Ensure profilePicture is set correctly
 
   toast.add({ severity: 'success', summary: 'Your data loaded successfully!', life: 3000 });
 })
