@@ -495,15 +495,17 @@ const handleRegister = async () => {
     });
 
     if (!response.ok) {
-      toast.add({ severity: 'error', summary: 'Register failed', detail: 'Apologies for the inconvenience', life: 3000 });
-      throw new Error('Register failed. Please try again later.');
+      const errorData = await response.json();
+      const errorMessage = errorData.msg || 'Apologies for the inconvenience';
+      toast.add({ severity: 'error', summary: 'Register failed', detail: errorMessage, life: 3000 });
+      throw new Error(`${errorMessage}`);
     }
 
     toast.add({ severity: 'info', summary: 'Registered successfully!', detail: 'Explore your account! :)', life: 3000 });
 
     const { token } = await response.json();
     authStore.setToken(token);
-    // await authStore.fetchUserProfile(); // Optionally fetch user profile data
+    // await authStore.fetchUserProfileData();
     const redirectPath = route.query.redirect?.toString() || '/profile';
     router.push(redirectPath);
     window.location.reload();

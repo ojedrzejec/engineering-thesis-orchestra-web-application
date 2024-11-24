@@ -47,6 +47,7 @@ const register = async (req, res) => {
         const createdOrchestraMember =
             await OrchestraMemberModel.createOrchestraMember(newOrchestraMember)
         if (!createdOrchestraMember) {
+            // throw new Error('Failed to create orchestra member')
             return res
                 .status(500)
                 .json({ msg: 'Failed to create orchestra member' })
@@ -61,6 +62,7 @@ const register = async (req, res) => {
                 )
 
             if (!createdInstrumentWithMember) {
+                // throw new Error('Failed to create instrument with member')
                 return res
                     .status(500)
                     .json({ msg: 'Failed to create instrument with member' })

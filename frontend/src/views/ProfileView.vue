@@ -241,20 +241,16 @@ const orchestraMember = ref<TOrchestraMember>(initOrchestraMember)
 
 onMounted(async() => {
   console.log("onMounted function");
-  const response = await fetch(`${API_BASE_URL}/orchestra-member/single`, {
-    method: 'GET',
-    headers: { 
-      Authorization: `Bearer ${authStore.getToken()}`,
-    }
-  });
 
-  if (!response.ok) {
+  await authStore.fetchUserProfileData();
+  const data = authStore.userProfile;
+
+  if (!data) {
     toast.add({ severity: 'error', summary: 'Error loading user data.', life: 3000 });
     console.error('Error loading data');
     return;
   }
 
-  const data = await response.json();
   console.log("GET data: ", data);
   
   orchestraMember.value.firstName = data.first_name;
@@ -342,7 +338,6 @@ const onFileSelect = async (event) => {
     orchestraMember.value.profilePicture = await fileToBase64(file);
   }
 };
-
 
 const removeFileCallback = (file) => {
   console.log(file);
