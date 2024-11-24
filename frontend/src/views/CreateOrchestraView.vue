@@ -28,10 +28,32 @@
           </div>
         </div>
 
-        <div class="registration-view__form-input">
+        <div class="create-orchestra-view__form-input create-orchestra-view__file" style="align-items: center;">
+          <FileUpload
+            mode="advanced"
+            name="logo"
+            accept="image/*"
+            :maxFileSize="1000000"
+            class="p-button-outlined" 
+            :auto="false"
+            :customUpload="true"
+            :show-cancel-button="false"
+            :show-upload-button="false"
+            :chooseLabel="orchestra.logo ? 'Change Logo' : 'Choose Orchestra Logo'"
+            @remove="removeFileCallback"
+            @select="onFileSelect"
+            @upload="onFileSelect"
+          >
+            <template v-if="!orchestra.logo" #empty>
+              <span>Drag and drop files to here to upload.</span>
+            </template>
+          </FileUpload>
+        </div>
+
+        <div class="create-orchestra-view__form-input">
           <FloatLabel variant="on">
             <InputText 
-              class="registration-view__form-input-field"
+              class="create-orchestra-view__form-input-field"
               id="email" 
               v-model="orchestra.email" 
               v-keyfilter="/[^\s]/"
@@ -40,7 +62,7 @@
             ></InputText>
             <label for="email">Email</label>
           </FloatLabel>
-          <div class="registration-view__form-error-messages">
+          <div class="create-orchestra-view__form-error-messages">
             <Message severity="error" v-if="orchestra.email && !isEmailValid && showEmailErrors">{{ messageValidationEmail }}</Message>
           </div>
         </div>
@@ -58,7 +80,7 @@
           </FloatLabel>
         </div>
 
-        <div class="profile-view__form-input">
+        <div class="create-orchestra-view__form-input">
           <FloatLabel variant="on">
             <Textarea 
               id="history" 
@@ -141,6 +163,27 @@ const validateEmailInput = () => {
 const showErrors = () => {
   showNameErrors.value = true;
   showEmailErrors.value = true;
+};
+
+const onFileSelect = async (event) => {
+  const file = event.files[0];
+  if (file) {
+    orchestra.value.logo = await fileToBase64(file) as string;
+  }
+};
+
+const fileToBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+};
+
+const removeFileCallback = (file) => {
+  console.log(file);
+  orchestra.value.logo = null;
 };
 
 const handleOrchestraCreation = () => {
