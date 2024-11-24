@@ -54,6 +54,57 @@
           <FloatLabel variant="on">
             <InputText 
               class="create-orchestra-view__form-input-field"
+              id="facebookUrl" 
+              v-model="orchestra.facebookUrl" 
+              v-keyfilter="/[^\s]/"
+              @input="validateFacebookUrlInput" 
+              :invalid="!isFacebookUrlValid && showFacebookUrlErrors"
+            ></InputText>
+            <label for="facebookUrl">Facebook Link</label>
+          </FloatLabel>
+          <div class="create-orchestra-view__form-error-messages">
+            <Message severity="error" v-if="orchestra.facebookUrl && !isFacebookUrlValid && showFacebookUrlErrors">{{ messageValidationLink }}</Message>
+          </div>
+        </div>
+
+        <div class="create-orchestra-view__form-input">
+          <FloatLabel variant="on">
+            <InputText 
+              class="create-orchestra-view__form-input-field"
+              id="instagramUrl" 
+              v-model="orchestra.instagramUrl" 
+              v-keyfilter="/[^\s]/"
+              @input="validateInstagramUrlInput" 
+              :invalid="!isInstagramUrlValid && showInstagramUrlErrors"
+            ></InputText>
+            <label for="instagramUrl">Instagram Link</label>
+          </FloatLabel>
+          <div class="create-orchestra-view__form-error-messages">
+            <Message severity="error" v-if="orchestra.instagramUrl && !isInstagramUrlValid && showInstagramUrlErrors">{{ messageValidationLink }}</Message>
+          </div>
+        </div>
+
+        <div class="create-orchestra-view__form-input">
+          <FloatLabel variant="on">
+            <InputText 
+              class="create-orchestra-view__form-input-field"
+              id="youtubeUrl" 
+              v-model="orchestra.youtubeUrl" 
+              v-keyfilter="/[^\s]/"
+              @input="validateYouTubeUrlInput" 
+              :invalid="!isYouTubeUrlValid && showYouTubeUrlErrors"
+            ></InputText>
+            <label for="youtubeUrl">YouTube Link</label>
+          </FloatLabel>
+          <div class="create-orchestra-view__form-error-messages">
+            <Message severity="error" v-if="orchestra.youtubeUrl && !isYouTubeUrlValid && showYouTubeUrlErrors">{{ messageValidationLink }}</Message>
+          </div>
+        </div>
+
+        <div class="create-orchestra-view__form-input">
+          <FloatLabel variant="on">
+            <InputText 
+              class="create-orchestra-view__form-input-field"
               id="email" 
               v-model="orchestra.email" 
               v-keyfilter="/[^\s]/"
@@ -149,9 +200,15 @@ const loading = ref(false);
 const errorMessage = ref('');
 const showNameErrors = ref(false);
 const showEmailErrors = ref(false);
+const showFacebookUrlErrors = ref(false);
+const showInstagramUrlErrors = ref(false);
+const showYouTubeUrlErrors = ref(false);
 
 const isNameValid = computed(() => orchestra.value.name && validateNameLength(orchestra.value.name) && validateWhitespaces(orchestra.value.name));
 const isEmailValid = computed(() => !orchestra.value.email || validateEmail(orchestra.value.email));
+const isFacebookUrlValid = computed(() => !orchestra.value.facebookUrl || validateFacebookLink(orchestra.value.facebookUrl));
+const isInstagramUrlValid = computed(() => !orchestra.value.instagramUrl || validateInstagramLink(orchestra.value.instagramUrl));
+const isYouTubeUrlValid = computed(() => !orchestra.value.youtubeUrl || validateYouTubeLink(orchestra.value.youtubeUrl));
 
 const validateNameInput = () => {
   showNameErrors.value = true;
@@ -159,10 +216,22 @@ const validateNameInput = () => {
 const validateEmailInput = () => {
   showEmailErrors.value = true;
 }
+const validateFacebookUrlInput = () => {
+  showFacebookUrlErrors.value = true;
+}
+const validateInstagramUrlInput = () => {
+  showInstagramUrlErrors.value = true;
+}
+const validateYouTubeUrlInput = () => {
+  showYouTubeUrlErrors.value = true;
+}
 
 const showErrors = () => {
   showNameErrors.value = true;
   showEmailErrors.value = true;
+  showFacebookUrlErrors.value = true;
+  showInstagramUrlErrors.value = true;
+  showYouTubeUrlErrors.value = true;
 };
 
 const onFileSelect = async (event) => {
@@ -189,7 +258,7 @@ const removeFileCallback = (file) => {
 const handleOrchestraCreation = () => {
   console.log('Button clicked! Inside handleOrchestraCreation function');
 
-  if (!isNameValid.value || !isEmailValid.value) {
+  if (!isNameValid.value || !isEmailValid.value || !isFacebookUrlValid.value || !isInstagramUrlValid.value || !isYouTubeUrlValid.value) {
     showErrors();
     return;
   }
@@ -222,7 +291,7 @@ const handleOrchestraCreation = () => {
     flex-direction: column;
     /* align-items: center; */
     gap: 5px;
-    min-width: 300px;
+    min-width: 550px;
   }
   
   &__form-error-messages {
