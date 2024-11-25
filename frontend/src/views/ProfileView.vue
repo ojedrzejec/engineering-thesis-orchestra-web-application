@@ -401,7 +401,7 @@ const handleUpdate = async () => {
       throw new Error(`Update failed. Please try again later. - ${errorMessage}`);
     }
     
-    toast.add({ severity: 'info', summary: 'Your data were updated successfully!', detail: 'Explore your account! :)', life: 3000 });
+    toast.add({ severity: 'success', summary: 'Your data were updated successfully!', detail: 'Explore your account! :)', life: 3000 });
 
   } catch (error) {
     errorMessage.value = error.message || 'An error occurred during update.'

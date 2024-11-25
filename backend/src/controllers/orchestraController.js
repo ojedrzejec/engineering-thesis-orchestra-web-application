@@ -12,7 +12,7 @@ const getAllOrchestras = async (req, res) => {
 const getOrchestra = async (req, res) => {
     const orchestraId = req.params.id
     const orchestra =
-        await Orchestra_OrchestraOrchestraMember_Owner_Model.getOrchestraByMemberId(
+        await Orchestra_OrchestraOrchestraMember_Owner_Model.getOrchestraById(
             orchestraId
         )
     res.json(orchestra)
@@ -69,10 +69,56 @@ const createOrchestra = async (req, res) => {
     }
 }
 
+const updateOrchestra = async (req, res) => {
+    const {
+        id,
+        name,
+        logo,
+        email,
+        address,
+        history,
+        facebook_url,
+        instagram_url,
+        youtube_url,
+    } = req.body
+    try {
+        // Check if the orchestra exists
+        const orchestraExists =
+            await Orchestra_OrchestraOrchestraMember_Owner_Model.getOrchestraById(
+                id
+            )
+        if (!orchestraExists) {
+            return res.status(404).json({ msg: 'Orchestra not found' })
+        }
+
+        // Update the orchestra details
+        const updatedOrchestra =
+            await Orchestra_OrchestraOrchestraMember_Owner_Model.updateOrchestra(
+                {
+                    id,
+                    name,
+                    logo: logo || null, // Ensure null is passed if logo is empty,
+                    email,
+                    address,
+                    history,
+                    facebook_url,
+                    instagram_url,
+                    youtube_url,
+                }
+            )
+
+        console.log('updatedOrchestra: ', updatedOrchestra)
+        res.status(200).json(updatedOrchestra)
+    } catch {
+        res.status(500).json({ msg: 'Server error while updateOrchestra' })
+    }
+}
+
 module.exports = {
     getAllOrchestras,
     getOrchestra,
     getOrchestrasWithMemberId,
     getAllOrchestraOrchestraMember,
     createOrchestra,
+    updateOrchestra,
 }

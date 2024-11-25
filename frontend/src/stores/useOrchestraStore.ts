@@ -10,6 +10,7 @@ export const useOrchestraStore = defineStore('orchestra', () => {
     const authStore = useAuthStore()
     const availableOrchestras = ref<TOrchestraAccess[]>([])
     const selectedOrchestra = ref<TOrchestra | null>(null)
+    const orchestraToUpdate = ref<TOrchestra | null>(null)
     const loading = ref<boolean>(false)
     const loadingSelectedOrchestra = ref<boolean>(false)
     
@@ -46,7 +47,7 @@ export const useOrchestraStore = defineStore('orchestra', () => {
                     accessType: orchestra.is_owner ? EOrchestraRole.OWNER : (orchestra.is_manager ? EOrchestraRole.MANAGER : EOrchestraRole.PLAYER),
                 }));
 
-                selectOrchestra(availableOrchestras.value[0]?.id)
+                selectOrchestra(selectedOrchestra.value?.id ? selectedOrchestra.value?.id : availableOrchestras.value[0]?.id)
             } else {
                 availableOrchestras.value = [];
                 console.error('API response is not an array: ', data);
@@ -93,20 +94,40 @@ export const useOrchestraStore = defineStore('orchestra', () => {
                 instagramUrl: data.instagram_url,
                 youtubeUrl: data.youtube_url,
             };
-            // console.log('Selected orchestra: ', JSON.parse(JSON.stringify(selectedOrchestra.value, null, 2)));
-            // console.log('Selected orchestra\'s name: ', selectedOrchestra.value.name)
+            
+            orchestraToUpdate.value = selectedOrchestra.value
+
+            // console.log('selectOrchestra | Orchestra To Update: ', JSON.parse(JSON.stringify(orchestraToUpdate.value, null, 2)));
+            // console.log('selectOrchestra | Selected orchestra: ', JSON.parse(JSON.stringify(selectedOrchestra.value, null, 2)));
+
         } catch (error) {
-            console.error('Failed to fetch orchestra: ', error)
+            console.error('Failed to select orchestra: ', error)
             selectedOrchestra.value = null
         } finally {
             loadingSelectedOrchestra.value = false
         }
     };
+
+    const updateOrchestra = async (orchestra: TOrchestra) => {
+        if (!orchestra) {
+            console.error('No orchestra ID provided')
+            selectedOrchestra.value = null
+            return
+        }
+
+        orchestraToUpdate.value = orchestra
+        selectedOrchestra.value = orchestraToUpdate.value
+        
+        // console.log('updateOrchestra | orchestraToUpdate: ', JSON.parse(JSON.stringify(orchestraToUpdate.value, null, 2)));
+        // console.log('updateOrchestra | Selected orchestra: ', JSON.parse(JSON.stringify(selectedOrchestra.value, null, 2)));
+    }
     
     return {
         availableOrchestras,
         selectedOrchestra,
+        orchestraToUpdate,
         fetchOrchestras,
         selectOrchestra,
+        updateOrchestra,
     };
 });

@@ -6,7 +6,7 @@ const getAllOrchestras = async () => {
     return result.rows
 }
 
-const getOrchestraByMemberId = async (orchestraId) => {
+const getOrchestraById = async (orchestraId) => {
     const result = await pool.query('SELECT * FROM orchestra WHERE id = $1', [
         orchestraId,
     ])
@@ -93,9 +93,53 @@ const createOrchestra = async ({
     }
 }
 
+const updateOrchestra = async ({
+    id,
+    name,
+    logo,
+    email,
+    address,
+    history,
+    facebook_url,
+    instagram_url,
+    youtube_url,
+}) => {
+    try {
+        const result = await pool.query(
+            `UPDATE orchestra
+            SET name = COALESCE($1, name),
+                logo = $2,
+                email = COALESCE($3, email),
+                address = COALESCE($4, address),
+                history = COALESCE($5, history),
+                facebook_url = COALESCE($6, facebook_url),
+                instagram_url = COALESCE($7, instagram_url),
+                youtube_url = COALESCE($8, youtube_url)
+            WHERE id = $9
+            RETURNING *;`,
+            [
+                name,
+                logo,
+                email,
+                address,
+                history,
+                facebook_url,
+                instagram_url,
+                youtube_url,
+                id,
+            ]
+        )
+        return result.rows[0]
+    } catch (err) {
+        console.error('Error updating orchestra:', err)
+        throw new Error('Error updating orchestra')
+    }
+}
+
 module.exports = {
     getAllOrchestras,
-    getOrchestraByMemberId,
+    getOrchestraById,
     getOrchestrasWithMemberId,
     createOrchestra,
+    updateOrchestra,
 }

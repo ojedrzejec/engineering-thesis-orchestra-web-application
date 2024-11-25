@@ -202,8 +202,8 @@ const orchestraStore = useOrchestraStore();
 const orchestra = ref<TOrchestra>(initOrchestra);
 
 onMounted(() => {
-  if (orchestraStore.selectedOrchestra) {
-    orchestra.value = orchestraStore.selectedOrchestra;
+  if (orchestraStore.orchestraToUpdate) {
+    orchestra.value = orchestraStore.orchestraToUpdate;
   }
 });
 
@@ -268,6 +268,55 @@ const removeFileCallback = (file) => {
 
 const handleOrchestraUpdate = async () => {
   console.log('Button clicked! Inside handleOrchestraUpdate function');
+
+  if (!isNameValid.value || !isEmailValid.value || !isFacebookUrlValid.value || !isInstagramUrlValid.value || !isYouTubeUrlValid.value) {
+    showErrors();
+    return;
+  }
+
+  loading.value = true;
+  errorMessage.value = '';
+
+  const formData = {
+    id: orchestra.value.id, // id from orchestraToUpdate in orchestraStore
+    name: orchestra.value.name,
+    logo: orchestra.value.logo,
+    email: orchestra.value.email,
+    address: orchestra.value.address,
+    history: orchestra.value.history,
+    facebook_url: orchestra.value.facebookUrl,
+    instagram_url: orchestra.value.instagramUrl,
+    youtube_url: orchestra.value.youtubeUrl,
+  }
+  console.log('formData:', JSON.stringify(formData, null, 2));
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/orchestra/`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authStore.getToken()}`,
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if(!response) {
+      const errorData = await response.json();
+      const errorMessage = errorData.msg || 'Apologies for the inconvenience. Please try again later.';
+      toast.add({ severity: 'error', summary: 'Update failed', detail: errorMessage, life: 3000 });
+      throw new Error(`Update failed. Please try again later. - ${errorMessage}`);
+    }
+    
+    toast.add({ severity: 'success', summary: `${orchestra.value.name} updated successfully!`, life: 3000 });
+    orchestraStore.updateOrchestra(orchestra.value);
+    orchestraStore.fetchOrchestras();
+
+  } catch (error) {
+    console.error('Error:', error);
+    errorMessage.value = error.message || 'An error occurred during orchestra creation.'
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
