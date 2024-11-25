@@ -111,7 +111,7 @@ const menubarItems = computed(() => {
           label: orchestra.name,
           icon: 'pi pi-folder',
           command: () => {
-            router.push({ name: 'profile' });
+            router.push({ name: 'availability' });
             orchestraStore.selectOrchestra(orchestra.id)
           }
         })).concat([
@@ -280,7 +280,10 @@ const updatePanelMenuItems = () => {
         items: [
           {
             label: 'Orchestra Information',
-            icon: 'pi pi-info'
+            icon: 'pi pi-info',
+            command: () => {
+              router.push({ name: 'orchestra-information' })
+            }
           },
           {
             label: 'Concerts',
@@ -296,7 +299,10 @@ const updatePanelMenuItems = () => {
           },
           {
             label: 'Instruments',
-            icon: 'pi pi-megaphone'
+            icon: 'pi pi-megaphone',
+            command: () => {
+              router.push({ name: 'instruments' })
+            }
           },
           {
             label: 'Pieces of Music',
@@ -331,7 +337,10 @@ const updatePanelMenuItems = () => {
         items: [
           {
             label: 'Orchestra Information',
-            icon: 'pi pi-info'
+            icon: 'pi pi-info',
+            command: () => {
+              router.push({ name: 'orchestra-information' })
+            }
           },
           {
             label: 'Concerts',

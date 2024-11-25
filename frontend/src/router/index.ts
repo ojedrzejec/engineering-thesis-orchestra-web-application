@@ -108,6 +108,18 @@ const router = createRouter({
       name: 'pieces-of-music',
       component: () => import('@/views/player/PiecesOfMusicView.vue'),
       meta: { logInOnly: true },
+    },
+    {
+      path: '/orchestra-information',
+      name: 'orchestra-information',
+      component: () => import('@/views/owner/OrchestraInformationView.vue'),
+      meta: { logInOnly: true },
+    },
+    {
+      path: '/instruments',
+      name: 'instruments',
+      component: () => import('@/views/owner/InstrumentsView.vue'),
+      meta: { logInOnly: true },
     }
   ],
 })
