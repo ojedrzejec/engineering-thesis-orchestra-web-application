@@ -185,7 +185,7 @@ import {
   validateInstagramLink, 
   validateYouTubeLink, 
 } from '@/constants/validation/orchestraCreationValidation';
-import type { TOrchestra } from '../types/TOrchestra';
+import type { TOrchestra } from '@/types/TOrchestra';
 import { initOrchestra } from '@/constants/initOrchestra';
 import { API_BASE_URL } from '@/constants/config';
 import { useAuthStore } from '@/stores/useAuthStore';
