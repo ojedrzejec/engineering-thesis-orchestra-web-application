@@ -1,7 +1,4 @@
 <template>
-<pre>
-{{ orchestra }}
-</pre>
 <div class="create-orchestra-view">
   <Toast />
   <div>
@@ -48,6 +45,49 @@
               <span>Drag and drop files to here to upload.</span>
             </template>
           </FileUpload>
+        </div>
+
+        <div class="create-orchestra-view__form-input">
+          <FloatLabel variant="on">
+            <InputText 
+              class="create-orchestra-view__form-input-field"
+              id="email" 
+              v-model="orchestra.email" 
+              v-keyfilter="/[^\s]/"
+              @input="validateEmailInput" 
+              :invalid="!isEmailValid && showEmailErrors"
+            ></InputText>
+            <label for="email">Email</label>
+          </FloatLabel>
+          <div class="create-orchestra-view__form-error-messages">
+            <Message severity="error" v-if="orchestra.email && !isEmailValid && showEmailErrors">{{ messageValidationEmail }}</Message>
+          </div>
+        </div>
+        
+        <div class="create-orchestra-view__form-input">
+          <FloatLabel variant="on">
+            <Textarea 
+              id="address" 
+              v-model="orchestra.address" 
+              rows="2" 
+              cols="30" 
+              autoResize
+            ></Textarea>
+            <label for="address">Address</label>
+          </FloatLabel>
+        </div>
+
+        <div class="create-orchestra-view__form-input">
+          <FloatLabel variant="on">
+            <Textarea 
+              id="history" 
+              v-model="orchestra.history" 
+              rows="7" 
+              cols="30" 
+              autoResize
+            ></Textarea>
+            <label for="history">History</label>
+          </FloatLabel>
         </div>
 
         <div class="create-orchestra-view__form-input">
@@ -101,49 +141,6 @@
           </div>
         </div>
 
-        <div class="create-orchestra-view__form-input">
-          <FloatLabel variant="on">
-            <InputText 
-              class="create-orchestra-view__form-input-field"
-              id="email" 
-              v-model="orchestra.email" 
-              v-keyfilter="/[^\s]/"
-              @input="validateEmailInput" 
-              :invalid="!isEmailValid && showEmailErrors"
-            ></InputText>
-            <label for="email">Email</label>
-          </FloatLabel>
-          <div class="create-orchestra-view__form-error-messages">
-            <Message severity="error" v-if="orchestra.email && !isEmailValid && showEmailErrors">{{ messageValidationEmail }}</Message>
-          </div>
-        </div>
-        
-        <div class="create-orchestra-view__form-input">
-          <FloatLabel variant="on">
-            <Textarea 
-              id="address" 
-              v-model="orchestra.address" 
-              rows="2" 
-              cols="30" 
-              autoResize
-            ></Textarea>
-            <label for="address">Address</label>
-          </FloatLabel>
-        </div>
-
-        <div class="create-orchestra-view__form-input">
-          <FloatLabel variant="on">
-            <Textarea 
-              id="history" 
-              v-model="orchestra.history" 
-              rows="7" 
-              cols="30" 
-              autoResize
-            ></Textarea>
-            <label for="history">History</label>
-          </FloatLabel>
-        </div>
-
         <div v-if="errorMessage" class="error-message">
           <Message severity="error">{{ errorMessage }}</Message>
         </div>
@@ -164,7 +161,6 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-
 import { Form } from '@primevue/forms';
 import Fluid from 'primevue/fluid';
 import FloatLabel from 'primevue/floatlabel';
@@ -176,9 +172,7 @@ import FileUpload from 'primevue/fileupload';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
 const toast = useToast();
-
 import {
-  messageValidationInput, 
   messageInputRequired, 
   messageValidationInputLength, 
   messageValidationWhitespaces,
@@ -193,6 +187,9 @@ import {
 } from '@/constants/validation/orchestraCreationValidation';
 import type { TOrchestra } from '../types/TOrchestra';
 import { initOrchestra } from '@/constants/initOrchestra';
+import { API_BASE_URL } from '@/constants/config';
+import { useAuthStore } from '@/stores/useAuthStore';
+const authStore = useAuthStore();
 
 const orchestra = ref<TOrchestra>(initOrchestra);
 
@@ -255,7 +252,7 @@ const removeFileCallback = (file) => {
   orchestra.value.logo = null;
 };
 
-const handleOrchestraCreation = () => {
+const handleOrchestraCreation = async () => {
   console.log('Button clicked! Inside handleOrchestraCreation function');
 
   if (!isNameValid.value || !isEmailValid.value || !isFacebookUrlValid.value || !isInstagramUrlValid.value || !isYouTubeUrlValid.value) {
@@ -265,6 +262,45 @@ const handleOrchestraCreation = () => {
 
   loading.value = true;
   errorMessage.value = '';
+
+  const formData = {
+    name: orchestra.value.name,
+    logo: orchestra.value.logo,
+    email: orchestra.value.email,
+    address: orchestra.value.address,
+    history: orchestra.value.history,
+    facebook_url: orchestra.value.facebookUrl,
+    instagram_url: orchestra.value.instagramUrl,
+    youtube_url: orchestra.value.youtubeUrl,
+  }
+  console.log('formData:', JSON.stringify(formData, null, 2));
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/orchestra/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authStore.getToken()}`,
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if(!response) {
+      const errorData = await response.json();
+      const errorMessage = errorData.msg || 'Apologies for the inconvenience. Please try again later.';
+      toast.add({ severity: 'error', summary: 'Orchestra creation failed', detail: errorMessage, life: 3000 });
+      throw new Error(`${errorMessage}`);
+    }
+    
+    toast.add({ severity: 'success', summary: `${orchestra.value.name} created successfully!`, detail: 'You are the orchestra owner! :)', life: 3000 });
+    orchestra.value = initOrchestra;
+
+  } catch (error) {
+    console.error('Error:', error);
+    errorMessage.value = error.message || 'An error occurred during orchestra creation.'
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 

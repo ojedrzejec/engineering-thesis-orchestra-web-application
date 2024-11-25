@@ -63,7 +63,7 @@ const createOrchestra = async (req, res) => {
 
         // const token = updateJsonWebToken(req.user.id)
 
-        res.json({ token, orchestra })
+        res.json(orchestra)
     } catch (err) {
         res.status(500).json({ msg: 'Server error while createOrchestra' })
     }
