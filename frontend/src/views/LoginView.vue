@@ -1,5 +1,6 @@
 <template>
   <div class="login-view">
+    <Toast />
     <div class="login-view__title">
       <h1>Login to your account</h1>
     </div>
@@ -100,6 +101,9 @@ import Password from 'primevue/password';
 import Divider from 'primevue/divider';
 import Fluid from 'primevue/fluid';
 import { Form } from '@primevue/forms';
+import Toast from 'primevue/toast';
+import { useToast } from 'primevue/usetoast';
+const toast = useToast();
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { API_BASE_URL } from '@/constants/config';
@@ -179,8 +183,13 @@ const handleLogin = async () => {
     });
 
     if (!response.ok) {
-      throw new Error('Login failed. Please check your credentials and try again.');
+      const errorData = await response.json();
+      const errorMessage = errorData.msg || 'Please check your credentials and try again.';
+      toast.add({ severity: 'error', summary: 'Login failed', detail: errorMessage, life: 3000 });
+      throw new Error(`Login failed. Please check your credentials and try again. - ${errorMessage}`);
     }
+
+    toast.add({ severity: 'info', summary: 'Successful login!', detail: 'Nice to see you again! :)', life: 3000 });
 
     const data = await response.json();
     console.log('Login response:', data); // Log the response

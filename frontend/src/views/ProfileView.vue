@@ -9,37 +9,37 @@
       <div class="profile-view__form">
         <div class="profile-view__form-input">
           <FloatLabel variant="on">
-          <InputText 
-            class="profile-view__form-input-field"
-            id="firstName" 
-            v-model="orchestraMember.firstName" 
-            @input="validateFirstNameInput" 
-            :invalid="!isFirstNameValid && showFirstNameErrors"
-          ></InputText>
-          <label for="firstName">First Name</label>
+            <InputText 
+              class="profile-view__form-input-field"
+              id="firstName" 
+              v-model="orchestraMember.firstName" 
+              @input="validateFirstNameInput" 
+              :invalid="!isFirstNameValid && showFirstNameErrors"
+            ></InputText>
+            <label for="firstName">First Name</label>
           </FloatLabel>
           <div class="profile-view__form-error-messages">
-          <Message severity="error" v-if="!orchestraMember.firstName && showFirstNameErrors">{{ messageInputRequired }}</Message>
-          <Message severity="error" v-if="orchestraMember.firstName && !validateFirstLastNameLength(orchestraMember.firstName) && showFirstNameErrors">{{ messageValidationFirstLastNameLength("First Name") }}</Message>
-          <Message severity="error" v-if="orchestraMember.firstName && !validatePolishLettersAndWhitespaces(orchestraMember.firstName) && showFirstNameErrors">{{ messageValidationLettersAndWhitespaces }}</Message>
+            <Message severity="error" v-if="!orchestraMember.firstName && showFirstNameErrors">{{ messageInputRequired }}</Message>
+            <Message severity="error" v-if="orchestraMember.firstName && !validateFirstLastNameLength(orchestraMember.firstName) && showFirstNameErrors">{{ messageValidationFirstLastNameLength("First Name") }}</Message>
+            <Message severity="error" v-if="orchestraMember.firstName && !validatePolishLettersAndWhitespaces(orchestraMember.firstName) && showFirstNameErrors">{{ messageValidationLettersAndWhitespaces }}</Message>
           </div>
         </div>
 
         <div class="profile-view__form-input">
           <FloatLabel variant="on">
-          <InputText 
-            class="profile-view__form-input-field"
-            id="lastName" 
-            v-model="orchestraMember.lastName" 
-            @input="validateLastNameInput" 
-            :invalid="!isLastNameValid && showLastNameErrors"
-          ></InputText>
-          <label for="lastName">Last Name</label>
+            <InputText 
+              class="profile-view__form-input-field"
+              id="lastName" 
+              v-model="orchestraMember.lastName" 
+              @input="validateLastNameInput" 
+              :invalid="!isLastNameValid && showLastNameErrors"
+            ></InputText>
+            <label for="lastName">Last Name</label>
           </FloatLabel>
           <div class="profile-view__form-error-messages">
-          <Message severity="error" v-if="!orchestraMember.lastName && showLastNameErrors">{{ messageInputRequired }}</Message>
-          <Message severity="error" v-if="orchestraMember.lastName && !validateFirstLastNameLength(orchestraMember.lastName) && showLastNameErrors">{{ messageValidationFirstLastNameLength("Last Name") }}</Message>
-          <Message severity="error" v-if="orchestraMember.lastName && !validatePolishLettersAndWhitespaces(orchestraMember.lastName) && showLastNameErrors">{{ messageValidationLettersAndWhitespaces }}</Message>
+            <Message severity="error" v-if="!orchestraMember.lastName && showLastNameErrors">{{ messageInputRequired }}</Message>
+            <Message severity="error" v-if="orchestraMember.lastName && !validateFirstLastNameLength(orchestraMember.lastName) && showLastNameErrors">{{ messageValidationFirstLastNameLength("Last Name") }}</Message>
+            <Message severity="error" v-if="orchestraMember.lastName && !validatePolishLettersAndWhitespaces(orchestraMember.lastName) && showLastNameErrors">{{ messageValidationLettersAndWhitespaces }}</Message>
           </div>
         </div>
 
@@ -52,15 +52,15 @@
           </div>
           <div>
             <FloatLabel variant="on">
-            <InputText 
-              class="profile-view__form-input-field"
-              id="instrument" 
-              v-model="instrument.name"
-              @input="validateInstrumentInput" 
-              @update="handleInstrumentsUpdate(instrument, ix)"
-              :invalid="!isInstrumentValid && showInstrumentErrors"
-            ></InputText>
-            <label for="instrument">Instrument Name</label>
+              <InputText 
+                class="profile-view__form-input-field"
+                id="instrument" 
+                v-model="instrument.name"
+                @input="validateInstrumentInput" 
+                @update="handleInstrumentsUpdate(instrument, ix)"
+                :invalid="!isInstrumentValid && showInstrumentErrors"
+              ></InputText>
+              <label for="instrument">Instrument Name</label>
             </FloatLabel>
             <div class="profile-view__form-error-messages">
             <Message severity="error" v-if="!instrument.name && showInstrumentErrors">{{ messageInputRequired }}</Message>
@@ -80,37 +80,37 @@
 
         <div class="profile-view__form-input">
           <FloatLabel variant="on">
-          <InputText 
-            class="profile-view__form-input-field"
-            v-model="orchestraMember.phone"
-            id="phone" 
-            @input="validatePhoneInput" 
-            :invalid="!isPhoneValid && showPhoneErrors"
-            v-keyfilter="{ pattern: /^[\+]?([0-9]{1,11})?$/, validateOnly: true }"
-            ></InputText>
-          <label for="phone">Phone Number</label>
+            <InputText 
+              class="profile-view__form-input-field"
+              v-model="orchestraMember.phone"
+              id="phone" 
+              @input="validatePhoneInput" 
+              :invalid="!isPhoneValid && showPhoneErrors"
+              v-keyfilter="{ pattern: /^[\+]?([0-9]{1,11})?$/, validateOnly: true }"
+              ></InputText>
+            <label for="phone">Phone Number</label>
           </FloatLabel>
           <div class="profile-view__form-error-messages">
-          <Message severity="error" v-if="!orchestraMember.phone && showPhoneErrors">{{ messageInputRequired }}</Message>
-          <Message severity="error" v-if="orchestraMember.phone && !validatePhoneNumber(orchestraMember.phone) && showPhoneErrors">{{ messageValidationPhoneNumber }}</Message>
+            <Message severity="error" v-if="!orchestraMember.phone && showPhoneErrors">{{ messageInputRequired }}</Message>
+            <Message severity="error" v-if="orchestraMember.phone && !validatePhoneNumber(orchestraMember.phone) && showPhoneErrors">{{ messageValidationPhoneNumber }}</Message>
           </div>
         </div>
 
         <div class="profile-view__form-input">
           <FloatLabel variant="on">
-          <DatePicker 
-            v-model="orchestraMember.dateOfBirth"
-            dateFormat="dd/mm/yy" 
-            showIcon 
-            inputId="dateOfBirth" 
-            iconDisplay="input" 
-            @input="validateDateOfBirthInput"
-            :invalid="!orchestraMember.dateOfBirth && showDateOfBirthErrors"
-          />
-          <label for="dateOfBirth">Date of Birth</label>
+            <DatePicker 
+              v-model="orchestraMember.dateOfBirth"
+              dateFormat="dd/mm/yy" 
+              showIcon 
+              inputId="dateOfBirth" 
+              iconDisplay="input" 
+              @input="validateDateOfBirthInput"
+              :invalid="!orchestraMember.dateOfBirth && showDateOfBirthErrors"
+            />
+            <label for="dateOfBirth">Date of Birth</label>
           </FloatLabel>
           <div class="profile-view__form-error-messages">
-          <Message severity="error" v-if="!orchestraMember.dateOfBirth && showDateOfBirthErrors">{{ messageInputRequired }}</Message>
+            <Message severity="error" v-if="!orchestraMember.dateOfBirth && showDateOfBirthErrors">{{ messageInputRequired }}</Message>
           </div>
         </div>
 
@@ -176,14 +176,14 @@
         
         <div class="profile-view__form-input">
           <FloatLabel variant="on">
-          <Textarea 
-            id="description" 
-            v-model="orchestraMember.description" 
-            rows="6" 
-            cols="30" 
-            autoResize
-          ></Textarea>
-          <label for="description">Description - write a few words about yourself <i class="pi pi-face-smile"></i></label>
+            <Textarea 
+              id="description" 
+              v-model="orchestraMember.description" 
+              rows="6" 
+              cols="30" 
+              autoResize
+            ></Textarea>
+            <label for="description">Description - write a few words about yourself <i class="pi pi-face-smile"></i></label>
           </FloatLabel>
         </div>
 
@@ -338,13 +338,8 @@ const handleInstrumentsUpdate = (instrument: TInstrument, ix: number) => {
 const onFileSelect = async (event) => {
   const file = event.files[0];
   if (file) {
-    orchestraMember.value.profilePicture = await fileToBase64(file);
+    orchestraMember.value.profilePicture = await fileToBase64(file) as string;
   }
-};
-
-const removeFileCallback = (file) => {
-  console.log(file);
-  orchestraMember.value.profilePicture = null;
 };
 
 const fileToBase64 = (file) => {
@@ -354,6 +349,11 @@ const fileToBase64 = (file) => {
     reader.onload = () => resolve(reader.result);
     reader.onerror = (error) => reject(error);
   });
+};
+
+const removeFileCallback = (file) => {
+  console.log(file);
+  orchestraMember.value.profilePicture = null;
 };
 
 const handleUpdate = async () => {
@@ -395,12 +395,13 @@ const handleUpdate = async () => {
     });
 
     if(!response) {
-      toast.add({ severity: 'error', summary: 'Update failed', detail: 'Apologies for the inconvenience', life: 3000 });
-      throw new Error('Update failed. Please try again later.') 
-    } else {
-      toast.add({ severity: 'info', summary: 'Your data were updated successfully!', detail: 'Explore your account! :)', life: 3000 });
+      const errorData = await response.json();
+      const errorMessage = errorData.msg || 'Apologies for the inconvenience. Please try again later.';
+      toast.add({ severity: 'error', summary: 'Update failed', detail: errorMessage, life: 3000 });
+      throw new Error(`Update failed. Please try again later. - ${errorMessage}`);
     }
     
+    toast.add({ severity: 'info', summary: 'Your data were updated successfully!', detail: 'Explore your account! :)', life: 3000 });
 
   } catch (error) {
     errorMessage.value = error.message || 'An error occurred during update.'

@@ -433,13 +433,8 @@ const handleInstrumentsUpdate = (instrument: TInstrument, ix: number) => {
 const onFileSelect = async (event) => {
   const file = event.files[0];
   if (file) {
-    orchestraMember.value.profilePicture = await fileToBase64(file);
+    orchestraMember.value.profilePicture = await fileToBase64(file) as string;
   }
-};
-
-const removeFileCallback = (file) => {
-  console.log(file);
-  orchestraMember.value.profilePicture = null;
 };
 
 const fileToBase64 = (file) => {
@@ -449,6 +444,11 @@ const fileToBase64 = (file) => {
     reader.onload = () => resolve(reader.result);
     reader.onerror = (error) => reject(error);
   });
+};
+
+const removeFileCallback = (file) => {
+  console.log(file);
+  orchestraMember.value.profilePicture = null;
 };
 
 // Register Handler
