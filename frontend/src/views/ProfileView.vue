@@ -246,26 +246,15 @@ onMounted(async() => {
   console.log("onMounted function");
 
   await authStore.fetchUserProfileData();
-  const data = authStore.userProfile;
+  orchestraMember.value = authStore.userProfile;
 
-  if (!data) {
+  if (!orchestraMember.value) {
     toast.add({ severity: 'error', summary: 'Error loading user data.', life: 3000 });
     console.error('Error loading data');
     return;
   }
 
-  console.log("GET data: ", data);
-  
-  orchestraMember.value.firstName = data.first_name;
-  orchestraMember.value.lastName = data.last_name;
-  orchestraMember.value.instruments = data.instruments.map((instrument: string) => ({ name: instrument }));
-  orchestraMember.value.phone = data.phone;
-  orchestraMember.value.dateOfBirth = new Date(data.birth_date);
-  orchestraMember.value.isStudent = data.are_you_student;
-  orchestraMember.value.university = data.university;
-  orchestraMember.value.description = data.description;
-  orchestraMember.value.profilePicture = data.profile_picture || null; // Ensure profilePicture is set correctly
-
+  console.log("GET data: ", orchestraMember.value);
   toast.add({ severity: 'success', summary: 'Your data loaded successfully!', life: 3000 });
 })
 

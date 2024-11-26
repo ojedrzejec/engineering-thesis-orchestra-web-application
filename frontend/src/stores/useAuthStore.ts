@@ -1,14 +1,16 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { API_BASE_URL } from '@/constants/config'
+import type { TOrchestraMember } from '@/types/TOrchestraMember';
+import { initOrchestraMember } from '@/constants/initOrchestraMember';
 
 const LOCAL_STORAGE_KEY_TOKEN = 'token'
-const LOCAL_STORAGE_KEY_ID = 'id'
+// const LOCAL_STORAGE_KEY_ID = 'id'
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(null)
-  const id = ref<string | null>(null)
-  const userProfile = ref<any>(null)
+  // const id = ref<string | null>(null)
+  const userProfile = ref<TOrchestraMember>(initOrchestraMember)
 
   const isLoggedIn = computed(() => !!token.value)
 
@@ -25,22 +27,22 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem(LOCAL_STORAGE_KEY_TOKEN)
   }
 
-  const setId = (newValue: string) => {
-    id.value = newValue
-    localStorage.setItem(LOCAL_STORAGE_KEY_ID, newValue)
-  }
+  // const setId = (newValue: string) => {
+  //   id.value = newValue
+  //   localStorage.setItem(LOCAL_STORAGE_KEY_ID, newValue)
+  // }
 
-  const getId = () => {
-    if (!id.value) {
-      id.value = localStorage.getItem(LOCAL_STORAGE_KEY_ID)
-    }
-    return id.value
-  }
+  // const getId = () => {
+  //   if (!id.value) {
+  //     id.value = localStorage.getItem(LOCAL_STORAGE_KEY_ID)
+  //   }
+  //   return id.value
+  // }
 
-  const removeId = () => {
-    id.value = null
-    localStorage.removeItem(LOCAL_STORAGE_KEY_ID)
-  }
+  // const removeId = () => {
+  //   id.value = null
+  //   localStorage.removeItem(LOCAL_STORAGE_KEY_ID)
+  // }
 
   const fetchUserProfileData = async () => {
     if (!token.value) {
@@ -59,11 +61,24 @@ export const useAuthStore = defineStore('auth', () => {
         throw new Error('Failed to fetch user profile data')
       }
 
-      userProfile.value = await response.json()
-      console.log('Fetched user profile:', userProfile.value)
+      const data = await response.json()
+      console.log('Fetched profile data:', data)
+
+      userProfile.value.firstName = data.first_name;
+      userProfile.value.lastName = data.last_name;
+      userProfile.value.instruments = data.instruments.map((instrument: string) => ({ name: instrument }));
+      userProfile.value.phone = data.phone;
+      userProfile.value.dateOfBirth = new Date(data.birth_date);
+      userProfile.value.isStudent = data.are_you_student;
+      userProfile.value.university = data.university;
+      userProfile.value.description = data.description;
+      userProfile.value.profilePicture = data.profile_picture || null; // Ensure profilePicture is set correctly
+
+      console.log('User profile:', userProfile.value)
+
     } catch (error) {
       console.error('Failed to fetch user profile:', error)
-      userProfile.value = null
+      userProfile.value = initOrchestraMember
     }
   }
   
@@ -78,9 +93,9 @@ export const useAuthStore = defineStore('auth', () => {
     setToken,
     getToken,
     removeToken,
-    setId,
-    getId,
-    removeId,
+    // setId,
+    // getId,
+    // removeId,
     fetchUserProfileData,
     userProfile,
   }
