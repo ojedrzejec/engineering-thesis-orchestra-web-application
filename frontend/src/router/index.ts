@@ -116,6 +116,12 @@ const router = createRouter({
       meta: { logInOnly: true },
     },
     {
+      path: '/members',
+      name: 'members',
+      component: () => import('@/views/owner/MembersView.vue'),
+      meta: { logInOnly: true },
+    },
+    {
       path: '/instruments',
       name: 'instruments',
       component: () => import('@/views/owner/InstrumentsView.vue'),

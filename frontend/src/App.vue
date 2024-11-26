@@ -291,7 +291,10 @@ const updatePanelMenuItems = () => {
           },
           {
             label: 'Members',
-            icon: 'pi pi-address-book'
+            icon: 'pi pi-address-book',
+            command: () => {
+              router.push({ name: 'members' })
+            }
           },
           {
             label: 'Groups',
@@ -348,7 +351,10 @@ const updatePanelMenuItems = () => {
           },
           {
             label: 'Members',
-            icon: 'pi pi-address-book'
+            icon: 'pi pi-address-book',
+            command: () => {
+              router.push({ name: 'members' })
+            }
           },
         ]
       },

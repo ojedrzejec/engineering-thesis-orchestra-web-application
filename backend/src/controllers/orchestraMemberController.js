@@ -1,5 +1,6 @@
 const OrchestraMemberModel = require('../models/OrchestraMemberModel')
 const InstrumentModel = require('../models/InstrumentModel')
+const Orchestra_OrchestraOrchestraMember_Owner_Model = require('../models/OrchestraModel_OrchestraOrchestraMember_OWNER')
 
 // get all
 const getAllOrchestraMembers = async (req, res) => {
@@ -13,6 +14,44 @@ const getAllOrchestraMembers = async (req, res) => {
     } catch (err) {
         res.status(500).json({
             msg: 'Server error while getting all orchestra members.',
+        })
+    }
+}
+
+// get all users emails from orchestra member table who are not assigned to the specific orchestra (using orchestra id)
+const getAllOrchestraMembersEmailsNotAssignedToOrchestraByOrchestraId = async (
+    req,
+    res
+) => {
+    const orchestraId = req.params.id
+    try {
+        // Check if the orchestra exists
+        const orchestraExistance =
+            await Orchestra_OrchestraOrchestraMember_Owner_Model.getOrchestraById(
+                orchestraId
+            )
+        if (!orchestraExistance) {
+            return res.status(404).json({ msg: 'Orchestra not found' })
+        }
+
+        const orchestraMembersEmails =
+            await OrchestraMemberModel.getAllOrchestraMembersEmailsNotAssignedToOrchestraByOrchestraId(
+                orchestraId
+            )
+        if (!orchestraMembersEmails.length) {
+            return res.status(404).json({
+                msg: 'No emails found (of orchestra members who are not assigned to this orchestra).',
+            })
+        }
+
+        res.status(200).json(orchestraMembersEmails)
+    } catch (err) {
+        console.error(
+            'Error in getAllOrchestraMembersEmailsNotAssignedToOrchestraByOrchestraId:',
+            err
+        )
+        res.status(500).json({
+            msg: 'Server error while getting all orchestra members emails.',
         })
     }
 }
@@ -165,6 +204,7 @@ const patchOrchestraMember = async (req, res) => {
 
 module.exports = {
     getAllOrchestraMembers,
+    getAllOrchestraMembersEmailsNotAssignedToOrchestraByOrchestraId,
     getOrchestraMember,
     getOrchestraMemberSingle,
     deleteOrchestraMember,

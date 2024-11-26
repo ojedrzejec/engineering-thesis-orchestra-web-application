@@ -1,6 +1,8 @@
 import type { TInstrument } from '@/types/TInstrument';
 
 export type TOrchestraMember = {
+    id: string | null;
+    email: string | null;
     firstName: string | null;
     lastName: string | null;
     instruments: TInstrument[] | [];
