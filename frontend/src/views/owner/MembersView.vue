@@ -28,10 +28,17 @@
       ></Button>
     </div>
   </div>
+
+  <!-- <Divider /> -->
   <div class="members-view__datatable">
-    <Button label="Refresh" @click="fetchOrchestraMembers"></Button>
+    <!-- <Button label="Refresh" @click="fetchOrchestraMembers"></Button> -->
+    
     <DataTable :value="orchestraMembersOfOrchestra" :loading="loadingOrchestraMembers" removableSort tableStyle="min-width: 50rem">
-      <!-- <Column field="id" header="ID"></Column> -->
+      <Column header="Avatar">
+        <template #body="{ data }">
+          <Avatar :image=data.profilePicture class="flex items-center justify-center mr-2" size="large" />
+        </template>
+      </Column>
       <Column field="email" header="Email" sortable style="width: 25%"></Column>
       <Column field="firstName" header="First Name" sortable style="width: 25%"></Column>
       <Column field="lastName" header="Last Name" sortable style="width: 25%"></Column>
@@ -43,7 +50,68 @@
       <!-- <Column field="description" header="Description"></Column> -->
       <Column field="instruments" header="Instruments" sortable style="width: 25%"></Column>
       <Column field="accessType" header="Access Type" sortable style="width: 25%"></Column>
+      <Column class="w-24 !text-end">
+        <template #body="{ data }">
+          <Drawer v-model:visible="visible" header="Orchestra Member Datails">
+            <div class="members-view__drawer">
+              <Avatar :image=data.profilePicture class="members-view__drawer-single-info members-view__drawer-avatar" size="xlarge" />
+              <div class="members-view__drawer-single-info">
+                <h4>Access Type:</h4>
+                <p v-if="data.accessType">{{data.accessType}}</p>
+                <div class="members-view__drawer-single-info-not-provided" v-if="!data.accessType">Not provided</div>
+              </div><div class="members-view__drawer-single-info">
+                <h4>First Name:</h4>
+                <p v-if="data.firstName">{{data.firstName}}</p>
+                <div class="members-view__drawer-single-info-not-provided" v-if="!data.firstName">Not provided</div>
+              </div>
+              <div class="members-view__drawer-single-info">
+                <h4>Last Name:</h4>
+                <p v-if="data.lastName">{{data.lastName}}</p>
+                <div class="members-view__drawer-single-info-not-provided" v-if="!data.lastName">Not provided</div>
+              </div>
+              <div class="members-view__drawer-single-info">
+                <h4>Instruments:</h4>
+                <p v-if="data.instruments">{{data.instruments}}</p>
+                <div class="members-view__drawer-single-info-not-provided" v-if="!data.instruments">Not provided</div>
+              </div>
+              <div class="members-view__drawer-single-info">
+                <h4>Email:</h4>
+                <p v-if="data.email">{{data.email}}</p>
+                <div class="members-view__drawer-single-info-not-provided" v-if="!data.email">Not provided</div>
+              </div>
+              <div class="members-view__drawer-single-info">
+                <h4>Phone:</h4>
+                <p v-if="data.phone">{{data.phone}}</p>
+                <div class="members-view__drawer-single-info-not-provided" v-if="!data.phone">Not provided</div>
+              </div>
+              <div class="members-view__drawer-single-info">
+                <h4>Date of Birth:</h4>
+                <p v-if="data.dateOfBirth">{{data.dateOfBirth}}</p>
+                <div class="members-view__drawer-single-info-not-provided" v-if="!data.dateOfBirth">Not provided</div>
+              </div>
+              <div class="members-view__drawer-single-info">
+                <h4>Is a Student:</h4>
+                <p v-if="data.isStudent">{{data.isStudent}}</p>
+                <div class="members-view__drawer-single-info-not-provided" v-if="!data.isStudent">Not provided</div>
+              </div>
+              <div v-if="data.isStudent" class="members-view__drawer-single-info">
+                <h4>University:</h4>
+                <p v-if="data.university">{{data.university}}</p>
+                <div class="members-view__drawer-single-info-not-provided" v-if="!data.university">Not provided</div>
+              </div>
+              <div class="members-view__drawer-single-info">
+                <h4>Description:</h4>
+                <p v-if="data.description">{{data.description}}</p>
+                <div class="members-view__drawer-single-info-not-provided" v-if="!data.description">Not provided</div>
+              </div>
+            </div>
+        </Drawer>
+          <Button icon="pi pi-user" @click="visible = true" rounded></Button>
+        </template>
+      </Column>
+
     </DataTable>
+    <Toast />
   </div>
 </div>
 </template>
@@ -65,6 +133,14 @@ import Column from 'primevue/column';
 import ColumnGroup from 'primevue/columngroup';   // optional
 import Row from 'primevue/row';                   // optional
 import type { TInstrument } from '@/types/TInstrument';
+import Drawer from 'primevue/drawer';
+import Avatar from 'primevue/avatar';
+import Divider from 'primevue/divider';
+import Toast from 'primevue/toast';
+import { useToast } from 'primevue/usetoast';
+const toast = useToast();
+
+const visible = ref(false);
 
 const loading = ref(false);
 // const loadingfetchEmails = ref(false);
@@ -109,6 +185,10 @@ const fetchOrchestraMembers = async () => {
   });
 };
 
+const selectRow = (data) => {
+    toast.add({ severity: 'info', summary: data.name, detail: data.inventoryStatus + ' | $' + data.price, life: 3000 });
+};
+
 const handleAddMember = () => {
   console.log('Button clicked! Inside handleAddMember function.')
 
@@ -123,11 +203,12 @@ const handleAddMember = () => {
 .members-view {
   display: flex;
   flex-direction: column;
+  gap: 50px;
   align-items: center;
   width: 100%;
   
   &__title {
-    margin-bottom: 20px;
+    // margin-bottom: 20px;
     // text-align: left;
   }
 
@@ -150,5 +231,48 @@ const handleAddMember = () => {
     width: 100%;
     min-width: 150px;
   }
+
+  &__datatable {
+    // width: 100%;
+    margin-top: 15px;
+  }
+
+  &__drawer {
+    display: flex;
+    flex-direction: column;
+    // gap: 10px;
+    // width: 30rem;
+    // height: 100%;
+  }
+
+  &__drawer-single-info {
+    // display: flex;
+    // flex-direction: row;
+    // align-items: center;
+    // gap: 20px;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: center;
+  }
+
+  &__drawer-avatar {
+    font-weight: bold;
+    display: flex; 
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 50px;
+  }
+
+  &__drawer-single-info-not-provided {
+    color: #b8b8b8;
+  }
 }
+
+// .p-drawer-left .p-drawer {
+//   width: 30rem;
+//   height: 100%;
+// }
 </style>

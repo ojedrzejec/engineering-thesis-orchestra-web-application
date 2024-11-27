@@ -84,7 +84,7 @@ export const useOrchestraMemberStore = defineStore('orchestraMember', () => {
           firstName: orchestraMember.first_name,
           lastName: orchestraMember.last_name,
           phone: orchestraMember.phone,
-          dateOfBirth: new Date(orchestraMember.birth_date),
+          dateOfBirth: new Date(orchestraMember.birth_date).toISOString().split('T')[0].split('-').reverse().join('.'),
           isStudent: orchestraMember.are_you_student,
           university: orchestraMember.university,
           profilePicture: orchestraMember.profile_picture || null,
