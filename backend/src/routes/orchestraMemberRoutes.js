@@ -3,6 +3,7 @@ const router = Router()
 const {
     getAllOrchestraMembers,
     getAllOrchestraMembersEmailsNotAssignedToOrchestraByOrchestraId,
+    getAllOrchestraMembersAssignedToOrchestraByOrchestraId,
     getOrchestraMember,
     getOrchestraMemberSingle,
     deleteOrchestraMember,
@@ -15,6 +16,11 @@ router.get(
     '/all-not-assigned-to-selected-orchestra/:id',
     authMiddleware.authenticateToken,
     getAllOrchestraMembersEmailsNotAssignedToOrchestraByOrchestraId
+)
+router.get(
+    '/all-assigned-to-selected-orchestra/:id',
+    authMiddleware.authenticateToken,
+    getAllOrchestraMembersAssignedToOrchestraByOrchestraId
 )
 // router.get('/:id', authMiddleware.authenticateToken, getOrchestraMember)
 router.get(

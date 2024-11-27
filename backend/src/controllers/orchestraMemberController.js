@@ -56,12 +56,75 @@ const getAllOrchestraMembersEmailsNotAssignedToOrchestraByOrchestraId = async (
     }
 }
 
+const getAllOrchestraMembersAssignedToOrchestraByOrchestraId = async (
+    req,
+    res
+) => {
+    const orchestraId = req.params.id
+    try {
+        // Check if the orchestra exists
+        const orchestraExistance =
+            await Orchestra_OrchestraOrchestraMember_Owner_Model.getOrchestraById(
+                orchestraId
+            )
+        if (!orchestraExistance) {
+            return res.status(404).json({ msg: 'Orchestra not found' })
+        }
+
+        const orchestraMembers =
+            await OrchestraMemberModel.getAllOrchestraMembersAssignedToOrchestraByOrchestraId(
+                orchestraId
+            )
+        if (!orchestraMembers.length) {
+            return res.status(404).json({
+                msg: 'No orchestra members found (assigned to this orchestra).',
+            })
+        }
+
+        // get instruments for each orchestra member
+        for (const member of orchestraMembers) {
+            const instruments = await InstrumentModel.getInstrumentsByMemberId(
+                member.id
+            )
+            member.instruments = instruments.map(
+                (instrument) => instrument.name
+            )
+        }
+
+        // get roles for each orchestra member
+        for (const member of orchestraMembers) {
+            const roles =
+                await Orchestra_OrchestraOrchestraMember_Owner_Model.getRolesByOrchestraMemberId(
+                    orchestraId,
+                    member.id
+                )
+
+            // return is_owner and is_manager as boolean values
+            member.is_owner = roles.map((role) => role.is_owner)[0]
+            member.is_manager = roles.map((role) => role.is_manager)[0]
+        }
+
+        console.log(orchestraMembers[0])
+
+        // res.status(200).json(orchestraMembers[0])
+        res.status(200).json(orchestraMembers)
+    } catch (err) {
+        console.error(
+            'Error in getAllOrchestraMembersAssignedToOrchestraByOrchestraId:',
+            err
+        )
+        res.status(500).json({
+            msg: 'Server error while getting all orchestra members.',
+        })
+    }
+}
+
 // get single
 const getOrchestraMember = async (req, res) => {
-    const id = req.params.id
+    const memberId = req.params.id
     try {
         const orchestraMember =
-            await OrchestraMemberModel.getOrchestraMemberById(id)
+            await OrchestraMemberModel.getOrchestraMemberById(memberId)
         if (!orchestraMember) {
             return res.status(404).json({ msg: 'Orchestra member not found.' })
         }
@@ -205,6 +268,7 @@ const patchOrchestraMember = async (req, res) => {
 module.exports = {
     getAllOrchestraMembers,
     getAllOrchestraMembersEmailsNotAssignedToOrchestraByOrchestraId,
+    getAllOrchestraMembersAssignedToOrchestraByOrchestraId,
     getOrchestraMember,
     getOrchestraMemberSingle,
     deleteOrchestraMember,

@@ -53,6 +53,7 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await fetch(`${API_BASE_URL}/orchestra-member/single`, {
         method: 'GET',
         headers: { 
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token.value}`,
         }
       });
@@ -61,8 +62,13 @@ export const useAuthStore = defineStore('auth', () => {
         throw new Error('Failed to fetch user profile data')
       }
 
-      const data = await response.json()
-      console.log('Fetched profile data:', data)
+      const text = await response.text();
+      if (!text) {
+        throw new Error('Empty response body');
+      }
+
+      const data = JSON.parse(text);
+      console.log('Fetched profile data:', data);
 
       userProfile.value.firstName = data.first_name;
       userProfile.value.lastName = data.last_name;

@@ -35,6 +35,14 @@ const getOrchestrasWithMemberId = async (userId) => {
     return result.rows
 }
 
+const getRolesByOrchestraMemberId = async (orchestraId, orchestraMemberId) => {
+    const result = await pool.query(
+        `SELECT is_owner, is_manager FROM orchestra_orchestra_member WHERE id_orchestra = $1 AND id_orchestra_member = $2`,
+        [orchestraId, orchestraMemberId]
+    )
+    return result.rows
+}
+
 // Method to create a new orchestra and associate it with the owner
 const createOrchestra = async ({
     name,
@@ -140,6 +148,7 @@ module.exports = {
     getAllOrchestras,
     getOrchestraById,
     getOrchestrasWithMemberId,
+    getRolesByOrchestraMemberId,
     createOrchestra,
     updateOrchestra,
 }
