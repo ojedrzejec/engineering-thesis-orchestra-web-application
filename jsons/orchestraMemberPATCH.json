@@ -1,0 +1,10 @@
+{
+    "first_name": "Marek",
+    "last_name": "Markowski",
+    "phone": "321321321",
+    "birth_date": "1999-09-09",
+    "are_you_student": true,
+    "university": "UMED",
+    "profile_picture": "base64",
+    "description": "AOPŁ pro player"
+}
