@@ -29,11 +29,9 @@
     </div>
   </div>
 
-  <!-- <Divider /> -->
   <div class="members-view__datatable">
-    <!-- <Button label="Refresh" @click="fetchOrchestraMembers"></Button> -->
-    
-    <DataTable :value="orchestraMembersOfOrchestra" :loading="loadingOrchestraMembers" removableSort tableStyle="min-width: 50rem">
+    <Button label="Refresh" @click="fetchOrchestraMembers"></Button>
+    <DataTable :value="orchestraMembersOfOrchestra" :loading="loadingFetchingOrchestraMembers" removableSort tableStyle="min-width: 50rem">
       <Column header="Avatar">
         <template #body="{ data }">
           <Avatar :image=data.profilePicture class="flex items-center justify-center mr-2" size="large" />
@@ -42,12 +40,6 @@
       <Column field="email" header="Email" sortable style="width: 25%"></Column>
       <Column field="firstName" header="First Name" sortable style="width: 25%"></Column>
       <Column field="lastName" header="Last Name" sortable style="width: 25%"></Column>
-      <!-- <Column field="phone" header="Phone"></Column> -->
-      <!-- <Column field="dateOfBirth" header="Date of Birth"></Column> -->
-      <!-- <Column field="isStudent" header="Is Student"></Column> -->
-      <!-- <Column field="university" header="University"></Column> -->
-      <!-- <Column field="profilePicture" header="Profile Picture"></Column> -->
-      <!-- <Column field="description" header="Description"></Column> -->
       <Column field="instruments" header="Instruments" sortable style="width: 25%"></Column>
       <Column field="accessType" header="Access Type" sortable style="width: 25%"></Column>
       <Column class="w-24 !text-end">
@@ -118,10 +110,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { API_BASE_URL } from '@/constants/config';
 import type { TOrchestraMember } from '@/types/TOrchestraMember';
-import { useAuthStore } from '@/stores/useAuthStore'
-const authStore = useAuthStore()
 import { useOrchestraStore } from '@/stores/useOrchestraStore'
 const orchestraStore = useOrchestraStore()
 import { useOrchestraMemberStore } from '@/stores/useOrchestraMemberStore'
@@ -130,12 +119,8 @@ import Select from 'primevue/select';
 import Button from 'primevue/button';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import ColumnGroup from 'primevue/columngroup';   // optional
-import Row from 'primevue/row';                   // optional
-import type { TInstrument } from '@/types/TInstrument';
 import Drawer from 'primevue/drawer';
 import Avatar from 'primevue/avatar';
-import Divider from 'primevue/divider';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
 const toast = useToast();
@@ -145,6 +130,7 @@ const loadingAdding = ref(false);
 
 const selectedEmail = ref<string>();
 const orchestraMembersOfOrchestra = ref<TOrchestraMember[]>([]);
+const loadingFetchingOrchestraMembers = computed(() => orchestraMemberStore.loadingFetchingOrchestraMembers);
 
 const emailsUsersNotInOrchestra = computed(() => orchestraMemberStore.allUsersNotAssignedToSelectedOrchestra);
 const loadingFetchingAllUsers = computed(() => orchestraMemberStore.loadingFetchingAllUsers);
@@ -159,12 +145,9 @@ const fetchEmails = async () => {
 
   if (orchestraMemberStore.allUsersNotAssignedToSelectedOrchestra.length > 0) {
     console.log('Emails fetched')
-
     // convert the array of objects to an array of emails
     // emailsUsersNotInOrchestra.value = orchestraMemberStore.allUsersNotAssignedToSelectedOrchestra.map((user) => user.email);
     // console.log('emailsUsersNotInOrchestra: ', JSON.stringify(emailsUsersNotInOrchestra.value, null, 2))
-
-    // loadingfetchEmails.value = false;
   } else {
     console.log('Emails not fetched OR no emails available')
   }
@@ -190,16 +173,14 @@ const fetchOrchestraMembers = async () => {
 const handleAddMember = async () => {
   console.log('Button clicked! Inside handleAddMember function.')
 
-  // add member to selected orchestra and update the orchestra_orchestra_member table in the database settinf the is_owner to false and is_manager to false 
   loadingAdding.value = true;
 
-  // get the id of the orchestra member to be added (selectedemail)
   const foundOrchestraMember = emailsUsersNotInOrchestra.value.find((user) => user === selectedEmail.value);
   console.log('foundOrchestraMember:', JSON.stringify(foundOrchestraMember, null, 2));
   
   const postData = {
     id_orchestra: orchestraStore.selectedOrchestra?.id,
-    id_orchestra_member: foundOrchestraMember?.id, // TODO: id of the orchestra member to be added
+    id_orchestra_member: foundOrchestraMember?.id,
     is_owner: false,
     is_manager: false,
   }
