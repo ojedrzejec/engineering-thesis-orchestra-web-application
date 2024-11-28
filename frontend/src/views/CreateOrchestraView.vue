@@ -1,8 +1,8 @@
 <template>
 <div class="create-orchestra-view">
   <Toast />
-  <div>
-    <h1 class="create-orchestra-view__title">Create new orchestra</h1>
+  <div class="create-orchestra-view__title">
+    <h1>Create new orchestra</h1>
   </div>
   <Form>
     <Fluid>

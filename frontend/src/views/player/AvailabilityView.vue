@@ -1,7 +1,9 @@
 <template>
 <div class="availability-view">
-    <h1>My Availability in {{ orchestraStore.selectedOrchestra?.name }}</h1>
-    <h3>Orchestra id: <i>{{ orchestraStore.selectedOrchestra?.id }}</i></h3>
+    <div class="availability-view__title">
+        <h1>My Availability in {{ orchestraStore.selectedOrchestra?.name }}</h1>
+        <h3>Orchestra id: <i>{{ orchestraStore.selectedOrchestra?.id }}</i></h3>
+    </div>
 </div>
 </template>
 

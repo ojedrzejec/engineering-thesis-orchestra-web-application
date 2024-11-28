@@ -1,6 +1,8 @@
 <template>
 <div class="pieces-of-music-view">
-    <h1>My Pieces Of Music</h1>
+    <div class="pieces-of-music-view__title">
+        <h1>My Pieces Of Music</h1>
+    </div>
 </div>
 </template>
 

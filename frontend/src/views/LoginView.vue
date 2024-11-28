@@ -158,11 +158,11 @@ const showErrors = () => {
 // Login Handler
 const handleLogin = async () => {
   // Check if all fields are valid before proceeding with login
-  if (!isEmailValid.value || !isPasswordValid.value) {
-    // errorMessage.value = 'Please correct the errors before logging in.';
-    showErrors();
-    return;
-  }
+  // if (!isEmailValid.value || !isPasswordValid.value) {
+  //   // errorMessage.value = 'Please correct the errors before logging in.';
+  //   showErrors();
+  //   return;
+  // }
   
   loading.value = true;
   errorMessage.value = '';
@@ -186,7 +186,7 @@ const handleLogin = async () => {
       const errorData = await response.json();
       const errorMessage = errorData.msg || 'Please check your credentials and try again.';
       toast.add({ severity: 'error', summary: 'Login failed', detail: errorMessage, life: 3000 });
-      throw new Error(`Login failed. Please check your credentials and try again. - ${errorMessage}`);
+      throw new Error(`Login failed. ${errorMessage}`);
     }
 
     toast.add({ severity: 'info', summary: 'Successful login!', detail: 'Nice to see you again! :)', life: 3000 });
