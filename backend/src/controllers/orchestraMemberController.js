@@ -19,42 +19,40 @@ const getAllOrchestraMembers = async (req, res) => {
 }
 
 // get all users emails from orchestra member table who are not assigned to the specific orchestra (using orchestra id)
-const getAllOrchestraMembersEmailsNotAssignedToOrchestraByOrchestraId = async (
-    req,
-    res
-) => {
-    const orchestraId = req.params.id
-    try {
-        // Check if the orchestra exists
-        const orchestraExistance =
-            await Orchestra_OrchestraOrchestraMember_Owner_Model.getOrchestraById(
-                orchestraId
-            )
-        if (!orchestraExistance) {
-            return res.status(404).json({ msg: 'Orchestra not found' })
-        }
+const getAllOrchestraMembersIdsAndEmailsNotAssignedToOrchestraByOrchestraId =
+    async (req, res) => {
+        const orchestraId = req.params.id
+        try {
+            // Check if the orchestra exists
+            const orchestraExistance =
+                await Orchestra_OrchestraOrchestraMember_Owner_Model.getOrchestraById(
+                    orchestraId
+                )
+            if (!orchestraExistance) {
+                return res.status(404).json({ msg: 'Orchestra not found' })
+            }
 
-        const orchestraMembersEmails =
-            await OrchestraMemberModel.getAllOrchestraMembersEmailsNotAssignedToOrchestraByOrchestraId(
-                orchestraId
+            const orchestraMembersIdsAndEmails =
+                await OrchestraMemberModel.getAllOrchestraMembersIdsAndEmailsNotAssignedToOrchestraByOrchestraId(
+                    orchestraId
+                )
+            if (!orchestraMembersIdsAndEmails.length) {
+                return res.status(404).json({
+                    msg: 'No emails found (of orchestra members who are not assigned to this orchestra).',
+                })
+            }
+
+            res.status(200).json(orchestraMembersIdsAndEmails)
+        } catch (err) {
+            console.error(
+                'Error in getAllOrchestraMembersIdsAndEmailsNotAssignedToOrchestraByOrchestraId:',
+                err
             )
-        if (!orchestraMembersEmails.length) {
-            return res.status(404).json({
-                msg: 'No emails found (of orchestra members who are not assigned to this orchestra).',
+            res.status(500).json({
+                msg: 'Server error while getting all orchestra members emails.',
             })
         }
-
-        res.status(200).json(orchestraMembersEmails)
-    } catch (err) {
-        console.error(
-            'Error in getAllOrchestraMembersEmailsNotAssignedToOrchestraByOrchestraId:',
-            err
-        )
-        res.status(500).json({
-            msg: 'Server error while getting all orchestra members emails.',
-        })
     }
-}
 
 const getAllOrchestraMembersAssignedToOrchestraByOrchestraId = async (
     req,
@@ -267,7 +265,7 @@ const patchOrchestraMember = async (req, res) => {
 
 module.exports = {
     getAllOrchestraMembers,
-    getAllOrchestraMembersEmailsNotAssignedToOrchestraByOrchestraId,
+    getAllOrchestraMembersIdsAndEmailsNotAssignedToOrchestraByOrchestraId,
     getAllOrchestraMembersAssignedToOrchestraByOrchestraId,
     getOrchestraMember,
     getOrchestraMemberSingle,

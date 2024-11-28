@@ -2,7 +2,7 @@ const { Router } = require('express')
 const router = Router()
 const {
     getAllOrchestraMembers,
-    getAllOrchestraMembersEmailsNotAssignedToOrchestraByOrchestraId,
+    getAllOrchestraMembersIdsAndEmailsNotAssignedToOrchestraByOrchestraId,
     getAllOrchestraMembersAssignedToOrchestraByOrchestraId,
     getOrchestraMember,
     getOrchestraMemberSingle,
@@ -15,7 +15,7 @@ router.get('/', authMiddleware.authenticateToken, getAllOrchestraMembers)
 router.get(
     '/all-not-assigned-to-selected-orchestra/:id',
     authMiddleware.authenticateToken,
-    getAllOrchestraMembersEmailsNotAssignedToOrchestraByOrchestraId
+    getAllOrchestraMembersIdsAndEmailsNotAssignedToOrchestraByOrchestraId
 )
 router.get(
     '/all-assigned-to-selected-orchestra/:id',

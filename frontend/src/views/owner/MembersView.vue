@@ -10,11 +10,11 @@
         v-model="selectedEmail" 
         showClear 
         filter 
-        :loading="orchestraMemberStore.loadingFetchingAllUsers" 
-        :options="emailsNotInOrchestra" 
+        :loading="loadingFetchingAllUsers" 
+        :options="emailsUsersNotInOrchestra" 
         optionLabel="email" 
         placeholder="Select an email" 
-        :disabled="orchestraMemberStore.loadingFetchingAllUsers" 
+        :disabled="loadingFetchingAllUsers" 
         class="w-full md:w-56" 
       ></Select>
     </div>
@@ -23,8 +23,8 @@
     <Button 
       class="members-view__form-button"
       @click.prevent="handleAddMember"
-      :disabled="loading"
-      :label="loading ? 'Adding...' : 'Add Member'" 
+      :disabled="loadingAdding"
+      :label="loadingAdding ? 'Adding...' : 'Add Member'" 
       ></Button>
     </div>
   </div>
@@ -52,8 +52,8 @@
       <Column field="accessType" header="Access Type" sortable style="width: 25%"></Column>
       <Column class="w-24 !text-end">
         <template #body="{ data }">
-          <Drawer v-model:visible="visible" header="Orchestra Member Datails">
-            <div class="members-view__drawer">
+          <Drawer v-model:visible="visible" header="Orchestra Member Datails" :pt="{'root': 'members-view__drawer'}">
+            <div class="members-view__drawer-content">
               <Avatar :image=data.profilePicture class="members-view__drawer-single-info members-view__drawer-avatar" size="xlarge" />
               <div class="members-view__drawer-single-info">
                 <h4>Access Type:</h4>
@@ -117,7 +117,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { API_BASE_URL } from '@/constants/config';
 import type { TOrchestraMember } from '@/types/TOrchestraMember';
 import { useAuthStore } from '@/stores/useAuthStore'
@@ -141,15 +141,13 @@ import { useToast } from 'primevue/usetoast';
 const toast = useToast();
 
 const visible = ref(false);
+const loadingAdding = ref(false);
 
-const loading = ref(false);
-// const loadingfetchEmails = ref(false);
-const selectedEmail = ref();
-const emailsNotInOrchestra = ref<string[]>([]);
+const selectedEmail = ref<string>();
 const orchestraMembersOfOrchestra = ref<TOrchestraMember[]>([]);
 
-const orchestraMembers = ref(orchestraMemberStore.allOrchestraMembersOfOrchestra);
-const loadingOrchestraMembers = ref(orchestraMemberStore.loadingFetchingOrchestraMembers);
+const emailsUsersNotInOrchestra = computed(() => orchestraMemberStore.allUsersNotAssignedToSelectedOrchestra);
+const loadingFetchingAllUsers = computed(() => orchestraMemberStore.loadingFetchingAllUsers);
 
 onMounted(async() => {
   fetchEmails()
@@ -157,11 +155,15 @@ onMounted(async() => {
 })
 
 const fetchEmails = async () => {
-  await orchestraMemberStore.fetchEmailsOfAllUsersNotAssignedToSelectedOrchestra();
+  await orchestraMemberStore.fetchIdsAndEmailsOfAllUsersNotAssignedToSelectedOrchestra();
 
-  if (orchestraMemberStore.allEmailsNotAssignedToSelectedOrchestra.length > 0) {
+  if (orchestraMemberStore.allUsersNotAssignedToSelectedOrchestra.length > 0) {
     console.log('Emails fetched')
-    emailsNotInOrchestra.value = orchestraMemberStore.allEmailsNotAssignedToSelectedOrchestra;
+
+    // convert the array of objects to an array of emails
+    // emailsUsersNotInOrchestra.value = orchestraMemberStore.allUsersNotAssignedToSelectedOrchestra.map((user) => user.email);
+    // console.log('emailsUsersNotInOrchestra: ', JSON.stringify(emailsUsersNotInOrchestra.value, null, 2))
+
     // loadingfetchEmails.value = false;
   } else {
     console.log('Emails not fetched OR no emails available')
@@ -174,7 +176,7 @@ const fetchOrchestraMembers = async () => {
   if(orchestraMemberStore.allOrchestraMembersOfOrchestra.length > 0) {
     console.log('Orchestra members fetched')
     orchestraMembersOfOrchestra.value = orchestraMemberStore.allOrchestraMembersOfOrchestra;
-    console.log('orchestraMembersOfOrchestra: ', JSON.stringify(orchestraMembersOfOrchestra.value, null, 2))
+    // console.log('orchestraMembersOfOrchestra: ', JSON.stringify(orchestraMembersOfOrchestra.value, null, 2))
   } else {
     console.log('Orchestra members not fetched OR no members available')
   }
@@ -185,17 +187,52 @@ const fetchOrchestraMembers = async () => {
   });
 };
 
-const selectRow = (data) => {
-    toast.add({ severity: 'info', summary: data.name, detail: data.inventoryStatus + ' | $' + data.price, life: 3000 });
-};
-
-const handleAddMember = () => {
+const handleAddMember = async () => {
   console.log('Button clicked! Inside handleAddMember function.')
 
+  // add member to selected orchestra and update the orchestra_orchestra_member table in the database settinf the is_owner to false and is_manager to false 
+  loadingAdding.value = true;
 
+  // get the id of the orchestra member to be added (selectedemail)
+  const foundOrchestraMember = emailsUsersNotInOrchestra.value.find((user) => user === selectedEmail.value);
+  console.log('foundOrchestraMember:', JSON.stringify(foundOrchestraMember, null, 2));
   
+  const postData = {
+    id_orchestra: orchestraStore.selectedOrchestra?.id,
+    id_orchestra_member: foundOrchestraMember?.id, // TODO: id of the orchestra member to be added
+    is_owner: false,
+    is_manager: false,
+  }
+  console.log('postData:', JSON.stringify(postData, null, 2));
+
+  try {
+  //   const response = await fetch(`${API_BASE_URL}/orchestra-orchestra-member/`, {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       Authorization: `Bearer ${authStore.getToken()}`,
+  //     },
+  //     body: JSON.stringify(postData),
+  //   });
+
+  //   if(!response) {
+  //     const errorData = await response.json();
+  //     const errorMessage = errorData.msg || 'Adding a member to the orchestra failed.';
+  //     toast.add({ severity: 'error', summary: 'Adding failed', detail: errorMessage, life: 3000 });
+  //     throw new Error(`${errorMessage}`);
+  //   }
+    
+  //   toast.add({ severity: 'success', summary: `The member ${selectedEmail.value} added successfully!`, detail: 'Check the orchestra member details!', life: 3000 });
+
+  // } catch (error) {
+  //   console.error('Error:', error);
+  } finally {
+    loadingAdding.value = false
+  }
+
   fetchEmails()
   fetchOrchestraMembers()
+
 }
 </script>
 
@@ -236,8 +273,13 @@ const handleAddMember = () => {
     // width: 100%;
     margin-top: 15px;
   }
-
+  
   &__drawer {
+    width: 100% !important;
+    max-width: 30rem;
+  }
+
+  &__drawer-content {
     display: flex;
     flex-direction: column;
     // gap: 10px;
@@ -270,9 +312,4 @@ const handleAddMember = () => {
     color: #b8b8b8;
   }
 }
-
-// .p-drawer-left .p-drawer {
-//   width: 30rem;
-//   height: 100%;
-// }
 </style>

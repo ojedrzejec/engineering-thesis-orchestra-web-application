@@ -23,20 +23,19 @@ const getAllOrchestraMembers = async () => {
 }
 
 // get all users emails from orchestra member table who are not assigned to the specific orchestra (using orchestra id)
-const getAllOrchestraMembersEmailsNotAssignedToOrchestraByOrchestraId = async (
-    orchestraId
-) => {
-    const result = await pool.query(
-        `SELECT email FROM orchestra_member
+const getAllOrchestraMembersIdsAndEmailsNotAssignedToOrchestraByOrchestraId =
+    async (orchestraId) => {
+        const result = await pool.query(
+            `SELECT id, email FROM orchestra_member
          WHERE id NOT IN (
              SELECT id_orchestra_member
              FROM orchestra_orchestra_member
              WHERE id_orchestra = $1
          );`,
-        [orchestraId]
-    )
-    return result.rows
-}
+            [orchestraId]
+        )
+        return result.rows
+    }
 
 const getAllOrchestraMembersAssignedToOrchestraByOrchestraId = async (
     orchestraId
@@ -165,7 +164,7 @@ module.exports = {
     findByEmail,
     findById,
     getAllOrchestraMembers,
-    getAllOrchestraMembersEmailsNotAssignedToOrchestraByOrchestraId,
+    getAllOrchestraMembersIdsAndEmailsNotAssignedToOrchestraByOrchestraId,
     getAllOrchestraMembersAssignedToOrchestraByOrchestraId,
     getOrchestraMemberById,
     deleteOrchestraMemberById,

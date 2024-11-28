@@ -8,12 +8,12 @@ import { EOrchestraRole } from '@/constants/enums/EOrchestraRole';
 export const useOrchestraMemberStore = defineStore('orchestraMember', () => {
   const authStore = useAuthStore()
   const orchestraStore = useOrchestraStore()
-  const allEmailsNotAssignedToSelectedOrchestra = ref<string[]>([]);
+  const allUsersNotAssignedToSelectedOrchestra = ref([]);
   const loadingFetchingAllUsers = ref<boolean>(false)
   const allOrchestraMembersOfOrchestra = ref([]);
   const loadingFetchingOrchestraMembers = ref<boolean>(false)
 
-  const fetchEmailsOfAllUsersNotAssignedToSelectedOrchestra = async () => {
+  const fetchIdsAndEmailsOfAllUsersNotAssignedToSelectedOrchestra = async () => {
     loadingFetchingAllUsers.value = true
 
     const token = authStore.getToken();
@@ -33,17 +33,26 @@ export const useOrchestraMemberStore = defineStore('orchestraMember', () => {
       if (!response.ok) {
         const errorData = await response.json();
         const errorMessage = errorData.msg || 'API error';
-        allEmailsNotAssignedToSelectedOrchestra.value = [];
+        allUsersNotAssignedToSelectedOrchestra.value = [];
         console.error('API error: ', errorMessage);
         throw new Error(`${errorMessage}`);
       }
 
-      allEmailsNotAssignedToSelectedOrchestra.value = await response.json()
-      console.log('Fetched all emails: ', allEmailsNotAssignedToSelectedOrchestra.value)
+      const data = await response.json()
+
+      allUsersNotAssignedToSelectedOrchestra.value = data.map((user: any) => (
+        {
+          id: user.id,
+          email: user.email,
+        }
+      ))
+
+      // allUsersNotAssignedToSelectedOrchestra.value = await response.json()
+      console.log('Fetched all ids and emails of users: ', allUsersNotAssignedToSelectedOrchestra.value)
     
     } catch (error) {
       console.error('Failed to fetch all users: ', error)
-      allEmailsNotAssignedToSelectedOrchestra.value = []
+      allUsersNotAssignedToSelectedOrchestra.value = []
     } finally {
       loadingFetchingAllUsers.value = false
     }
@@ -107,9 +116,9 @@ export const useOrchestraMemberStore = defineStore('orchestraMember', () => {
 
 
   return {
-    allEmailsNotAssignedToSelectedOrchestra,
+    allUsersNotAssignedToSelectedOrchestra,
     loadingFetchingAllUsers,
-    fetchEmailsOfAllUsersNotAssignedToSelectedOrchestra,
+    fetchIdsAndEmailsOfAllUsersNotAssignedToSelectedOrchestra,
 
     allOrchestraMembersOfOrchestra,
     loadingFetchingOrchestraMembers,
