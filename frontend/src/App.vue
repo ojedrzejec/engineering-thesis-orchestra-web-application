@@ -313,7 +313,10 @@ const updatePanelMenuItems = () => {
           },
           {
             label: 'Manage Access',
-            icon: 'pi pi-unlock'
+            icon: 'pi pi-unlock',
+            command: () => {
+              router.push({ name: 'manage-access' })
+            }
           }
         ]
       },

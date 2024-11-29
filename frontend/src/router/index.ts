@@ -126,6 +126,12 @@ const router = createRouter({
       name: 'instruments',
       component: () => import('@/views/owner/InstrumentsView.vue'),
       meta: { logInOnly: true },
+    },
+    {
+      path: '/manage-access',
+      name: 'manage-access',
+      component: () => import('@/views/owner/ManageAccessView.vue'),
+      meta: { logInOnly: true },
     }
   ],
 })

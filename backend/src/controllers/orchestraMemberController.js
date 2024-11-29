@@ -117,6 +117,35 @@ const getAllOrchestraMembersAssignedToOrchestraByOrchestraId = async (
     }
 }
 
+const getAllOrchestraPlayerByOrchestraId = async (req, res) => {
+    const orchestraId = req.params.id
+    try {
+        // Check if the orchestra exists
+        const orchestraExistance =
+            await Orchestra_OrchestraOrchestraMember_Owner_Model.getOrchestraById(
+                orchestraId
+            )
+        if (!orchestraExistance) {
+            return res.status(404).json({ msg: 'Orchestra not found' })
+        }
+
+        const orchestraOrchestraMember =
+            await OrchestraMemberModel.getAllOrchestraPlayerByOrchestraId(
+                orchestraId
+            )
+        if (!orchestraOrchestraMember.length) {
+            return res.status(404).json({ msg: 'No orchestra members found.' })
+        }
+
+        res.status(200).json(orchestraOrchestraMember)
+    } catch (err) {
+        console.error('Error in getAllOrchestraPlayerByOrchestraId:', err)
+        res.status(500).json({
+            msg: 'Server error while getting all orchestra players.',
+        })
+    }
+}
+
 // get single
 const getOrchestraMember = async (req, res) => {
     const memberId = req.params.id
@@ -224,8 +253,7 @@ const patchOrchestraMember = async (req, res) => {
                 description,
             })
 
-        // Handle instrument updates
-
+        // Handle instrument updates: delete all instruments and create new ones
         // delete instruments
         const deletedInstruments =
             await InstrumentModel.deleteInstrumentsByOrchestraMemberId(
@@ -268,6 +296,7 @@ module.exports = {
     getAllOrchestraMembersIdsAndEmailsNotAssignedToOrchestraByOrchestraId,
     getAllOrchestraMembersAssignedToOrchestraByOrchestraId,
     getOrchestraMember,
+    getAllOrchestraPlayerByOrchestraId,
     getOrchestraMemberSingle,
     deleteOrchestraMember,
     patchOrchestraMember,

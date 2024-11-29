@@ -5,6 +5,7 @@ const {
     getAllOrchestraMembersIdsAndEmailsNotAssignedToOrchestraByOrchestraId,
     getAllOrchestraMembersAssignedToOrchestraByOrchestraId,
     getOrchestraMember,
+    getAllOrchestraPlayerByOrchestraId,
     getOrchestraMemberSingle,
     deleteOrchestraMember,
     patchOrchestraMember,
@@ -27,6 +28,11 @@ router.get(
     '/single',
     authMiddleware.authenticateToken,
     getOrchestraMemberSingle
+)
+router.get(
+    '/orchestra-players/:id',
+    authMiddleware.authenticateToken,
+    getAllOrchestraPlayerByOrchestraId
 )
 router.delete('/:id', authMiddleware.authenticateToken, deleteOrchestraMember)
 router.patch('/', authMiddleware.authenticateToken, patchOrchestraMember)
