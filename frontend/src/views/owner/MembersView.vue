@@ -30,7 +30,6 @@
   </div>
 
   <div class="members-view__datatable">
-    <Button label="Refresh" @click="fetchOrchestraMembers"></Button>
     <DataTable :value="orchestraMembersOfOrchestra" :loading="loadingFetchingOrchestraMembers" removableSort tableStyle="min-width: 50rem">
       <Column header="Avatar">
         <template #body="{ data }">
@@ -41,15 +40,20 @@
       <Column field="firstName" header="First Name" sortable style="width: 25%"></Column>
       <Column field="lastName" header="Last Name" sortable style="width: 25%"></Column>
       <Column field="instruments" header="Instruments" sortable style="width: 25%"></Column>
-      <Column field="accessType" header="Access Type" sortable style="width: 25%"></Column>
+      <Column field="accessType" header="Access Type" sortable style="width: 25%">
+        <template #body="{ data }">
+          <Tag v-if="data.accessType" :value="data.accessType" :severity="tagSeverity(data.accessType)"></Tag>
+        </template>
+      </Column>
       <Column class="w-24 !text-end">
         <template #body="{ data }">
-          <Drawer v-model:visible="visible" header="Orchestra Member Datails" :pt="{'root': 'members-view__drawer'}">
+          <Button icon="pi pi-user" @click="visible = true" rounded></Button>
+          <Drawer v-model:visible="visible" position="right" header="Orchestra Member Datails" :pt="{'root': 'members-view__drawer'}">
             <div class="members-view__drawer-content">
               <Avatar :image=data.profilePicture class="members-view__drawer-single-info members-view__drawer-avatar" size="xlarge" />
               <div class="members-view__drawer-single-info">
                 <h4>Access Type:</h4>
-                <p v-if="data.accessType">{{data.accessType}}</p>
+                <p><Tag v-if="data.accessType" :value="data.accessType" :severity="tagSeverity(data.accessType)"></Tag></p>
                 <div class="members-view__drawer-single-info-not-provided" v-if="!data.accessType">Not provided</div>
               </div><div class="members-view__drawer-single-info">
                 <h4>First Name:</h4>
@@ -97,8 +101,7 @@
                 <div class="members-view__drawer-single-info-not-provided" v-if="!data.description">Not provided</div>
               </div>
             </div>
-        </Drawer>
-          <Button icon="pi pi-user" @click="visible = true" rounded></Button>
+          </Drawer>
         </template>
       </Column>
 
@@ -109,8 +112,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUpdated, ref } from 'vue'
 import type { TOrchestraMember } from '@/types/TOrchestraMember';
+import { API_BASE_URL } from '@/constants/config';
+import { useAuthStore } from '@/stores/useAuthStore';
+const authStore = useAuthStore();
 import { useOrchestraStore } from '@/stores/useOrchestraStore'
 const orchestraStore = useOrchestraStore()
 import { useOrchestraMemberStore } from '@/stores/useOrchestraMemberStore'
@@ -121,6 +127,7 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Drawer from 'primevue/drawer';
 import Avatar from 'primevue/avatar';
+import Tag from 'primevue/tag';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
 const toast = useToast();
@@ -128,16 +135,35 @@ const toast = useToast();
 const visible = ref(false);
 const loadingAdding = ref(false);
 
+const emailsUsersNotInOrchestra = computed(() => orchestraMemberStore.allUsersNotAssignedToSelectedOrchestra);
+const loadingFetchingAllUsers = computed(() => orchestraMemberStore.loadingFetchingAllUsers);
 const selectedEmail = ref<string>();
+
 const orchestraMembersOfOrchestra = ref<TOrchestraMember[]>([]);
 const loadingFetchingOrchestraMembers = computed(() => orchestraMemberStore.loadingFetchingOrchestraMembers);
 
-const emailsUsersNotInOrchestra = computed(() => orchestraMemberStore.allUsersNotAssignedToSelectedOrchestra);
-const loadingFetchingAllUsers = computed(() => orchestraMemberStore.loadingFetchingAllUsers);
+const tagSeverity = (accessType: string) => {
+  if (accessType === 'owner') {
+    return 'danger';
+  } else if (accessType === 'manager') {
+    return 'warning';
+  } else {
+    return 'info';
+  }
+}
 
 onMounted(async() => {
   fetchEmails()
   fetchOrchestraMembers()
+})
+
+onUpdated(async() => {
+  if (emailsUsersNotInOrchestra.value === undefined || emailsUsersNotInOrchestra.value.length === 0) {
+    fetchEmails()
+  }
+  if (orchestraMembersOfOrchestra.value === undefined || orchestraMembersOfOrchestra.value.length === 0) {
+    fetchOrchestraMembers()
+  }
 })
 
 const fetchEmails = async () => {
@@ -187,26 +213,26 @@ const handleAddMember = async () => {
   console.log('postData:', JSON.stringify(postData, null, 2));
 
   try {
-  //   const response = await fetch(`${API_BASE_URL}/orchestra-orchestra-member/`, {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       Authorization: `Bearer ${authStore.getToken()}`,
-  //     },
-  //     body: JSON.stringify(postData),
-  //   });
+    const response = await fetch(`${API_BASE_URL}/orchestra-orchestra-member/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authStore.getToken()}`,
+      },
+      body: JSON.stringify(postData),
+    });
 
-  //   if(!response) {
-  //     const errorData = await response.json();
-  //     const errorMessage = errorData.msg || 'Adding a member to the orchestra failed.';
-  //     toast.add({ severity: 'error', summary: 'Adding failed', detail: errorMessage, life: 3000 });
-  //     throw new Error(`${errorMessage}`);
-  //   }
+    if(!response) {
+      const errorData = await response.json();
+      const errorMessage = errorData.msg || 'Adding a member to the orchestra failed.';
+      toast.add({ severity: 'error', summary: 'Adding failed', detail: errorMessage, life: 3000 });
+      throw new Error(`${errorMessage}`);
+    }
     
-  //   toast.add({ severity: 'success', summary: `The member ${selectedEmail.value} added successfully!`, detail: 'Check the orchestra member details!', life: 3000 });
+    toast.add({ severity: 'success', summary: `The member ${selectedEmail.value} added successfully!`, detail: 'Check the orchestra member details!', life: 3000 });
 
-  // } catch (error) {
-  //   console.error('Error:', error);
+  } catch (error) {
+    console.error('Error:', error);
   } finally {
     loadingAdding.value = false
   }
