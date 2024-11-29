@@ -47,58 +47,59 @@
       </Column>
       <Column class="w-24 !text-end">
         <template #body="{ data }">
-          <Button icon="pi pi-user" @click="visible = true" rounded></Button>
-          <Drawer v-model:visible="visible" position="right" header="Orchestra Member Datails" :pt="{'root': 'members-view__drawer'}">
+          <Button icon="pi pi-user" @click="openDrawer(data)" rounded></Button>
+          <!-- the drawer should contain such data depending on the data in the same row -->
+          <Drawer v-model:visible="drawerVisible" position="right" header="Orchestra Member Details" :pt="{'root': 'members-view__drawer'}">
             <div class="members-view__drawer-content">
-              <Avatar :image=data.profilePicture class="members-view__drawer-single-info members-view__drawer-avatar" size="xlarge" />
+              <Avatar :image="selectedUser.profilePicture" class="members-view__drawer-single-info members-view__drawer-avatar" size="xlarge" />
               <div class="members-view__drawer-single-info">
                 <h4>Access Type:</h4>
-                <p><Tag v-if="data.accessType" :value="data.accessType" :severity="tagSeverity(data.accessType)"></Tag></p>
-                <div class="members-view__drawer-single-info-not-provided" v-if="!data.accessType">Not provided</div>
+                <p><Tag v-if="selectedUser.accessType" :value="selectedUser.accessType" :severity="tagSeverity(selectedUser.accessType)"></Tag></p>
+                <div class="members-view__drawer-single-info-not-provided" v-if="!selectedUser.accessType">Not provided</div>
               </div><div class="members-view__drawer-single-info">
                 <h4>First Name:</h4>
-                <p v-if="data.firstName">{{data.firstName}}</p>
-                <div class="members-view__drawer-single-info-not-provided" v-if="!data.firstName">Not provided</div>
+                <p v-if="selectedUser.firstName">{{selectedUser.firstName}}</p>
+                <div class="members-view__drawer-single-info-not-provided" v-if="!selectedUser.firstName">Not provided</div>
               </div>
               <div class="members-view__drawer-single-info">
                 <h4>Last Name:</h4>
-                <p v-if="data.lastName">{{data.lastName}}</p>
-                <div class="members-view__drawer-single-info-not-provided" v-if="!data.lastName">Not provided</div>
+                <p v-if="selectedUser.lastName">{{selectedUser.lastName}}</p>
+                <div class="members-view__drawer-single-info-not-provided" v-if="!selectedUser.lastName">Not provided</div>
               </div>
               <div class="members-view__drawer-single-info">
                 <h4>Instruments:</h4>
-                <p v-if="data.instruments">{{data.instruments}}</p>
-                <div class="members-view__drawer-single-info-not-provided" v-if="!data.instruments">Not provided</div>
+                <p v-if="selectedUser.instruments">{{selectedUser.instruments}}</p>
+                <div class="members-view__drawer-single-info-not-provided" v-if="!selectedUser.instruments">Not provided</div>
               </div>
               <div class="members-view__drawer-single-info">
                 <h4>Email:</h4>
-                <p v-if="data.email">{{data.email}}</p>
-                <div class="members-view__drawer-single-info-not-provided" v-if="!data.email">Not provided</div>
+                <p v-if="selectedUser.email">{{selectedUser.email}}</p>
+                <div class="members-view__drawer-single-info-not-provided" v-if="!selectedUser.email">Not provided</div>
               </div>
               <div class="members-view__drawer-single-info">
                 <h4>Phone:</h4>
-                <p v-if="data.phone">{{data.phone}}</p>
-                <div class="members-view__drawer-single-info-not-provided" v-if="!data.phone">Not provided</div>
+                <p v-if="selectedUser.phone">{{selectedUser.phone}}</p>
+                <div class="members-view__drawer-single-info-not-provided" v-if="!selectedUser.phone">Not provided</div>
               </div>
               <div class="members-view__drawer-single-info">
                 <h4>Date of Birth:</h4>
-                <p v-if="data.dateOfBirth">{{data.dateOfBirth}}</p>
-                <div class="members-view__drawer-single-info-not-provided" v-if="!data.dateOfBirth">Not provided</div>
+                <p v-if="selectedUser.dateOfBirth">{{selectedUser.dateOfBirth}}</p>
+                <div class="members-view__drawer-single-info-not-provided" v-if="!selectedUser.dateOfBirth">Not provided</div>
               </div>
               <div class="members-view__drawer-single-info">
                 <h4>Is a Student:</h4>
-                <p v-if="data.isStudent">{{data.isStudent}}</p>
-                <div class="members-view__drawer-single-info-not-provided" v-if="!data.isStudent">Not provided</div>
+                <p v-if="selectedUser.isStudent">{{selectedUser.isStudent}}</p>
+                <div class="members-view__drawer-single-info-not-provided" v-if="!selectedUser.isStudent">Not provided</div>
               </div>
-              <div v-if="data.isStudent" class="members-view__drawer-single-info">
+              <div v-if="selectedUser.isStudent" class="members-view__drawer-single-info">
                 <h4>University:</h4>
-                <p v-if="data.university">{{data.university}}</p>
-                <div class="members-view__drawer-single-info-not-provided" v-if="!data.university">Not provided</div>
+                <p v-if="selectedUser.university">{{selectedUser.university}}</p>
+                <div class="members-view__drawer-single-info-not-provided" v-if="!selectedUser.university">Not provided</div>
               </div>
               <div class="members-view__drawer-single-info">
                 <h4>Description:</h4>
-                <p v-if="data.description">{{data.description}}</p>
-                <div class="members-view__drawer-single-info-not-provided" v-if="!data.description">Not provided</div>
+                <p v-if="selectedUser.description">{{selectedUser.description}}</p>
+                <div class="members-view__drawer-single-info-not-provided" v-if="!selectedUser.description">Not provided</div>
               </div>
             </div>
           </Drawer>
@@ -114,6 +115,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUpdated, ref } from 'vue'
 import type { TOrchestraMember } from '@/types/TOrchestraMember';
+import { initOrchestraMember } from '@/constants/initOrchestraMember';
 import { API_BASE_URL } from '@/constants/config';
 import { useAuthStore } from '@/stores/useAuthStore';
 const authStore = useAuthStore();
@@ -132,7 +134,6 @@ import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
 const toast = useToast();
 
-const visible = ref(false);
 const loadingAdding = ref(false);
 
 const emailsUsersNotInOrchestra = computed(() => orchestraMemberStore.allUsersNotAssignedToSelectedOrchestra);
@@ -141,6 +142,14 @@ const selectedEmail = ref<string>();
 
 const orchestraMembersOfOrchestra = ref<TOrchestraMember[]>([]);
 const loadingFetchingOrchestraMembers = computed(() => orchestraMemberStore.loadingFetchingOrchestraMembers);
+
+const drawerVisible = ref(false);
+const selectedUser = ref<TOrchestraMember>(initOrchestraMember);
+
+const openDrawer = (user: TOrchestraMember) => {
+  selectedUser.value = user
+  drawerVisible.value = true
+}
 
 const tagSeverity = (accessType: string) => {
   if (accessType === 'owner') {
@@ -309,10 +318,9 @@ const handleAddMember = async () => {
   &__drawer-avatar {
     font-weight: bold;
     display: flex; 
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-bottom: 50px;
+    margin: 20px auto;
   }
 
   &__drawer-single-info-not-provided {
