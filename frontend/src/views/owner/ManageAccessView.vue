@@ -1,33 +1,51 @@
 <template>
 <div class="manage-access-view">
+  <Toast/>
   <div class="manage-access-view__title">
     <h1>Manage Access</h1>
   </div>
-
-  <h2>MANAGERS:</h2>
-
-  <pre>
-    orchestraManagers:
-    {{orchestraManagers ? orchestraManagers : 'No managers'}}
-  </pre>
+  <h2 class="manage-access-view__subtitle">
+    MANAGERS:
+  </h2>
 
   <div class="manage-access-view__accordion">
-    <!-- <Accordion value="0"> -->
-    <Accordion :value="['0']" multiple>
-      <AccordionPanel v-for="manager in orchestraManagers" :key="manager.email" :value="manager.value">
-        <AccordionHeader>{{ manager.email }}</AccordionHeader>
-        <AccordionContent>
-          <p class="m-0">{{ manager.first_name }}</p>
-          <p class="m-0">{{ manager.last_name }}</p>
-          <p class="m-0">{{ manager.description }}</p>
+    <div v-if="orchestraManagers === null || orchestraManagers.length === 0">
+      No managers found.
+    </div>
+    <div v-else>
+      <!-- <pre>
+        orchestra Managers:
+        {{orchestraManagers ? orchestraManagers : 'No managers'}}
+      </pre> -->
+      <Accordion :value="['0']" multiple>
+        <AccordionPanel v-for="manager in orchestraManagers" :key="manager.email" :value="manager.value">
+          <AccordionHeader><Avatar :image="manager.profilePicture" size="xlarge" />{{ manager.firstName }} {{ manager.lastName }}</AccordionHeader>
+          <AccordionContent>
+            <div class="manage-access-view__accordion-item">
+              <h4 class="m-0">First Name:</h4>
+              <p class="m-0">{{ manager.firstName }}</p>
+            </div>
+            <div class="manage-access-view__accordion-item">
+              <h4 class="m-0">Last Name:</h4>
+              <p class="m-0">{{ manager.lastName }}</p>
+            </div>
+            <div class="manage-access-view__accordion-item">
+              <h4 class="m-0">Email:</h4>
+              <p class="m-0">{{ manager.email }}</p>
+            </div>
+            <div class="manage-access-view__accordion-item">
+              <h4 class="m-0">Description:</h4>
+              <p class="m-0">{{ manager.description }}</p>
+            </div>
         </AccordionContent>
       </AccordionPanel>
     </Accordion>
   </div>
+  </div>
   
   <div>
     <p>
-      [...] to each set manager display a 'remove' button
+      TODO: add to each manager a bin icon / a 'remove' button to revert the manager back to a player
     </p>
   </div>
 
@@ -64,18 +82,23 @@ import { useAuthStore } from '@/stores/useAuthStore';
 const authStore = useAuthStore()
 import { useOrchestraStore } from '@/stores/useOrchestraStore';
 const orchestraStore = useOrchestraStore()
-import type { TOrchestraMember } from '@/types/TOrchestraMember';
+import type { TManager } from '@/types/TManager';
+import type { TPlayer } from '@/types/TPlayer';
 import Select from 'primevue/select';
 import Button from 'primevue/button';
 import Accordion from 'primevue/accordion';
 import AccordionPanel from 'primevue/accordionpanel';
 import AccordionHeader from 'primevue/accordionheader';
 import AccordionContent from 'primevue/accordioncontent';
+import Avatar from 'primevue/avatar';
+import Toast from 'primevue/toast';
+import { useToast } from 'primevue/usetoast';
+const toast = useToast();
 
-const orchestraManagers = ref([])
+const orchestraManagers = ref<TManager[]>([])
 const loadingGettingManagers = ref(false)
-const orchestraPlayers = ref<TOrchestraMember[]>([])
-const selectedPlayer = ref<TOrchestraMember | null>(null)
+const orchestraPlayers = ref<TPlayer[]>([])
+const selectedPlayer = ref<TPlayer | null>(null)
 const loadingGettingPlayers = ref(false)
 const loadingSetting = ref(false)
 
@@ -123,8 +146,14 @@ const fetchOrchestraManagers = async () => {
     console.log("getAllOrchestraManagerByOrchestraId: ", data)
 
     const counter = ref(1)
-    orchestraManagers.value = data.map((manager: any) => ({
+    orchestraManagers.value = data.map((manager: TManager) => ({
       ...manager,
+      id: manager.id,
+      email: manager.email,
+      firstName: manager.first_name,
+      lastName: manager.last_name,
+      profilePicture: manager.profile_picture || null,
+      description: manager.description,
       value: `${counter.value++}`,
     }))
 
@@ -170,11 +199,10 @@ const fetchOrchestraPlayers = async () => {
     orchestraPlayers.value = []
   } finally {
     loadingGettingPlayers.value = false
-    selectedPlayer.value = null
   }
 }
 
-const handleSetAsManager = () => {
+const handleSetAsManager = async () => {
   console.log('handleSetAsManager')
   
   if (!selectedPlayer.value) {
@@ -188,15 +216,41 @@ const handleSetAsManager = () => {
   
   loadingSetting.value = true
 
+  const updateData = {
+    id_orchestra: orchestraStore.selectedOrchestra?.id,
+    id_orchestra_member: selectedPlayer.value.id,
+  }
+  console.log('updateData:', JSON.stringify(updateData, null, 2));
+
   try {
-    // PATCH orchestra member from player to manager (is_owner = false and is_manager = true)
+    const response = await fetch(`${API_BASE_URL}/orchestra-orchestra-member/`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authStore.getToken()}`,
+      },
+      body: JSON.stringify(updateData),
+    });
+
+    if(!response) {
+      const errorData = await response.json();
+      const errorMessage = errorData.msg || 'Apologies for the inconvenience. Please try again later.';
+      toast.add({ severity: 'error', summary: 'Action failed: ', detail: errorMessage, life: 3000 });
+      throw new Error(`Action failed: ${errorMessage}`);
+    }
+    
+    toast.add({ severity: 'success', summary: 'Success!', detail: 'Orchestra member set as manager!', life: 3000 });
+
   } catch (error) {
     console.error(error)
+    errorMessage.value = error.message || 'An error occurred during setting the orchestra member as a manager.'
   } finally {
     loadingSetting.value = false
+    selectedPlayer.value = null
+    fetchOrchestraManagers()
+    fetchOrchestraPlayers()
   }
 }
-
 </script>
 
 <style setup lang="scss">
@@ -211,6 +265,10 @@ const handleSetAsManager = () => {
   //   // margin-bottom: 20px;
   //   // text-align: left;
   // }
+
+  &__subtitle {
+    color: #10b981;
+  }
 
   &__form {
     // display: flex;
@@ -231,6 +289,18 @@ const handleSetAsManager = () => {
   &__form-button {
     width: 100%;
     min-width: 150px;
+  }
+
+  &__accordion {
+    width: 100%;
+    max-width: 500px;
+  }
+
+  &__accordion-item {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    gap: 2px;
+    align-items: center;
   }
 }
 </style>

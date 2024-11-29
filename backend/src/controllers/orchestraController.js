@@ -7,7 +7,7 @@ const OrchestraMemberModel = require('../models/OrchestraMemberModel')
 const getAllOrchestras = async (req, res) => {
     const orchestras =
         await Orchestra_OrchestraOrchestraMember_Owner_Model.getAllOrchestras()
-    res.json(orchestras)
+    res.status(200).json(orchestras)
 }
 
 const getOrchestra = async (req, res) => {
@@ -16,7 +16,7 @@ const getOrchestra = async (req, res) => {
         await Orchestra_OrchestraOrchestraMember_Owner_Model.getOrchestraById(
             orchestraId
         )
-    res.json(orchestra)
+    res.status(200).json(orchestra)
 }
 
 const getOrchestrasWithMemberId = async (req, res) => {
@@ -25,13 +25,13 @@ const getOrchestrasWithMemberId = async (req, res) => {
             req.user.id
         )
     console.log(orchestrasWithOrchestraMember)
-    res.json(orchestrasWithOrchestraMember)
+    res.status(200).json(orchestrasWithOrchestraMember)
 }
 
 const getAllOrchestraOrchestraMember = async (req, res) => {
     const orchestraOrchestraMember =
         await OrchestraOrchestraMemberModel.getAllOrchestraOrchestraMember()
-    res.json(orchestraOrchestraMember)
+    res.status(200).json(orchestraOrchestraMember)
 }
 
 const createOrchestra = async (req, res) => {
@@ -64,7 +64,7 @@ const createOrchestra = async (req, res) => {
 
         // const token = updateJsonWebToken(req.user.id)
 
-        res.json(orchestra)
+        res.status(201).json(orchestra)
     } catch (err) {
         res.status(500).json({ msg: 'Server error while createOrchestra' })
     }
@@ -164,6 +164,55 @@ const addMemberToOrchestra = async (req, res) => {
     }
 }
 
+const updateMemberAsManager = async (req, res) => {
+    const { id_orchestra, id_orchestra_member } = req.body
+    try {
+        // Check if the orchestra exists
+        const orchestraExists =
+            await Orchestra_OrchestraOrchestraMember_Owner_Model.getOrchestraById(
+                id_orchestra
+            )
+        if (!orchestraExists) {
+            return res.status(404).json({ msg: 'Orchestra not found' })
+        }
+
+        // Check if the orchestra member exists
+        const orchestraMemberExists =
+            await OrchestraMemberModel.getOrchestraMemberById(
+                id_orchestra_member
+            )
+        if (!orchestraMemberExists) {
+            return res.status(404).json({ msg: 'Orchestra member not found' })
+        }
+
+        // Check if the member is already assigned to the orchestra
+        const memberAlreadyAssignedToOrchestra =
+            await OrchestraOrchestraMemberModel.getOrchestraMemberByOrchestraIdAndMemberId(
+                id_orchestra,
+                id_orchestra_member
+            )
+        if (!memberAlreadyAssignedToOrchestra) {
+            return res.status(400).json({
+                msg: 'Orchestra member is not assigned to the orchestra',
+            })
+        }
+
+        // Update the member as manager
+        const updatedOrchestraMember =
+            await OrchestraOrchestraMemberModel.updateMemberAsManager(
+                id_orchestra,
+                id_orchestra_member
+            )
+
+        res.status(200).json(updatedOrchestraMember)
+    } catch (err) {
+        console.error('Error in updateMemberAsManager:', err.message, err.stack)
+        res.status(500).json({
+            msg: 'Server error while updateMemberAsManager',
+        })
+    }
+}
+
 module.exports = {
     getAllOrchestras,
     getOrchestra,
@@ -172,4 +221,5 @@ module.exports = {
     createOrchestra,
     updateOrchestra,
     addMemberToOrchestra,
+    updateMemberAsManager,
 }

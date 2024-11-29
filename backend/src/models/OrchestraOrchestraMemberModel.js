@@ -29,8 +29,30 @@ const addMemberToOrchestra = async (
     return result.rows[0]
 }
 
+const updateMemberAsManager = async (orchestraId, orchestraMemberId) => {
+    try {
+        const result = await pool.query(
+            `UPDATE orchestra_orchestra_member
+            SET is_owner = false, is_manager = true
+            WHERE id_orchestra = $1 AND id_orchestra_member = $2
+            RETURNING *;`,
+            [orchestraId, orchestraMemberId]
+        )
+        return result.rows[0]
+    } catch (err) {
+        console.error(
+            'Error updating orchestra member to manager access type:',
+            err
+        )
+        throw new Error(
+            'Error updating orchestra member to manager access type'
+        )
+    }
+}
+
 module.exports = {
     getAllOrchestraOrchestraMember,
     getOrchestraMemberByOrchestraIdAndMemberId,
     addMemberToOrchestra,
+    updateMemberAsManager,
 }

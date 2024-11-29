@@ -4,6 +4,7 @@ const {
     getOrchestrasWithMemberId,
     getAllOrchestraOrchestraMember,
     addMemberToOrchestra,
+    updateMemberAsManager,
 } = require('../controllers/orchestraController')
 const authMiddleware = require('../middlewares/authMiddleware')
 
@@ -14,5 +15,6 @@ router.get(
     getAllOrchestraOrchestraMember
 )
 router.post('/', authMiddleware.authenticateToken, addMemberToOrchestra)
+router.patch('/', authMiddleware.authenticateToken, updateMemberAsManager)
 
 module.exports = router
