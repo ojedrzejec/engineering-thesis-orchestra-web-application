@@ -4,30 +4,47 @@
     <h1>Manage Access</h1>
   </div>
 
-  <div>
-  <div class="manage-access-view__form">
-    <p>
-      [X] display a list of 'players' in the orchestra in the select dropdown
-    </p>
-    orchestraPlayers:
-    <pre>
-      {{orchestraPlayers}}
-    </pre>
+  <h2>MANAGERS:</h2>
 
+  <pre>
+    orchestraManagers:
+    {{orchestraManagers ? orchestraManagers : 'No managers'}}
+  </pre>
+
+  <div class="manage-access-view__accordion">
+    <!-- <Accordion value="0"> -->
+    <Accordion :value="['0']" multiple>
+      <AccordionPanel v-for="manager in orchestraManagers" :key="manager.email" :value="manager.value">
+        <AccordionHeader>{{ manager.email }}</AccordionHeader>
+        <AccordionContent>
+          <p class="m-0">{{ manager.first_name }}</p>
+          <p class="m-0">{{ manager.last_name }}</p>
+          <p class="m-0">{{ manager.description }}</p>
+        </AccordionContent>
+      </AccordionPanel>
+    </Accordion>
+  </div>
+  
+  <div>
+    <p>
+      [...] to each set manager display a 'remove' button
+    </p>
+  </div>
+
+  <div class="manage-access-view__form">
     <div class="manage-access-view__form-input card flex justify-center">
       <Select 
         v-model="selectedPlayer" 
         :options="orchestraPlayers" 
         optionLabel="email" 
-        :loading="loadingGetPlayers" 
+        :loading="loadingGettingPlayers" 
         placeholder="Select an orchestra member (player)" 
-        :disabled="loadingGetPlayers" 
+        :disabled="loadingGettingPlayers" 
         showClear 
         filter 
         class="w-full md:w-56" 
       ></Select>
     </div>
-
     <div>
       <Button 
         class="manage-access-view__form-button"
@@ -36,18 +53,6 @@
         :label="loadingSetting ? 'Setting...' : 'Set as Manager'" 
       ></Button>
     </div>
-  </div>
-
-  <div>
-    <p>
-      [...] button 'set as manager'
-    </p>
-  </div>
-
-  <div>
-    <p>
-      [...] to each setted manager display a 'remove' button
-    </p>
   </div>
 </div>
 </template>
@@ -60,30 +65,81 @@ const authStore = useAuthStore()
 import { useOrchestraStore } from '@/stores/useOrchestraStore';
 const orchestraStore = useOrchestraStore()
 import type { TOrchestraMember } from '@/types/TOrchestraMember';
-import { initOrchestraMember } from '@/constants/initOrchestraMember';
 import Select from 'primevue/select';
 import Button from 'primevue/button';
+import Accordion from 'primevue/accordion';
+import AccordionPanel from 'primevue/accordionpanel';
+import AccordionHeader from 'primevue/accordionheader';
+import AccordionContent from 'primevue/accordioncontent';
 
+const orchestraManagers = ref([])
+const loadingGettingManagers = ref(false)
 const orchestraPlayers = ref<TOrchestraMember[]>([])
 const selectedPlayer = ref<TOrchestraMember | null>(null)
-const loadingGetPlayers = ref(false)
+const loadingGettingPlayers = ref(false)
 const loadingSetting = ref(false)
 
 onMounted( async () => {
-  console.log('ManageAccessView mounted')
+  fetchOrchestraManagers()
   fetchOrchestraPlayers()
 })
 
 onUnmounted(() => {
+  if(orchestraManagers.value === null || orchestraManagers.value.length === 0) {
+    fetchOrchestraManagers()
+  }
+
   if(orchestraPlayers.value === null || orchestraPlayers.value.length === 0) {
     fetchOrchestraPlayers()
   }
 })
 
+const fetchOrchestraManagers = async () => {
+  console.log('fetchOrchestraManagers')
+
+  loadingGettingManagers.value = true
+
+  const token = authStore.getToken();
+  if (!token) {
+    throw new Error('No token available');
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/orchestra-member/orchestra-managers/${orchestraStore.selectedOrchestra?.id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      }
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error(errorData)
+      throw new Error('Failed to fetch orchestra managers: ' + errorData.message)
+    }
+
+    const data = await response.json()
+    console.log("getAllOrchestraManagerByOrchestraId: ", data)
+
+    const counter = ref(1)
+    orchestraManagers.value = data.map((manager: any) => ({
+      ...manager,
+      value: `${counter.value++}`,
+    }))
+
+  } catch (error) {
+    console.error(error)
+    orchestraManagers.value = []
+  } finally {
+    loadingGettingManagers.value = false
+  }
+}
+
 const fetchOrchestraPlayers = async () => {
   console.log('fetchOrchestraPlayers')
 
-  loadingGetPlayers.value = true
+  loadingGettingPlayers.value = true
 
   const token = authStore.getToken();
   if (!token) {
@@ -113,18 +169,27 @@ const fetchOrchestraPlayers = async () => {
     console.error(error)
     orchestraPlayers.value = []
   } finally {
-    loadingGetPlayers.value = false
+    loadingGettingPlayers.value = false
+    selectedPlayer.value = null
   }
 }
 
 const handleSetAsManager = () => {
   console.log('handleSetAsManager')
+  
   if (!selectedPlayer.value) {
     return
   }
 
-  try {
+  const token = authStore.getToken();
+  if (!token) {
+    throw new Error('No token available');
+  }
+  
+  loadingSetting.value = true
 
+  try {
+    // PATCH orchestra member from player to manager (is_owner = false and is_manager = true)
   } catch (error) {
     console.error(error)
   } finally {

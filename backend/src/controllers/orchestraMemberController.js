@@ -117,7 +117,7 @@ const getAllOrchestraMembersAssignedToOrchestraByOrchestraId = async (
     }
 }
 
-const getAllOrchestraPlayerByOrchestraId = async (req, res) => {
+const getAllOrchestraManagersByOrchestraId = async (req, res) => {
     const orchestraId = req.params.id
     try {
         // Check if the orchestra exists
@@ -129,17 +129,46 @@ const getAllOrchestraPlayerByOrchestraId = async (req, res) => {
             return res.status(404).json({ msg: 'Orchestra not found' })
         }
 
-        const orchestraOrchestraMember =
-            await OrchestraMemberModel.getAllOrchestraPlayerByOrchestraId(
+        const orchestraManagers =
+            await OrchestraMemberModel.getAllOrchestraManagersByOrchestraId(
                 orchestraId
             )
-        if (!orchestraOrchestraMember.length) {
-            return res.status(404).json({ msg: 'No orchestra members found.' })
+        if (!orchestraManagers.length) {
+            return res.status(404).json({ msg: 'No orchestra managers found.' })
         }
 
-        res.status(200).json(orchestraOrchestraMember)
+        res.status(200).json(orchestraManagers)
     } catch (err) {
-        console.error('Error in getAllOrchestraPlayerByOrchestraId:', err)
+        console.error('Error in getAllOrchestraManagersByOrchestraId:', err)
+        res.status(500).json({
+            msg: 'Server error while getting all orchestra managers.',
+        })
+    }
+}
+
+const getAllOrchestraPlayersByOrchestraId = async (req, res) => {
+    const orchestraId = req.params.id
+    try {
+        // Check if the orchestra exists
+        const orchestraExistance =
+            await Orchestra_OrchestraOrchestraMember_Owner_Model.getOrchestraById(
+                orchestraId
+            )
+        if (!orchestraExistance) {
+            return res.status(404).json({ msg: 'Orchestra not found' })
+        }
+
+        const orchestraPlayers =
+            await OrchestraMemberModel.getAllOrchestraPlayersByOrchestraId(
+                orchestraId
+            )
+        if (!orchestraPlayers.length) {
+            return res.status(404).json({ msg: 'No orchestra players found.' })
+        }
+
+        res.status(200).json(orchestraPlayers)
+    } catch (err) {
+        console.error('Error in getAllOrchestraPlayersByOrchestraId:', err)
         res.status(500).json({
             msg: 'Server error while getting all orchestra players.',
         })
@@ -296,7 +325,8 @@ module.exports = {
     getAllOrchestraMembersIdsAndEmailsNotAssignedToOrchestraByOrchestraId,
     getAllOrchestraMembersAssignedToOrchestraByOrchestraId,
     getOrchestraMember,
-    getAllOrchestraPlayerByOrchestraId,
+    getAllOrchestraManagersByOrchestraId,
+    getAllOrchestraPlayersByOrchestraId,
     getOrchestraMemberSingle,
     deleteOrchestraMember,
     patchOrchestraMember,

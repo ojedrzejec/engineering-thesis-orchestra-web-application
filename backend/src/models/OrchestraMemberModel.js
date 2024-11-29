@@ -54,7 +54,20 @@ const getAllOrchestraMembersAssignedToOrchestraByOrchestraId = async (
     return result.rows
 }
 
-const getAllOrchestraPlayerByOrchestraId = async (orchestraId) => {
+const getAllOrchestraManagersByOrchestraId = async (orchestraId) => {
+    const result = await pool.query(
+        `SELECT * FROM orchestra_member 
+        WHERE id IN (
+            SELECT id_orchestra_member
+            FROM orchestra_orchestra_member
+            WHERE id_orchestra = $1 AND is_owner = false AND is_manager = true
+        );`,
+        [orchestraId]
+    )
+    return result.rows
+}
+
+const getAllOrchestraPlayersByOrchestraId = async (orchestraId) => {
     const result = await pool.query(
         `SELECT id, email, first_name, last_name FROM orchestra_member 
         WHERE id IN (
@@ -177,7 +190,8 @@ module.exports = {
     findByEmail,
     findById,
     getAllOrchestraMembers,
-    getAllOrchestraPlayerByOrchestraId,
+    getAllOrchestraManagersByOrchestraId,
+    getAllOrchestraPlayersByOrchestraId,
     getAllOrchestraMembersIdsAndEmailsNotAssignedToOrchestraByOrchestraId,
     getAllOrchestraMembersAssignedToOrchestraByOrchestraId,
     getOrchestraMemberById,
