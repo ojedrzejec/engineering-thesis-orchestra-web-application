@@ -165,7 +165,7 @@ const addMemberToOrchestra = async (req, res) => {
 }
 
 const updateMemberAsManager = async (req, res) => {
-    const { id_orchestra, id_orchestra_member } = req.body
+    const { id_orchestra, id_orchestra_member, is_manager } = req.body
     try {
         // Check if the orchestra exists
         const orchestraExists =
@@ -201,7 +201,8 @@ const updateMemberAsManager = async (req, res) => {
         const updatedOrchestraMember =
             await OrchestraOrchestraMemberModel.updateMemberAsManager(
                 id_orchestra,
-                id_orchestra_member
+                id_orchestra_member,
+                is_manager
             )
 
         res.status(200).json(updatedOrchestraMember)

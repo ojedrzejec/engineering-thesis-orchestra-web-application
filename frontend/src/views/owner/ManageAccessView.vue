@@ -19,7 +19,10 @@
       </pre> -->
       <Accordion :value="['0']" multiple>
         <AccordionPanel v-for="manager in orchestraManagers" :key="manager.email" :value="manager.value">
-          <AccordionHeader><Avatar :image="manager.profilePicture" size="xlarge" />{{ manager.firstName }} {{ manager.lastName }}</AccordionHeader>
+          <!-- <div class="manage-access-view__accordion-position"> -->
+          <AccordionHeader><Avatar :image="manager.profilePicture" size="xlarge" />{{ manager.firstName }} {{ manager.lastName }} </AccordionHeader>
+          <i class="pi pi-trash manage-access-view__trash-icon" @click="revertManagerToPlayer(manager)"></i>
+          <!-- </div> -->
           <AccordionContent>
             <div class="manage-access-view__accordion-item">
               <h4 class="m-0">First Name:</h4>
@@ -37,16 +40,10 @@
               <h4 class="m-0">Description:</h4>
               <p class="m-0">{{ manager.description }}</p>
             </div>
-        </AccordionContent>
-      </AccordionPanel>
-    </Accordion>
-  </div>
-  </div>
-  
-  <div>
-    <p>
-      TODO: add to each manager a bin icon / a 'remove' button to revert the manager back to a player
-    </p>
+          </AccordionContent>
+        </AccordionPanel>
+      </Accordion>
+    </div>
   </div>
 
   <div class="manage-access-view__form">
@@ -219,6 +216,7 @@ const handleSetAsManager = async () => {
   const updateData = {
     id_orchestra: orchestraStore.selectedOrchestra?.id,
     id_orchestra_member: selectedPlayer.value.id,
+    is_manager: true,
   }
   console.log('updateData:', JSON.stringify(updateData, null, 2));
 
@@ -247,6 +245,49 @@ const handleSetAsManager = async () => {
   } finally {
     loadingSetting.value = false
     selectedPlayer.value = null
+    fetchOrchestraManagers()
+    fetchOrchestraPlayers()
+  }
+}
+
+const revertManagerToPlayer = async (manager: TManager) => {
+  console.log('revertManagerToPlayer', manager)
+
+  const token = authStore.getToken();
+  if (!token) {
+    throw new Error('No token available');
+  }
+
+  const updateData = {
+    id_orchestra: orchestraStore.selectedOrchestra?.id,
+    id_orchestra_member: manager.id,
+    is_manager: false,
+  }
+  console.log('updateData:', JSON.stringify(updateData, null, 2));
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/orchestra-orchestra-member/`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authStore.getToken()}`,
+      },
+      body: JSON.stringify(updateData),
+    });
+
+    if(!response) {
+      const errorData = await response.json();
+      const errorMessage = errorData.msg || 'Apologies for the inconvenience. Please try again later.';
+      toast.add({ severity: 'error', summary: 'Action failed: ', detail: errorMessage, life: 3000 });
+      throw new Error(`Action failed: ${errorMessage}`);
+    }
+    
+    toast.add({ severity: 'success', summary: 'Success!', detail: 'Orchestra member reverted to player!', life: 3000 });
+
+  } catch (error) {
+    console.error(error)
+    errorMessage.value = error.message || 'An error occurred during reverting the orchestra member to a player.'
+  } finally {
     fetchOrchestraManagers()
     fetchOrchestraPlayers()
   }
@@ -293,7 +334,7 @@ const handleSetAsManager = async () => {
 
   &__accordion {
     width: 100%;
-    max-width: 500px;
+    max-width: 550px;
   }
 
   &__accordion-item {
@@ -301,6 +342,22 @@ const handleSetAsManager = async () => {
     grid-template-columns: 1fr 3fr;
     gap: 2px;
     align-items: center;
+  }
+
+  // &__accordion-position {
+  //   display: flex;
+  //   flex-direction: row;
+  //   justify-content: space-between;
+  //   width: 100%;
+  //   // align-items: center;
+  // }
+
+  &__trash-icon {
+    color: slateblue;
+    font-size: 1.5rem;
+    position: absolute;
+    right: calc(50% - 500px);
+    transform: translateY(+150%);
   }
 }
 </style>
