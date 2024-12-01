@@ -60,7 +60,7 @@
     </header>
     <div class="app-view__app-content">
       <div
-        v-if="authStore.isLoggedIn"
+        v-if="isLoggedIn && orchestraStore.availableOrchestras.length > 0"
         class="app-view__navigation-menu-vertical-left"
       >
         <PanelMenu :model="panelMenuItems" multiple class="w-full md:w-80" />
@@ -94,7 +94,7 @@ const orchestraStore = useOrchestraStore()
 const router = useRouter()
 
 const loginLogoutButtonLabel = computed(() => {
-  if (authStore.isLoggedIn) {
+  if (isLoggedIn.value) {
     return 'Log out'
   }
 
@@ -102,7 +102,7 @@ const loginLogoutButtonLabel = computed(() => {
 })
 
 const handleLoginLogoutButtonClick = () => {
-  if (authStore.isLoggedIn) {
+  if (isLoggedIn.value) {
     authStore.removeToken()
     window.location.reload()
   }
@@ -111,7 +111,7 @@ const handleLoginLogoutButtonClick = () => {
 }
 
 const loginLogoutIcon = computed(() => {
-  if (authStore.isLoggedIn) {
+  if (isLoggedIn.value) {
     return 'pi pi-sign-out'
   }
 
