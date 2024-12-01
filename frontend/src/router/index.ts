@@ -91,7 +91,19 @@ const router = createRouter({
       component: () => import('@/views/OrchestraView.vue'),
       children: [
         {
-          path: '/:orchestraId/orchestra-information',
+          path: 'availability',
+          name: 'availability',
+          component: () => import('@/views/player/AvailabilityView.vue'),
+          meta: { logInOnly: true },
+        },
+        {
+          path: 'pieces-of-music',
+          name: 'pieces-of-music',
+          component: () => import('@/views/player/PiecesOfMusicView.vue'),
+          meta: { logInOnly: true },
+        },
+        {
+          path: 'orchestra-information',
           name: 'orchestra-information',
           component: () => import('@/views/owner/OrchestraInformationView.vue'),
           meta: { logInOnly: true },
@@ -108,18 +120,6 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: ProfileView,
-      meta: { logInOnly: true },
-    },
-    {
-      path: '/availability',
-      name: 'availability',
-      component: () => import('@/views/player/AvailabilityView.vue'),
-      meta: { logInOnly: true },
-    },
-    {
-      path: '/pieces-of-music',
-      name: 'pieces-of-music',
-      component: () => import('@/views/player/PiecesOfMusicView.vue'),
       meta: { logInOnly: true },
     },
     {

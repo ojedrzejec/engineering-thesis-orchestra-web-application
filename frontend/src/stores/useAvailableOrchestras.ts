@@ -3,6 +3,7 @@ import { defineStore, storeToRefs } from 'pinia'
 import { computed, onMounted, ref } from 'vue'
 import { useAuthStore } from './useAuthStore'
 import type { TOrchestraAccess } from '@/types/TOrchestraAccess'
+import { EOrchestraRole } from '@/constants/enums/EOrchestraRole'
 
 export const useAvailableOrchestrasStore = defineStore(
   'availbale-orchestras',
@@ -46,8 +47,24 @@ export const useAvailableOrchestrasStore = defineStore(
           throw new Error('Response not ok.')
         }
 
-        const data = await response.json()
-        availableOrchestras.value = data
+        const data = (await response.json()) as {
+          id: string
+          name: string
+          is_owner: boolean
+          is_manager: boolean
+        }[]
+
+        availableOrchestras.value = data.map(
+          ({ id, name, is_manager, is_owner }) => ({
+            id,
+            name,
+            accessType: is_owner
+              ? EOrchestraRole.OWNER
+              : is_manager
+                ? EOrchestraRole.MANAGER
+                : EOrchestraRole.PLAYER,
+          }),
+        )
       } catch (e) {
         const baseErrorMessage = 'Failed to fetch available orchestras.'
         console.error(baseErrorMessage, e)
