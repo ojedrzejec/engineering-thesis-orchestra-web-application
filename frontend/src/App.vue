@@ -1,10 +1,17 @@
 <template>
   <div class="app-view">
     <header>
-      <div class="app-view__navigation-menu-horizontal">
+      <div class="app-view__navigation-menu-horizontal">        
         <Menubar :model="menubarItems">
           <template #start>
-            <svg width="35" height="40" viewBox="0 0 35 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-8">
+            <svg
+              width="35"
+              height="40"
+              viewBox="0 0 35 40"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-8"
+            >
               <path
                 d="M25.87 18.05L23.16 17.45L25.27 20.46V29.78L32.49 23.76V13.53L29.18 14.73L25.87 18.04V18.05ZM25.27 35.49L29.18 31.58V27.67L25.27 30.98V35.49ZM20.16 17.14H20.03H20.17H20.16ZM30.1 5.19L34.89 4.81L33.08 12.33L24.1 15.67L30.08 5.2L30.1 5.19ZM5.72 14.74L2.41 13.54V23.77L9.63 29.79V20.47L11.74 17.46L9.03 18.06L5.72 14.75V14.74ZM9.63 30.98L5.72 27.67V31.58L9.63 35.49V30.98ZM4.8 5.2L10.78 15.67L1.81 12.33L0 4.81L4.79 5.19L4.8 5.2ZM24.37 21.05V34.59L22.56 37.29L20.46 39.4H14.44L12.34 37.29L10.53 34.59V21.05L12.42 18.23L17.45 26.8L22.48 18.23L24.37 21.05ZM22.85 0L22.57 0.69L17.45 13.08L12.33 0.69L12.05 0H22.85Z"
                 fill="var(--p-primary-color)"
@@ -17,20 +24,34 @@
           </template>
           <template #item="{ item, props, hasSubmenu, root }">
             <a v-ripple class="flex items-center" v-bind="props.action">
-              <span :class="item.icon" ></span>
+              <span :class="item.icon"></span>
               <span>{{ item.label }}</span>
-              <Badge v-if="item.badge" :class="{ 'ml-auto': !root, 'ml-2': root }" :value="item.badge" />
-              <span v-if="item.shortcut" class="ml-auto border border-surface rounded bg-emphasis text-muted-color text-xs p-1">{{ item.shortcut }}</span>
-              <i v-if="hasSubmenu" :class="['pi pi-angle-down ml-auto', { 'pi-angle-down': root, 'pi-angle-right': !root }]"></i>
+              <Badge
+                v-if="item.badge"
+                :class="{ 'ml-auto': !root, 'ml-2': root }"
+                :value="item.badge"
+              />
+              <span
+                v-if="item.shortcut"
+                class="ml-auto border border-surface rounded bg-emphasis text-muted-color text-xs p-1"
+                >{{ item.shortcut }}</span
+              >
+              <i
+                v-if="hasSubmenu"
+                :class="[
+                  'pi pi-angle-down ml-auto',
+                  { 'pi-angle-down': root, 'pi-angle-right': !root },
+                ]"
+              ></i>
             </a>
           </template>
           <template #end>
             <div class="flex items-center gap-2">
-              <Button 
+              <Button
                 class="w-32 sm:w-auto"
                 @click.prevent="handleLoginLogoutButtonClick"
-                :icon=loginLogoutIcon
-                :label=loginLogoutButtonLabel
+                :icon="loginLogoutIcon"
+                :label="loginLogoutButtonLabel"
               ></Button>
             </div>
           </template>
@@ -38,7 +59,10 @@
       </div>
     </header>
     <div class="app-view__app-content">
-      <div v-if="authStore.isLoggedIn" class="app-view__navigation-menu-vertical-left">
+      <div
+        v-if="authStore.isLoggedIn"
+        class="app-view__navigation-menu-vertical-left"
+      >
         <PanelMenu :model="panelMenuItems" multiple class="w-full md:w-80" />
       </div>
       <div class="app-view__router-view">
@@ -54,15 +78,18 @@ import { onMounted, ref, watch } from 'vue'
 import { RouterView, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useOrchestraStore } from '@/stores/useOrchestraStore'
-import { EOrchestraRole } from '@/constants/enums/EOrchestraRole';
+import { EOrchestraRole } from '@/constants/enums/EOrchestraRole'
 import { computed } from 'vue'
-import Menubar from 'primevue/menubar';
-import Badge from 'primevue/badge';
-import Button from 'primevue/button';
-import PanelMenu from 'primevue/panelmenu';
+import Menubar from 'primevue/menubar'
+import Badge from 'primevue/badge'
+import Button from 'primevue/button'
+import PanelMenu from 'primevue/panelmenu'
 import type { MenuItem } from 'primevue/menuitem'
+import { storeToRefs } from 'pinia'
 
 const authStore = useAuthStore()
+const { isLoggedIn } = storeToRefs(authStore)
+
 const orchestraStore = useOrchestraStore()
 const router = useRouter()
 
@@ -77,7 +104,7 @@ const loginLogoutButtonLabel = computed(() => {
 const handleLoginLogoutButtonClick = () => {
   if (authStore.isLoggedIn) {
     authStore.removeToken()
-    window.location.reload();
+    window.location.reload()
   }
 
   router.push({ name: 'login' })
@@ -92,7 +119,7 @@ const loginLogoutIcon = computed(() => {
 })
 
 onMounted(async () => {
-  await orchestraStore.fetchOrchestras();
+  await orchestraStore.fetchOrchestras()
   if (orchestraStore.availableOrchestras.length > 0) {
     console.log('Orchestras fetched')
   } else {
@@ -100,179 +127,90 @@ onMounted(async () => {
   }
 })
 
-const menubarItems = computed(() => {
-  if (authStore.isLoggedIn) {
-    return [
-      {
-        label: orchestraStore.selectedOrchestra?.name || 'You do not belong to any orchestra',
-        icon: 'pi pi-folder-open',
-        badge: orchestraStore.availableOrchestras.length,
-        items: orchestraStore.availableOrchestras.map((orchestra) => ({
-          label: orchestra.name,
-          icon: 'pi pi-folder',
-          command: () => {
-            router.push({ name: 'availability' });
-            orchestraStore.selectOrchestra(orchestra.id)
-          }
-        })).concat([
-          {
-            separator: true
-          },
-          {
-            label: 'Create Orchestra',
-            icon: 'pi pi-plus-circle',
-            command: () => {
-              router.push({ name: 'create-orchestra' });
-            }
-          }
-        ])
-      },
-      {
-        label: 'My Profile',
-        icon: 'pi pi-user',
-        command: () => {
-          router.push({ name: 'profile' });
-        }
-      },
-    ]
+const menubarItems = computed<MenuItem[]>(() => {
+  const menuItems: MenuItem[] = []
+
+  if (!isLoggedIn.value) {
+    return menuItems
   }
 
-  return [
+  const orchestrasSubmenu: MenuItem[] = orchestraStore.availableOrchestras.map(
+    orchestra => ({
+      label: orchestra.name,
+      icon: 'pi pi-folder',
+      command: () => {
+        router.push({ name: 'availability' })
+        orchestraStore.selectOrchestra(orchestra.id)
+      },
+    }),
+  )
+
+  if (orchestrasSubmenu.length) {
+    orchestrasSubmenu.push({
+      separator: true,
+    })
+  }
+
+  orchestrasSubmenu.push({
+    label: 'Create Orchestra',
+    icon: 'pi pi-plus-circle',
+    command: () => {
+      router.push({ name: 'create-orchestra' })
+    },
+  })
+
+  menuItems.push(
     {
-      label: orchestraStore.selectedOrchestra?.name || 'No orchestras available',
+      label:
+        orchestraStore.selectedOrchestra?.name ||
+        'You do not belong to any orchestra',
       icon: 'pi pi-folder-open',
       badge: orchestraStore.availableOrchestras.length,
-      items: orchestraStore.availableOrchestras.map((orchestra) => ({
-        label: orchestra.name,
-        icon: 'pi pi-folder',
-        command: () => {
-          router.push({ name: 'home' });
-          orchestraStore.selectOrchestra(orchestra.id)
-        }
-      })).concat([
-        {
-          separator: true
-        },
-        {
-          label: 'Create Orchestra',
-          icon: 'pi pi-plus-circle',
-          command: () => {
-            router.push({ name: 'create-orchestra' });
-          }
-        }
-      ])
+      items: orchestrasSubmenu,
     },
     {
-      label: 'Home',
-      icon: 'pi pi-home',
+      label: 'My Profile',
+      icon: 'pi pi-user',
       command: () => {
-        router.push({ name: 'home' });
-      }
+        router.push({ name: 'profile' })
+      },
     },
-    {
-      label: 'Concerts',
-      icon: 'pi pi-calendar',
-      items: [
-        {
-          label: 'Upcoming Concerts',
-          icon: 'pi pi-ticket',
-          command: () => {
-            router.push({ name: 'upcoming-concerts' });
-          }
-        },
-        {
-          label: 'Previous Concerts',
-          icon: 'pi pi-history',
-          command: () => {
-            router.push({ name: 'previous-concerts' });
-          }
-        },
-      ]
-    },
-    {
-      label: 'Gallery',
-      icon: 'pi pi-images',
-      items: [
-        {
-          label: 'Photos',
-          icon: 'pi pi-camera',
-          command: () => {
-            router.push({ name: 'photos' });
-          }
-        },
-        {
-          label: 'YT Videos',
-          icon: 'pi pi-video',
-          command: () => {
-            router.push({ name: 'videos' });
-          }
-        },
-      ]
-    },
-    {
-      label: 'About Us',
-      icon: 'pi pi-id-card',
-      items: [
-        {
-          label: 'Instruments',
-          icon: 'pi pi-megaphone',
-          command: () => {
-            router.push({ name: 'instruments' });
-          }
-        },
-        {
-          label: 'Conductor and Board',
-          icon: 'pi pi-users',
-          command: () => {
-            router.push({ name: 'conductor-and-board' });
-          }
-        },
-        {
-          label: 'History',
-          icon: 'pi pi-building-columns',
-          command: () => {
-            router.push({ name: 'history' });
-          }
-        },
-      ]
-    },
-    {
-      label: 'Contact',
-      icon: 'pi pi-envelope',
-      command: () => {
-        router.push({ name: 'contact' });
-      }
-    }
-  ]
+  )
+
+  console.log('menuItems', menuItems)
+  
+  return menuItems
 })
 
 const defineAccessType = () => {
-  const orchestra = orchestraStore.availableOrchestras.find(o => o.id === orchestraStore.selectedOrchestra?.id);
-  return orchestra ? orchestra.accessType : null;
+  const orchestra = orchestraStore.availableOrchestras.find(
+    o => o.id === orchestraStore.selectedOrchestra?.id,
+  )
+  return orchestra ? orchestra.accessType : null
 }
 
-const panelMenuItems = ref<MenuItem>([])
+const panelMenuItems = ref<MenuItem[]>([])
 
 const updatePanelMenuItems = () => {
   const accessType = defineAccessType()
-  console.log("selectedOrchestra: ", orchestraStore.selectedOrchestra?.name)
-  console.log("accessType: ", accessType)
-  
-  if (accessType === EOrchestraRole.OWNER) { 
+  console.log('selectedOrchestra: ', orchestraStore.selectedOrchestra?.name)
+  console.log('accessType: ', accessType)
+
+  if (accessType === EOrchestraRole.OWNER) {
     panelMenuItems.value = [
       {
         label: 'My Availability',
         icon: 'pi pi-calendar',
         command: () => {
           router.push({ name: 'availability' })
-        }
+        },
       },
       {
         label: 'Pieces Of Music',
         icon: 'pi pi-play',
         command: () => {
           router.push({ name: 'pieces-of-music' })
-        }
+        },
       },
       {
         label: 'Owner Panel',
@@ -283,59 +221,59 @@ const updatePanelMenuItems = () => {
             icon: 'pi pi-info',
             command: () => {
               router.push({ name: 'orchestra-information' })
-            }
+            },
           },
           {
             label: 'Concerts',
-            icon: 'pi pi-ticket'
+            icon: 'pi pi-ticket',
           },
           {
             label: 'Members',
             icon: 'pi pi-address-book',
             command: () => {
               router.push({ name: 'members' })
-            }
+            },
           },
           {
             label: 'Groups',
-            icon: 'pi pi-users'
+            icon: 'pi pi-users',
           },
           {
             label: 'Instruments',
             icon: 'pi pi-megaphone',
             command: () => {
               router.push({ name: 'instruments' })
-            }
+            },
           },
           {
             label: 'Pieces of Music',
-            icon: 'pi pi-file'
+            icon: 'pi pi-file',
           },
           {
             label: 'Manage Access',
             icon: 'pi pi-unlock',
             command: () => {
               router.push({ name: 'manage-access' })
-            }
-          }
-        ]
+            },
+          },
+        ],
       },
     ]
-  } else if (accessType === EOrchestraRole.MANAGER) { 
+  } else if (accessType === EOrchestraRole.MANAGER) {
     panelMenuItems.value = [
       {
         label: 'My Availability',
         icon: 'pi pi-calendar',
         command: () => {
           router.push({ name: 'availability' })
-        }
+        },
       },
       {
         label: 'Pieces Of Music',
         icon: 'pi pi-play',
         command: () => {
           router.push({ name: 'pieces-of-music' })
-        }
+        },
       },
       {
         label: 'Manager Panel',
@@ -346,20 +284,20 @@ const updatePanelMenuItems = () => {
             icon: 'pi pi-info',
             command: () => {
               router.push({ name: 'orchestra-information' })
-            }
+            },
           },
           {
             label: 'Concerts',
-            icon: 'pi pi-ticket'
+            icon: 'pi pi-ticket',
           },
           {
             label: 'Members',
             icon: 'pi pi-address-book',
             command: () => {
               router.push({ name: 'members' })
-            }
+            },
           },
-        ]
+        ],
       },
     ]
   } else {
@@ -369,22 +307,25 @@ const updatePanelMenuItems = () => {
         icon: 'pi pi-calendar',
         command: () => {
           router.push({ name: 'availability' })
-        }
+        },
       },
       {
         label: 'Pieces Of Music',
         icon: 'pi pi-play',
         command: () => {
           router.push({ name: 'pieces-of-music' })
-        }
+        },
       },
     ]
   }
 }
 
-watch(() => orchestraStore.selectedOrchestra, () => {
-  updatePanelMenuItems()
-})
+watch(
+  () => orchestraStore.selectedOrchestra,
+  () => {
+    updatePanelMenuItems()
+  },
+)
 </script>
 
 <style setup lang="scss">
