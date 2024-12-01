@@ -79,18 +79,18 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { RouterView, useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { EOrchestraRole } from '@/constants/enums/EOrchestraRole'
 import { useAuthStore } from '@/stores/useAuthStore'
-import { useOrchestraStore } from '@/stores/useOrchestraStore'
-import { storeToRefs } from 'pinia'
+import { useAvailableOrchestrasStore } from './stores/useAvailableOrchestras'
+// import { useOrchestraStore } from '@/stores/useOrchestraStore'
 import Badge from 'primevue/badge'
 import Button from 'primevue/button'
 import Menubar from 'primevue/menubar'
 import type { MenuItem } from 'primevue/menuitem'
 import PanelMenu from 'primevue/panelmenu'
-import { computed, onMounted, ref, watch } from 'vue'
-import { RouterView, useRouter } from 'vue-router'
-import { useAvailableOrchestrasStore } from './stores/useAvailableOrchestras'
 
 const availableOrchestrasStore = useAvailableOrchestrasStore()
 const {

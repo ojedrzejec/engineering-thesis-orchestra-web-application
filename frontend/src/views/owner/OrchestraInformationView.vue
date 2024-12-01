@@ -5,7 +5,14 @@
       <h1>Orchestra Information</h1>
     </div>
     {{ route.params }}
-    <Form>
+
+    <div v-if="loadingOrchestraInformation">
+      <ProgressSpinner />
+    </div>
+    <div v-else-if="!orchestraInformation">
+      <Message severity="error">Failed to load orchestra information.</Message>
+    </div>
+    <Form v-else>
       <Fluid>
         <div class="orchestra-information-view__form">
           <div class="orchestra-information-view__form-input">
@@ -13,7 +20,7 @@
               <InputText
                 class="orchestra-information-view__form-input-field"
                 id="name"
-                v-model="orchestra.name"
+                v-model="orchestraInformation.name"
                 @input="validateNameInput"
                 :invalid="!isNameValid && showNameErrors"
               ></InputText>
@@ -22,14 +29,14 @@
             <div class="orchestra-information-view__form-error-messages">
               <Message
                 severity="error"
-                v-if="!orchestra.name && showNameErrors"
+                v-if="!orchestraInformation.name && showNameErrors"
                 >{{ messageInputRequired('Name') }}</Message
               >
               <Message
                 severity="error"
                 v-if="
-                  orchestra.name &&
-                  !validateNameLength(orchestra.name) &&
+                  orchestraInformation.name &&
+                  !validateNameLength(orchestraInformation.name) &&
                   showNameErrors
                 "
                 >{{ messageValidationInputLength('Name') }}</Message
@@ -37,8 +44,8 @@
               <Message
                 severity="error"
                 v-if="
-                  orchestra.name &&
-                  !validateWhitespaces(orchestra.name) &&
+                  orchestraInformation.name &&
+                  !validateWhitespaces(orchestraInformation.name) &&
                   showNameErrors
                 "
                 >{{ messageValidationWhitespaces('Name') }}</Message
@@ -59,22 +66,24 @@
               :auto="false"
               :customUpload="true"
               :show-cancel-button="false"
-              :show-upload-button="true"
+              :show-upload-button="false"
               :chooseLabel="
-                orchestra.logo ? 'Change Logo' : 'Choose Orchestra Logo'
+                orchestraInformation.logo
+                  ? 'Change Logo'
+                  : 'Choose Orchestra Logo'
               "
               :multiple="false"
               @remove="removeFileCallback"
               @select="onFileSelect"
             >
               <!-- @upload="onFileSelect" -->
-              <template v-if="!orchestra.logo" #empty>
+              <template v-if="!orchestraInformation.logo" #empty>
                 <span>Drag and drop files to here to upload.</span>
               </template>
             </FileUpload>
-            <div v-if="orchestra.logo">
+            <div v-if="orchestraInformation.logo">
               <img
-                :src="orchestra.logo"
+                :src="orchestraInformation.logo"
                 alt="Orchestra Logo"
                 style="
                   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -91,7 +100,7 @@
               <InputText
                 class="orchestra-information-view__form-input-field"
                 id="email"
-                v-model="orchestra.email"
+                v-model="orchestraInformation.email"
                 v-keyfilter="/[^\s]/"
                 @input="validateEmailInput"
                 :invalid="!isEmailValid && showEmailErrors"
@@ -101,7 +110,9 @@
             <div class="orchestra-information-view__form-error-messages">
               <Message
                 severity="error"
-                v-if="orchestra.email && !isEmailValid && showEmailErrors"
+                v-if="
+                  orchestraInformation.email && !isEmailValid && showEmailErrors
+                "
                 >{{ messageValidationEmail }}</Message
               >
             </div>
@@ -111,7 +122,7 @@
             <FloatLabel variant="on">
               <Textarea
                 id="address"
-                v-model="orchestra.address"
+                v-model="orchestraInformation.address"
                 rows="2"
                 cols="30"
                 autoResize
@@ -124,7 +135,7 @@
             <FloatLabel variant="on">
               <Textarea
                 id="history"
-                v-model="orchestra.history"
+                v-model="orchestraInformation.history"
                 rows="7"
                 cols="30"
                 autoResize
@@ -138,7 +149,7 @@
               <InputText
                 class="orchestra-information-view__form-input-field"
                 id="facebookUrl"
-                v-model="orchestra.facebookUrl"
+                v-model="orchestraInformation.facebookUrl"
                 v-keyfilter="/[^\s]/"
                 @input="validateFacebookUrlInput"
                 :invalid="!isFacebookUrlValid && showFacebookUrlErrors"
@@ -149,7 +160,7 @@
               <Message
                 severity="error"
                 v-if="
-                  orchestra.facebookUrl &&
+                  orchestraInformation.facebookUrl &&
                   !isFacebookUrlValid &&
                   showFacebookUrlErrors
                 "
@@ -163,7 +174,7 @@
               <InputText
                 class="orchestra-information-view__form-input-field"
                 id="instagramUrl"
-                v-model="orchestra.instagramUrl"
+                v-model="orchestraInformation.instagramUrl"
                 v-keyfilter="/[^\s]/"
                 @input="validateInstagramUrlInput"
                 :invalid="!isInstagramUrlValid && showInstagramUrlErrors"
@@ -174,7 +185,7 @@
               <Message
                 severity="error"
                 v-if="
-                  orchestra.instagramUrl &&
+                  orchestraInformation.instagramUrl &&
                   !isInstagramUrlValid &&
                   showInstagramUrlErrors
                 "
@@ -188,7 +199,7 @@
               <InputText
                 class="orchestra-information-view__form-input-field"
                 id="youtubeUrl"
-                v-model="orchestra.youtubeUrl"
+                v-model="orchestraInformation.youtubeUrl"
                 v-keyfilter="/[^\s]/"
                 @input="validateYouTubeUrlInput"
                 :invalid="!isYouTubeUrlValid && showYouTubeUrlErrors"
@@ -199,7 +210,7 @@
               <Message
                 severity="error"
                 v-if="
-                  orchestra.youtubeUrl &&
+                  orchestraInformation.youtubeUrl &&
                   !isYouTubeUrlValid &&
                   showYouTubeUrlErrors
                 "
@@ -227,8 +238,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia'
+import { useAuthStore } from '@/stores/useAuthStore'
+import { useOrchestraInformation } from '@/composables/useOrchestraInformation'
 import { API_BASE_URL } from '@/constants/config'
-import { initOrchestra } from '@/constants/initOrchestra'
 import {
   messageInputRequired,
   messageValidationEmail,
@@ -242,11 +257,7 @@ import {
   validateWhitespaces,
   validateYouTubeLink,
 } from '@/constants/validation/orchestraCreationValidation'
-import { useAuthStore } from '@/stores/useAuthStore'
-import { useOrchestraStore } from '@/stores/useOrchestraStore'
-import type { TOrchestra } from '@/types/TOrchestra'
 import { Form } from '@primevue/forms'
-import { storeToRefs } from 'pinia'
 import Button from 'primevue/button'
 import FileUpload, { type FileUploadSelectEvent } from 'primevue/fileupload'
 import FloatLabel from 'primevue/floatlabel'
@@ -256,23 +267,38 @@ import Message from 'primevue/message'
 import Textarea from 'primevue/textarea'
 import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
-import { computed, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+
+const authStore = useAuthStore()
+const { token } = storeToRefs(authStore)
 
 const toast = useToast()
 const route = useRoute()
 
-const authStore = useAuthStore()
-const { token } = storeToRefs(authStore)
-const orchestraStore = useOrchestraStore()
+const {
+  fetchOrchestraInformation,
+  loadingOrchestraInformation,
+  orchestraInformation,
+} = useOrchestraInformation()
 
-const orchestra = ref<TOrchestra>(initOrchestra)
+watch(
+  () => route.params.orchestraId,
+  async orchestraId => {
+    await fetchOrchestraInformation(orchestraId.toString())
+  },
+  { immediate: true },
+)
 
-onMounted(() => {
-  if (orchestraStore.orchestraToUpdate) {
-    orchestra.value = orchestraStore.orchestraToUpdate
-  }
-})
+// const authStore = useAuthStore()
+// const { token } = storeToRefs(authStore)
+// const orchestraStore = useOrchestraStore()
+
+// const orchestra = ref<TOrchestra>(initOrchestra)
+
+// onMounted(() => {
+//   if (orchestraStore.orchestraToUpdate) {
+//     orchestra.value = orchestraStore.orchestraToUpdate
+//   }
+// })
 
 const loading = ref(false)
 const errorMessage = ref('')
@@ -284,27 +310,29 @@ const showYouTubeUrlErrors = ref(false)
 
 const isNameValid = computed(
   () =>
-    orchestra.value.name &&
-    validateNameLength(orchestra.value.name) &&
-    validateWhitespaces(orchestra.value.name),
+    orchestraInformation.value?.name &&
+    validateNameLength(orchestraInformation.value.name) &&
+    validateWhitespaces(orchestraInformation.value.name),
 )
 const isEmailValid = computed(
-  () => !orchestra.value.email || validateEmail(orchestra.value.email),
+  () =>
+    !orchestraInformation.value?.email ||
+    validateEmail(orchestraInformation.value.email),
 )
 const isFacebookUrlValid = computed(
   () =>
-    !orchestra.value.facebookUrl ||
-    validateFacebookLink(orchestra.value.facebookUrl),
+    !orchestraInformation.value?.facebookUrl ||
+    validateFacebookLink(orchestraInformation.value.facebookUrl),
 )
 const isInstagramUrlValid = computed(
   () =>
-    !orchestra.value.instagramUrl ||
-    validateInstagramLink(orchestra.value.instagramUrl),
+    !orchestraInformation.value?.instagramUrl ||
+    validateInstagramLink(orchestraInformation.value.instagramUrl),
 )
 const isYouTubeUrlValid = computed(
   () =>
-    !orchestra.value.youtubeUrl ||
-    validateYouTubeLink(orchestra.value.youtubeUrl),
+    !orchestraInformation.value?.youtubeUrl ||
+    validateYouTubeLink(orchestraInformation.value.youtubeUrl),
 )
 
 const validateNameInput = () => {
@@ -332,10 +360,12 @@ const showErrors = () => {
 }
 
 const onFileSelect = async (event: FileUploadSelectEvent) => {
+  if (!orchestraInformation.value) return
+
   const file: File = Array.isArray(event.files) ? event.files[0] : event.files
 
   if (file) {
-    orchestra.value.logo = await fileToBase64(file)
+    orchestraInformation.value.logo = await fileToBase64(file)
   }
 }
 
@@ -354,11 +384,17 @@ const fileToBase64 = (file: File): Promise<string> =>
   })
 
 const removeFileCallback = () => {
-  orchestra.value.logo = null
+  if (!orchestraInformation.value) return
+
+  orchestraInformation.value.logo = null
 }
 
 const handleOrchestraUpdate = async () => {
   console.log('Button clicked! Inside handleOrchestraUpdate function')
+
+  if (!orchestraInformation.value) {
+    throw new Error('Orchestra information is not available.')
+  }
 
   if (
     !isNameValid.value ||
@@ -375,15 +411,15 @@ const handleOrchestraUpdate = async () => {
   errorMessage.value = ''
 
   const formData = {
-    id: orchestra.value.id, // id from orchestraToUpdate in orchestraStore
-    name: orchestra.value.name,
-    logo: orchestra.value.logo,
-    email: orchestra.value.email,
-    address: orchestra.value.address,
-    history: orchestra.value.history,
-    facebook_url: orchestra.value.facebookUrl,
-    instagram_url: orchestra.value.instagramUrl,
-    youtube_url: orchestra.value.youtubeUrl,
+    id: orchestraInformation.value.id, // id from orchestraToUpdate in orchestraStore
+    name: orchestraInformation.value.name,
+    logo: orchestraInformation.value.logo,
+    email: orchestraInformation.value.email,
+    address: orchestraInformation.value.address,
+    history: orchestraInformation.value.history,
+    facebook_url: orchestraInformation.value.facebookUrl,
+    instagram_url: orchestraInformation.value.instagramUrl,
+    youtube_url: orchestraInformation.value.youtubeUrl,
   }
   console.log('formData:', JSON.stringify(formData, null, 2))
 
@@ -403,11 +439,11 @@ const handleOrchestraUpdate = async () => {
 
     toast.add({
       severity: 'success',
-      summary: `${orchestra.value.name} updated successfully!`,
+      summary: `${orchestraInformation.value.name} updated successfully!`,
       life: 3000,
     })
-    orchestraStore.updateOrchestra(orchestra.value)
-    orchestraStore.fetchOrchestras()
+    // orchestraStore.updateOrchestra(orchestraInformation.value)
+    // orchestraStore.fetchOrchestras()
   } catch (error) {
     const baseErrorMessage = 'Failed to update orchestra.'
     console.error(baseErrorMessage, error)
