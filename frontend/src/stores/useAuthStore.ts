@@ -1,8 +1,8 @@
-import { computed, ref } from 'vue'
-import { defineStore } from 'pinia'
 import { API_BASE_URL } from '@/constants/config'
-import type { TOrchestraMember } from '@/types/TOrchestraMember';
-import { initOrchestraMember } from '@/constants/initOrchestraMember';
+import { initOrchestraMember } from '@/constants/initOrchestraMember'
+import type { TOrchestraMember } from '@/types/TOrchestraMember'
+import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
 
 const LOCAL_STORAGE_KEY_TOKEN = 'token'
 // const LOCAL_STORAGE_KEY_ID = 'id'
@@ -52,42 +52,43 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const response = await fetch(`${API_BASE_URL}/orchestra-member/single`, {
         method: 'GET',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token.value}`,
-        }
-      });
+        },
+      })
 
       if (!response.ok) {
         throw new Error('Failed to fetch user profile data')
       }
 
-      const text = await response.text();
+      const text = await response.text()
       if (!text) {
-        throw new Error('Empty response body');
+        throw new Error('Empty response body')
       }
 
-      const data = JSON.parse(text);
-      console.log('Fetched profile data:', data);
+      const data = JSON.parse(text)
+      console.log('Fetched profile data:', data)
 
-      userProfile.value.firstName = data.first_name;
-      userProfile.value.lastName = data.last_name;
-      userProfile.value.instruments = data.instruments.map((instrument: string) => ({ name: instrument }));
-      userProfile.value.phone = data.phone;
-      userProfile.value.dateOfBirth = new Date(data.birth_date);
-      userProfile.value.isStudent = data.are_you_student;
-      userProfile.value.university = data.university;
-      userProfile.value.description = data.description;
-      userProfile.value.profilePicture = data.profile_picture || null; // Ensure profilePicture is set correctly
+      userProfile.value.firstName = data.first_name
+      userProfile.value.lastName = data.last_name
+      userProfile.value.instruments = data.instruments.map(
+        (instrument: string) => ({ name: instrument }),
+      )
+      userProfile.value.phone = data.phone
+      userProfile.value.dateOfBirth = new Date(data.birth_date)
+      userProfile.value.isStudent = data.are_you_student
+      userProfile.value.university = data.university
+      userProfile.value.description = data.description
+      userProfile.value.profilePicture = data.profile_picture || null // Ensure profilePicture is set correctly
 
       console.log('User profile:', userProfile.value)
-
     } catch (error) {
       console.error('Failed to fetch user profile:', error)
       userProfile.value = initOrchestraMember
     }
   }
-  
+
   // Persist the token across page refreshes
   const tokenFromLocalStorage = localStorage.getItem(LOCAL_STORAGE_KEY_TOKEN)
   if (tokenFromLocalStorage) {
@@ -95,6 +96,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   return {
+    token,
     isLoggedIn,
     setToken,
     getToken,

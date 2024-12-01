@@ -58,14 +58,15 @@
               :auto="false"
               :customUpload="true"
               :show-cancel-button="false"
-              :show-upload-button="false"
+              :show-upload-button="true"
               :chooseLabel="
                 orchestra.logo ? 'Change Logo' : 'Choose Orchestra Logo'
               "
+              :multiple="false"
               @remove="removeFileCallback"
               @select="onFileSelect"
-              @upload="onFileSelect"
             >
+              <!-- @upload="onFileSelect" -->
               <template v-if="!orchestra.logo" #empty>
                 <span>Drag and drop files to here to upload.</span>
               </template>
@@ -244,8 +245,9 @@ import { useAuthStore } from '@/stores/useAuthStore'
 import { useOrchestraStore } from '@/stores/useOrchestraStore'
 import type { TOrchestra } from '@/types/TOrchestra'
 import { Form } from '@primevue/forms'
+import { storeToRefs } from 'pinia'
 import Button from 'primevue/button'
-import FileUpload from 'primevue/fileupload'
+import FileUpload, { type FileUploadSelectEvent } from 'primevue/fileupload'
 import FloatLabel from 'primevue/floatlabel'
 import Fluid from 'primevue/fluid'
 import InputText from 'primevue/inputtext'
@@ -254,8 +256,11 @@ import Textarea from 'primevue/textarea'
 import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
 import { computed, onMounted, ref } from 'vue'
+
 const toast = useToast()
+
 const authStore = useAuthStore()
+const { token } = storeToRefs(authStore)
 const orchestraStore = useOrchestraStore()
 
 const orchestra = ref<TOrchestra>(initOrchestra)
@@ -323,24 +328,29 @@ const showErrors = () => {
   showYouTubeUrlErrors.value = true
 }
 
-const onFileSelect = async event => {
-  const file = event.files[0]
+const onFileSelect = async (event: FileUploadSelectEvent) => {
+  const file: File = Array.isArray(event.files) ? event.files[0] : event.files
+
   if (file) {
-    orchestra.value.logo = (await fileToBase64(file)) as string
+    orchestra.value.logo = await fileToBase64(file)
   }
 }
 
-const fileToBase64 = file => {
-  return new Promise((resolve, reject) => {
+const fileToBase64 = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.readAsDataURL(file)
-    reader.onload = () => resolve(reader.result)
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        resolve(reader.result)
+      } else {
+        reject(new Error('File could not be converted to base64 string'))
+      }
+    }
     reader.onerror = error => reject(error)
   })
-}
 
-const removeFileCallback = file => {
-  console.log(file)
+const removeFileCallback = () => {
   orchestra.value.logo = null
 }
 
@@ -379,25 +389,13 @@ const handleOrchestraUpdate = async () => {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${authStore.getToken()}`,
+        Authorization: `Bearer ${token.value}`,
       },
       body: JSON.stringify(formData),
     })
 
-    if (!response) {
-      const errorData = await response.json()
-      const errorMessage =
-        errorData.msg ||
-        'Apologies for the inconvenience. Please try again later.'
-      toast.add({
-        severity: 'error',
-        summary: 'Update failed',
-        detail: errorMessage,
-        life: 3000,
-      })
-      throw new Error(
-        `Update failed. Please try again later. - ${errorMessage}`,
-      )
+    if (!response.ok) {
+      throw new Error('Response not ok.')
     }
 
     toast.add({
@@ -408,9 +406,13 @@ const handleOrchestraUpdate = async () => {
     orchestraStore.updateOrchestra(orchestra.value)
     orchestraStore.fetchOrchestras()
   } catch (error) {
-    console.error('Error:', error)
-    errorMessage.value =
-      error.message || 'An error occurred during orchestra creation.'
+    const baseErrorMessage = 'Failed to update orchestra.'
+    console.error(baseErrorMessage, error)
+    toast.add({
+      severity: 'error',
+      summary: baseErrorMessage,
+      life: 3000,
+    })
   } finally {
     loading.value = false
   }
