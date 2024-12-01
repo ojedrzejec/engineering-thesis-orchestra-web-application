@@ -1,7 +1,7 @@
 <template>
   <div class="app-view">
     <header>
-      <div class="app-view__navigation-menu-horizontal">        
+      <div class="app-view__navigation-menu-horizontal">
         <Menubar :model="menubarItems">
           <template #start>
             <svg
@@ -63,7 +63,12 @@
         v-if="isLoggedIn && orchestraStore.availableOrchestras.length > 0"
         class="app-view__navigation-menu-vertical-left"
       >
-        <PanelMenu :model="panelMenuItems" multiple class="w-full md:w-80" />
+        <PanelMenu
+          :model="panelMenuItems"
+          multiple
+          class="w-full md:w-80"
+          :expandedKeys="{ 'owner-panel': true }"
+        />
       </div>
       <div class="app-view__router-view">
         <RouterView />
@@ -74,18 +79,17 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
-import { RouterView, useRouter } from 'vue-router'
+import { EOrchestraRole } from '@/constants/enums/EOrchestraRole'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useOrchestraStore } from '@/stores/useOrchestraStore'
-import { EOrchestraRole } from '@/constants/enums/EOrchestraRole'
-import { computed } from 'vue'
-import Menubar from 'primevue/menubar'
+import { storeToRefs } from 'pinia'
 import Badge from 'primevue/badge'
 import Button from 'primevue/button'
-import PanelMenu from 'primevue/panelmenu'
+import Menubar from 'primevue/menubar'
 import type { MenuItem } from 'primevue/menuitem'
-import { storeToRefs } from 'pinia'
+import PanelMenu from 'primevue/panelmenu'
+import { computed, onMounted, ref, watch } from 'vue'
+import { RouterView, useRouter } from 'vue-router'
 
 const authStore = useAuthStore()
 const { isLoggedIn } = storeToRefs(authStore)
@@ -178,7 +182,7 @@ const menubarItems = computed<MenuItem[]>(() => {
   )
 
   console.log('menuItems', menuItems)
-  
+
   return menuItems
 })
 
@@ -215,6 +219,7 @@ const updatePanelMenuItems = () => {
       {
         label: 'Owner Panel',
         icon: 'pi pi-face-smile',
+        key: 'owner-panel',
         items: [
           {
             label: 'Orchestra Information',
