@@ -90,6 +90,14 @@ import type { MenuItem } from 'primevue/menuitem'
 import PanelMenu from 'primevue/panelmenu'
 import { computed, onMounted, ref, watch } from 'vue'
 import { RouterView, useRouter } from 'vue-router'
+import { useAvailableOrchestrasStore } from './stores/useAvailableOrchestras'
+
+const availableOrchestrasStore = useAvailableOrchestrasStore()
+const {
+  availableOrchestras,
+  loadingAvailableOrchestras,
+  selectedOrchestraDetails,
+} = storeToRefs(availableOrchestrasStore)
 
 const authStore = useAuthStore()
 const { isLoggedIn } = storeToRefs(authStore)
@@ -138,12 +146,15 @@ const menubarItems = computed<MenuItem[]>(() => {
     return menuItems
   }
 
-  const orchestrasSubmenu: MenuItem[] = orchestraStore.availableOrchestras.map(
+  const orchestrasSubmenu: MenuItem[] = availableOrchestras.value.map(
     orchestra => ({
       label: orchestra.name,
       icon: 'pi pi-folder',
       command: () => {
-        router.push({ name: 'availability' })
+        router.push({
+          name: 'orchestra-information',
+          params: { orchestraId: orchestra.id },
+        })
         orchestraStore.selectOrchestra(orchestra.id)
       },
     }),
@@ -163,13 +174,15 @@ const menubarItems = computed<MenuItem[]>(() => {
     },
   })
 
+  // TODO: availableOrchestrasStore
   menuItems.push(
     {
-      label:
-        orchestraStore.selectedOrchestra?.name ||
-        'You do not belong to any orchestra',
+      label: loadingAvailableOrchestras.value
+        ? 'Loading...'
+        : selectedOrchestraDetails.value?.name ||
+          'You do not belong to any orchestra',
       icon: 'pi pi-folder-open',
-      badge: orchestraStore.availableOrchestras.length,
+      badge: availableOrchestras.value.length,
       items: orchestrasSubmenu,
     },
     {

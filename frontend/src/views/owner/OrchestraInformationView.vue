@@ -4,6 +4,7 @@
     <div class="orchestra-information-view__title">
       <h1>Orchestra Information</h1>
     </div>
+    {{ route.params }}
     <Form>
       <Fluid>
         <div class="orchestra-information-view__form">
@@ -256,8 +257,10 @@ import Textarea from 'primevue/textarea'
 import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
 import { computed, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 
 const toast = useToast()
+const route = useRoute()
 
 const authStore = useAuthStore()
 const { token } = storeToRefs(authStore)
