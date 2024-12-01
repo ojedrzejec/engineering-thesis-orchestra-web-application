@@ -8,7 +8,9 @@
     MANAGERS:
   </h2>
 
-  <div class="manage-access-view__accordion">
+  <ProgressSpinner v-if="isloadingSprinner" />
+
+  <div v-if="!isloadingSprinner" class="manage-access-view__accordion">
     <div v-if="orchestraManagers === null || orchestraManagers.length === 0">
       No managers found.
     </div>
@@ -21,7 +23,16 @@
         <AccordionPanel v-for="manager in orchestraManagers" :key="manager.email" :value="manager.value">
           <!-- <div class="manage-access-view__accordion-position"> -->
           <AccordionHeader><Avatar :image="manager.profilePicture" size="xlarge" />{{ manager.firstName }} {{ manager.lastName }} </AccordionHeader>
-          <i class="pi pi-trash manage-access-view__trash-icon" @click="revertManagerToPlayer(manager)"></i>
+          <!-- <i class="pi pi-trash manage-access-view__trash-icon" @click="revertManagerToPlayer(manager)"></i> -->
+          <Button 
+            class="manage-access-view__trash-icon"
+            icon="pi pi-trash" 
+            severity="danger" 
+            variant="outlined"
+            rounded 
+            aria-label="Cancel" 
+            @click="revertManagerToPlayer(manager)" 
+          ></Button>
           <!-- </div> -->
           <AccordionContent>
             <div class="manage-access-view__accordion-item">
@@ -88,6 +99,7 @@ import AccordionPanel from 'primevue/accordionpanel';
 import AccordionHeader from 'primevue/accordionheader';
 import AccordionContent from 'primevue/accordioncontent';
 import Avatar from 'primevue/avatar';
+import ProgressSpinner from 'primevue/progressspinner';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
 const toast = useToast();
@@ -98,10 +110,15 @@ const orchestraPlayers = ref<TPlayer[]>([])
 const selectedPlayer = ref<TPlayer | null>(null)
 const loadingGettingPlayers = ref(false)
 const loadingSetting = ref(false)
+const isloadingSprinner = ref(true)
 
 onMounted( async () => {
-  fetchOrchestraManagers()
-  fetchOrchestraPlayers()
+  await fetchOrchestraManagers()
+  await fetchOrchestraPlayers()
+
+  // wait 1 second
+  await new Promise(resolve => setTimeout(resolve, 1000))
+  isloadingSprinner.value = false 
 })
 
 onUnmounted(() => {
@@ -353,11 +370,11 @@ const revertManagerToPlayer = async (manager: TManager) => {
   // }
 
   &__trash-icon {
-    color: slateblue;
+    // color: slateblue;
     font-size: 1.5rem;
     position: absolute;
     right: calc(50% - 500px);
-    transform: translateY(+150%);
+    transform: translateY(+80%);
   }
 }
 </style>
