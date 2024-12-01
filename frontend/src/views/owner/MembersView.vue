@@ -5,7 +5,7 @@
   </div>
 
   <div class="members-view__form">
-    <div class="profile-view__form-input card flex justify-center">
+    <div class="members-view__form-input card flex justify-center">
       <Select 
         v-model="selectedEmail" 
         showClear 
@@ -20,11 +20,11 @@
     </div>
     
     <div>
-    <Button 
-      class="members-view__form-button"
-      @click.prevent="handleAddMember"
-      :disabled="loadingAdding"
-      :label="loadingAdding ? 'Adding...' : 'Add Member'" 
+      <Button 
+        class="members-view__form-button"
+        @click.prevent="handleAddMember"
+        :disabled="loadingAdding || !selectedEmail"
+        :label="loadingAdding ? 'Adding...' : 'Add Member'" 
       ></Button>
     </div>
   </div>
@@ -51,7 +51,9 @@
           <!-- the drawer should contain such data depending on the data in the same row -->
           <Drawer v-model:visible="drawerVisible" position="right" header="Orchestra Member Details" :pt="{'root': 'members-view__drawer'}">
             <div class="members-view__drawer-content">
-              <Avatar :image="selectedUser.profilePicture" class="members-view__drawer-single-info members-view__drawer-avatar" size="xlarge" />
+              <div class="members-view__drawer-single-info members-view__drawer-avatar">
+                <Avatar :image="selectedUser.profilePicture" size="xlarge" />
+              </div>
               <div class="members-view__drawer-single-info">
                 <h4>Access Type:</h4>
                 <p><Tag v-if="selectedUser.accessType" :value="selectedUser.accessType" :severity="tagSeverity(selectedUser.accessType)"></Tag></p>
@@ -138,7 +140,7 @@ const loadingAdding = ref(false);
 
 const emailsUsersNotInOrchestra = computed(() => orchestraMemberStore.allUsersNotAssignedToSelectedOrchestra);
 const loadingFetchingAllUsers = computed(() => orchestraMemberStore.loadingFetchingAllUsers);
-const selectedEmail = ref<string>();
+const selectedEmail = ref<string | null>(null);
 
 const orchestraMembersOfOrchestra = ref<TOrchestraMember[]>([]);
 const loadingFetchingOrchestraMembers = computed(() => orchestraMemberStore.loadingFetchingOrchestraMembers);
@@ -155,7 +157,7 @@ const tagSeverity = (accessType: string) => {
   if (accessType === 'owner') {
     return 'danger';
   } else if (accessType === 'manager') {
-    return 'warning';
+    return 'warn';
   } else {
     return 'info';
   }
@@ -238,12 +240,13 @@ const handleAddMember = async () => {
       throw new Error(`${errorMessage}`);
     }
     
-    toast.add({ severity: 'success', summary: `The member ${selectedEmail.value} added successfully!`, detail: 'Check the orchestra member details!', life: 3000 });
+    toast.add({ severity: 'success', summary: `The member ${foundOrchestraMember} added successfully!`, detail: 'Check the orchestra member details!', life: 3000 });
 
   } catch (error) {
     console.error('Error:', error);
   } finally {
     loadingAdding.value = false
+    selectedEmail.value = null
   }
 
   fetchEmails()
@@ -321,6 +324,7 @@ const handleAddMember = async () => {
     align-items: center;
     justify-content: center;
     margin: 20px auto;
+    // border: 1px solid #e0e0e0;
   }
 
   &__drawer-single-info-not-provided {
