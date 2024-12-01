@@ -237,18 +237,30 @@ const panelMenuItems = computed<MenuItem[]>(() => {
         label: 'Orchestra Information',
         icon: 'pi pi-info',
         command: () => {
-          router.push({ name: 'orchestra-information' })
+          router.push({
+            name: 'orchestra-information',
+            params: { orchestraId: selectedOrchestraId.value },
+          })
         },
       },
       {
         label: 'Concerts',
         icon: 'pi pi-ticket',
+        command: () => {
+          router.push({
+            name: 'concerts',
+            params: { orchestraId: selectedOrchestraId.value },
+          })
+        },
       },
       {
         label: 'Members',
         icon: 'pi pi-address-book',
         command: () => {
-          router.push({ name: 'members' })
+          router.push({
+            name: 'members',
+            params: { orchestraId: selectedOrchestraId.value },
+          })
         },
       },
     )
@@ -259,6 +271,12 @@ const panelMenuItems = computed<MenuItem[]>(() => {
       {
         label: 'Groups',
         icon: 'pi pi-users',
+        command: () => {
+          router.push({
+            name: 'groups',
+            params: { orchestraId: selectedOrchestraId.value },
+          })
+        },
       },
       {
         label: 'Instruments',
@@ -268,14 +286,13 @@ const panelMenuItems = computed<MenuItem[]>(() => {
         },
       },
       {
-        label: 'Pieces of Music',
-        icon: 'pi pi-file',
-      },
-      {
         label: 'Manage Access',
         icon: 'pi pi-unlock',
         command: () => {
-          router.push({ name: 'manage-access' })
+          router.push({
+            name: 'manage-access',
+            params: { orchestraId: selectedOrchestraId.value },
+          })
         },
       },
     )
