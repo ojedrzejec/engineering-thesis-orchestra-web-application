@@ -227,8 +227,10 @@
             <Button
               class="orchestra-information-view__form-button"
               @click.prevent="handleOrchestraUpdate"
-              :disabled="loading"
-              :label="loading ? 'Updating...' : 'Update'"
+              :disabled="loadingOrchestraInformationUpdate"
+              :label="
+                loadingOrchestraInformationUpdate ? 'Updating...' : 'Update'
+              "
             ></Button>
           </div>
         </div>
@@ -278,6 +280,8 @@ const {
   fetchOrchestraInformation,
   loadingOrchestraInformation,
   orchestraInformation,
+  updateOrchestraInformation,
+  loadingOrchestraInformationUpdate,
 } = useOrchestraInformation()
 
 watch(
@@ -300,7 +304,6 @@ watch(
 //   }
 // })
 
-const loading = ref(false)
 const errorMessage = ref('')
 const showNameErrors = ref(false)
 const showEmailErrors = ref(false)
@@ -407,54 +410,9 @@ const handleOrchestraUpdate = async () => {
     return
   }
 
-  loading.value = true
   errorMessage.value = ''
 
-  const formData = {
-    id: orchestraInformation.value.id, // id from orchestraToUpdate in orchestraStore
-    name: orchestraInformation.value.name,
-    logo: orchestraInformation.value.logo,
-    email: orchestraInformation.value.email,
-    address: orchestraInformation.value.address,
-    history: orchestraInformation.value.history,
-    facebook_url: orchestraInformation.value.facebookUrl,
-    instagram_url: orchestraInformation.value.instagramUrl,
-    youtube_url: orchestraInformation.value.youtubeUrl,
-  }
-  console.log('formData:', JSON.stringify(formData, null, 2))
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/orchestra/`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token.value}`,
-      },
-      body: JSON.stringify(formData),
-    })
-
-    if (!response.ok) {
-      throw new Error('Response not ok.')
-    }
-
-    toast.add({
-      severity: 'success',
-      summary: `${orchestraInformation.value.name} updated successfully!`,
-      life: 3000,
-    })
-    // orchestraStore.updateOrchestra(orchestraInformation.value)
-    // orchestraStore.fetchOrchestras()
-  } catch (error) {
-    const baseErrorMessage = 'Failed to update orchestra.'
-    console.error(baseErrorMessage, error)
-    toast.add({
-      severity: 'error',
-      summary: baseErrorMessage,
-      life: 3000,
-    })
-  } finally {
-    loading.value = false
-  }
+  await updateOrchestraInformation(orchestraInformation.value)
 }
 </script>
 
