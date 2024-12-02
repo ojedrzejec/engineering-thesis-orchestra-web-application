@@ -1,4 +1,4 @@
-import CreateOrchestraView from '@/views/CreateOrchestraView.vue'
+import CreateOrchestraView from '@/views/logged-in-user/CreateOrchestraView.vue'
 import ConductorBoardAboutView from '@/views/guest/aboutUs/ConductorBoardAboutView.vue'
 import HistoryAboutView from '@/views/guest/aboutUs/HistoryAboutView.vue'
 import InstrumentsAboutView from '@/views/guest/aboutUs/InstrumentsAboutView.vue'
@@ -6,7 +6,7 @@ import PreviousConcertsView from '@/views/guest/concerts/PreviousConcertsView.vu
 import UpcomingConcertsView from '@/views/guest/concerts/UpcomingConcertsView.vue'
 import PhotosGalleryView from '@/views/guest/gallery/PhotosGalleryView.vue'
 import VideosGalleryView from '@/views/guest/gallery/VideosGalleryView.vue'
-import ProfileView from '@/views/ProfileView.vue'
+import ProfileView from '@/views/logged-in-user/ProfileView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/guest/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
@@ -88,54 +88,78 @@ const router = createRouter({
     {
       path: '/:orchestraId',
       name: 'orchestra',
-      component: () => import('@/views/OrchestraView.vue'),
+      component: () => import('@/views/logged-in-user/OrchestraView.vue'),
       children: [
         {
           path: 'availability',
           name: 'availability',
-          component: () => import('@/views/player/AvailabilityView.vue'),
+          component: () =>
+            import(
+              '@/views/logged-in-user/orchestra-member/AvailabilityView.vue'
+            ),
           meta: { logInOnly: true },
         },
         {
           path: 'pieces-of-music',
           name: 'pieces-of-music',
-          component: () => import('@/views/player/PiecesOfMusicView.vue'),
+          component: () =>
+            import(
+              '@/views/logged-in-user/orchestra-member/PiecesOfMusicView.vue'
+            ),
           meta: { logInOnly: true },
         },
         {
           path: 'orchestra-information',
           name: 'orchestra-information',
-          component: () => import('@/views/owner/OrchestraInformationView.vue'),
+          component: () =>
+            import(
+              '@/views/logged-in-user/orchestra-member/owner-and-manager/OrchestraInformationView.vue'
+            ),
           meta: { logInOnly: true },
         },
         {
           path: 'concerts',
           name: 'concerts',
-          component: () => import('@/views/owner/ConcertsView.vue'),
+          component: () =>
+            import(
+              '@/views/logged-in-user/orchestra-member/owner-and-manager/ConcertsView.vue'
+            ),
           meta: { logInOnly: true },
         },
         {
           path: 'members',
           name: 'members',
-          component: () => import('@/views/owner/MembersView.vue'),
+          component: () =>
+            import(
+              '@/views/logged-in-user/orchestra-member/owner-and-manager/MembersView.vue'
+            ),
           meta: { logInOnly: true },
         },
         {
           path: 'groups',
           name: 'groups',
-          component: () => import('@/views/owner/GroupsView.vue'),
+          component: () =>
+            import(
+              '@/views/logged-in-user/orchestra-member/owner/GroupsView.vue'
+            ),
           meta: { logInOnly: true },
         },
         {
           path: 'instruments',
           name: 'instruments',
-          component: () => import('@/views/owner/InstrumentsView.vue'),
+          component: () =>
+            import(
+              '@/views/logged-in-user/orchestra-member/owner/InstrumentsView.vue'
+            ),
           meta: { logInOnly: true },
         },
         {
           path: 'manage-access',
           name: 'manage-access',
-          component: () => import('@/views/owner/ManageAccessView.vue'),
+          component: () =>
+            import(
+              '@/views/logged-in-user/orchestra-member/owner/ManageAccessView.vue'
+            ),
           meta: { logInOnly: true },
         },
       ],
