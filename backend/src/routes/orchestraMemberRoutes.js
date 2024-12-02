@@ -15,12 +15,12 @@ const authMiddleware = require('../middlewares/authMiddleware')
 
 router.get('/', authMiddleware.authenticateToken, getAllOrchestraMembers)
 router.get(
-    '/all-not-assigned-to-selected-orchestra/:id',
+    '/all-app-users-not-in-orchestra/:id',
     authMiddleware.authenticateToken,
     getAllOrchestraMembersIdsAndEmailsNotAssignedToOrchestraByOrchestraId
 )
 router.get(
-    '/all-assigned-to-selected-orchestra/:id',
+    '/all-orchestra-members/:id',
     authMiddleware.authenticateToken,
     getAllOrchestraMembersAssignedToOrchestraByOrchestraId
 )

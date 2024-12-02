@@ -22,7 +22,7 @@ export const useOrchestraMemberStore = defineStore('orchestraMember', () => {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/orchestra-member/all-not-assigned-to-selected-orchestra/${orchestraStore.selectedOrchestra?.id}`, {
+      const response = await fetch(`${API_BASE_URL}/orchestra-member/all-app-users/${orchestraStore.selectedOrchestra?.id}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
