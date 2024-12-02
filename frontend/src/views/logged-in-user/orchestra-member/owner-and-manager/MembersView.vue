@@ -39,8 +39,8 @@
 
     <div class="members-view__datatable">
       <DataTable
-        :value="orchestraMembersOfOrchestra"
-        :loading="loadingFetchingOrchestraMembers"
+        :value="allOrchestraMembers"
+        :loading="loadingAllOrchestraMembers"
         removableSort
         tableStyle="min-width: 50rem"
       >
@@ -109,7 +109,10 @@
                 <div
                   class="members-view__drawer-single-info members-view__drawer-avatar"
                 >
-                  <Avatar :image="selectedUser.profilePicture" size="xlarge" />
+                  <Avatar
+                    :image="selectedUser.profilePicture || undefined"
+                    size="xlarge"
+                  />
                 </div>
                 <div class="members-view__drawer-single-info">
                   <h4>Access Type:</h4>
@@ -248,13 +251,16 @@
 import { computed, onMounted, onUpdated, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import type { TOrchestraMember } from '@/types/TOrchestraMember'
-import { initOrchestraMember } from '@/constants/initOrchestraMember'
 import { API_BASE_URL } from '@/constants/config'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useAvailableOrchestrasStore } from '@/stores/useAvailableOrchestras'
 import { useOrchestraStore } from '@/stores/useOrchestraStore'
 import { useOrchestraMemberStore } from '@/stores/useOrchestraMemberStore'
+import { useMembers } from '@/composables/useMembers'
+import type { TOrchestraMember } from '@/types/TOrchestraMember'
+import type { TMember } from '@/types/TMember'
+import { initOrchestraMember } from '@/constants/initOrchestraMember'
+import { initMember } from '@/constants/initMember'
 import Select from 'primevue/select'
 import Button from 'primevue/button'
 import DataTable from 'primevue/datatable'
@@ -264,15 +270,11 @@ import Avatar from 'primevue/avatar'
 import Tag from 'primevue/tag'
 import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
-import { useMembers } from '@/composables/useMembers'
 
 const authStore = useAuthStore()
 const { token } = storeToRefs(authStore)
 // const orchestraStore = useOrchestraStore()
 const orchestraMemberStore = useOrchestraMemberStore()
-
-const toast = useToast()
-const route = useRoute()
 
 const availableOrchestrasStore = useAvailableOrchestrasStore()
 const { selectedOrchestraId, selectedOrchestraDetails } = storeToRefs(
@@ -290,18 +292,29 @@ const {
   UpdateAllOrchestraMembers,
 } = useMembers()
 
+const toast = useToast()
+const route = useRoute()
+const selectedEmail = ref<string | null>(null)
+const selectedUser = ref<TMember>(initMember)
+const drawerVisible = ref(false)
+const loadingAdding = ref(false)
+
 watch(
   () => route.params.orchestraId,
   async orchestraId => {
     await fetchAllAppUsersNotInOrchestra(orchestraId.toString())
+    await fetchAllOrchestraMembers(orchestraId.toString())
+    // convert instruments string array to string of instruments
+    allOrchestraMembers.value.forEach(orchestraMember => {
+      if (Array.isArray(orchestraMember.instruments)) {
+        orchestraMember.instruments = orchestraMember.instruments
+          .map((instrument: string) => instrument)
+          .join(', ')
+      }
+    })
   },
-  // async orchestraId => {
-  //   await fetchAllOrchestraMembers(orchestraId.toString())
-  // },
   { immediate: true },
 )
-
-const loadingAdding = ref(false)
 
 // const emailsUsersNotInOrchestra = computed(
 //   () => orchestraMemberStore.allUsersNotAssignedToSelectedOrchestra,
@@ -309,17 +322,13 @@ const loadingAdding = ref(false)
 // const loadingFetchingAllUsers = computed(
 //   () => orchestraMemberStore.loadingFetchingAllUsers,
 // )
-const selectedEmail = ref<string | null>(null)
 
-const orchestraMembersOfOrchestra = ref<TOrchestraMember[]>([])
-const loadingFetchingOrchestraMembers = computed(
-  () => orchestraMemberStore.loadingFetchingOrchestraMembers,
-)
+// const orchestraMembersOfOrchestra = ref<TOrchestraMember[]>([])
+// const loadingFetchingOrchestraMembers = computed(
+//   () => orchestraMemberStore.loadingFetchingOrchestraMembers,
+// )
 
-const selectedUser = ref<TOrchestraMember>(initOrchestraMember)
-const drawerVisible = ref(false)
-
-const openDrawer = (user: TOrchestraMember) => {
+const openDrawer = (user: TMember) => {
   selectedUser.value = user
   drawerVisible.value = true
 }
@@ -367,25 +376,25 @@ const tagSeverity = (accessType: string) => {
 //   }
 // }
 
-const fetchOrchestraMembers = async () => {
-  await orchestraMemberStore.fetchAllOrchestraMembersOfOrchestraWithRoles()
+// const fetchOrchestraMembers = async () => {
+//   await orchestraMemberStore.fetchAllOrchestraMembersOfOrchestraWithRoles()
 
-  if (orchestraMemberStore.allOrchestraMembersOfOrchestra.length > 0) {
-    console.log('Orchestra members fetched')
-    orchestraMembersOfOrchestra.value =
-      orchestraMemberStore.allOrchestraMembersOfOrchestra
-    // console.log('orchestraMembersOfOrchestra: ', JSON.stringify(orchestraMembersOfOrchestra.value, null, 2))
-  } else {
-    console.log('Orchestra members not fetched OR no members available')
-  }
+//   if (orchestraMemberStore.allOrchestraMembersOfOrchestra.length > 0) {
+//     console.log('Orchestra members fetched')
+//     orchestraMembersOfOrchestra.value =
+//       orchestraMemberStore.allOrchestraMembersOfOrchestra
+//     // console.log('orchestraMembersOfOrchestra: ', JSON.stringify(orchestraMembersOfOrchestra.value, null, 2))
+//   } else {
+//     console.log('Orchestra members not fetched OR no members available')
+//   }
 
-  // convert instruments string array to string of instruments
-  orchestraMembersOfOrchestra.value.forEach(orchestraMember => {
-    orchestraMember.instruments = orchestraMember.instruments
-      .map(instrument => instrument)
-      .join(', ')
-  })
-}
+//   // convert instruments string array to string of instruments
+//   orchestraMembersOfOrchestra.value.forEach(orchestraMember => {
+//     orchestraMember.instruments = orchestraMember.instruments
+//       .map(instrument => instrument)
+//       .join(', ')
+//   })
+// }
 
 const handleAddMember = async () => {
   console.log('Button clicked! Inside handleAddMember function.')
@@ -393,7 +402,7 @@ const handleAddMember = async () => {
   loadingAdding.value = true
 
   const foundOrchestraMember = allAppUsersNotInOrchestra.value.find(
-    user => user.email === selectedEmail.value,
+    user => user === selectedEmail.value,
   )
   console.log(
     'foundOrchestraMember:',
@@ -446,7 +455,7 @@ const handleAddMember = async () => {
   }
 
   // fetchEmails()
-  fetchOrchestraMembers()
+  // fetchOrchestraMembers()
 }
 </script>
 
