@@ -97,7 +97,6 @@
               @click="openDrawer(data)"
               rounded
             ></Button>
-            <!-- the drawer should contain such data depending on the data in the same row -->
             <Drawer
               v-model:visible="drawerVisible"
               position="right"
@@ -247,18 +246,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUpdated, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { API_BASE_URL } from '@/constants/config'
-import { useAuthStore } from '@/stores/useAuthStore'
 import { useAvailableOrchestrasStore } from '@/stores/useAvailableOrchestras'
-import { useOrchestraStore } from '@/stores/useOrchestraStore'
-import { useOrchestraMemberStore } from '@/stores/useOrchestraMemberStore'
 import { useMembers } from '@/composables/useMembers'
-import type { TOrchestraMember } from '@/types/TOrchestraMember'
 import type { TMember } from '@/types/TMember'
-import { initOrchestraMember } from '@/constants/initOrchestraMember'
 import { initMember } from '@/constants/initMember'
 import Select from 'primevue/select'
 import Button from 'primevue/button'
@@ -268,12 +261,6 @@ import Drawer from 'primevue/drawer'
 import Avatar from 'primevue/avatar'
 import Tag from 'primevue/tag'
 import Toast from 'primevue/toast'
-import { useToast } from 'primevue/usetoast'
-
-const authStore = useAuthStore()
-const { token } = storeToRefs(authStore)
-// const orchestraStore = useOrchestraStore()
-// const orchestraMemberStore = useOrchestraMemberStore()
 
 const availableOrchestrasStore = useAvailableOrchestrasStore()
 const { selectedOrchestraId, selectedOrchestraDetails } = storeToRefs(
@@ -291,18 +278,17 @@ const {
   updateAllOrchestraMembers,
 } = useMembers()
 
-const toast = useToast()
 const route = useRoute()
 const selectedEmail = ref<string | null>(null)
 const selectedUser = ref<TMember>(initMember)
 const drawerVisible = ref(false)
-// const loadingAdding = ref(false)
 
 watch(
   () => route.params.orchestraId,
   async orchestraId => {
     await fetchAllAppUsersNotInOrchestra(orchestraId.toString())
     await fetchAllOrchestraMembers(orchestraId.toString())
+
     // convert instruments string array to string of instruments
     allOrchestraMembers.value.forEach(orchestraMember => {
       if (Array.isArray(orchestraMember.instruments)) {
@@ -314,18 +300,6 @@ watch(
   },
   { immediate: true },
 )
-
-// const emailsUsersNotInOrchestra = computed(
-//   () => orchestraMemberStore.allUsersNotAssignedToSelectedOrchestra,
-// )
-// const loadingFetchingAllUsers = computed(
-//   () => orchestraMemberStore.loadingFetchingAllUsers,
-// )
-
-// const orchestraMembersOfOrchestra = ref<TOrchestraMember[]>([])
-// const loadingFetchingOrchestraMembers = computed(
-//   () => orchestraMemberStore.loadingFetchingOrchestraMembers,
-// )
 
 const openDrawer = (user: TMember) => {
   selectedUser.value = user
@@ -341,59 +315,6 @@ const tagSeverity = (accessType: string) => {
     return 'info'
   }
 }
-
-// onMounted(async () => {
-//   fetchEmails()
-//   fetchOrchestraMembers()
-// })
-
-// onUpdated(async () => {
-//   if (
-//     emailsUsersNotInOrchestra.value === undefined ||
-//     emailsUsersNotInOrchestra.value.length === 0
-//   ) {
-//     fetchEmails()
-//   }
-//   if (
-//     orchestraMembersOfOrchestra.value === undefined ||
-//     orchestraMembersOfOrchestra.value.length === 0
-//   ) {
-//     fetchOrchestraMembers()
-//   }
-// })
-
-// const fetchEmails = async () => {
-//   await orchestraMemberStore.fetchIdsAndEmailsOfAllUsersNotAssignedToSelectedOrchestra()
-
-//   if (allAppUsersNotInOrchestra.value.length > 0) {
-//     console.log('Emails fetched')
-//     // convert the array of objects to an array of emails
-//     // emailsUsersNotInOrchestra.value = orchestraMemberStore.allUsersNotAssignedToSelectedOrchestra.map((user) => user.email);
-//     // console.log('emailsUsersNotInOrchestra: ', JSON.stringify(emailsUsersNotInOrchestra.value, null, 2))
-//   } else {
-//     console.log('Emails not fetched OR no emails available')
-//   }
-// }
-
-// const fetchOrchestraMembers = async () => {
-//   await orchestraMemberStore.fetchAllOrchestraMembersOfOrchestraWithRoles()
-
-//   if (orchestraMemberStore.allOrchestraMembersOfOrchestra.length > 0) {
-//     console.log('Orchestra members fetched')
-//     orchestraMembersOfOrchestra.value =
-//       orchestraMemberStore.allOrchestraMembersOfOrchestra
-//     // console.log('orchestraMembersOfOrchestra: ', JSON.stringify(orchestraMembersOfOrchestra.value, null, 2))
-//   } else {
-//     console.log('Orchestra members not fetched OR no members available')
-//   }
-
-//   // convert instruments string array to string of instruments
-//   orchestraMembersOfOrchestra.value.forEach(orchestraMember => {
-//     orchestraMember.instruments = orchestraMember.instruments
-//       .map(instrument => instrument)
-//       .join(', ')
-//   })
-// }
 
 const handleAddMember = async () => {
   if (!selectedOrchestraId.value) return
@@ -435,10 +356,10 @@ const handleAddMember = async () => {
   align-items: center;
   width: 100%;
 
-  &__title {
-    // margin-bottom: 20px;
-    // text-align: left;
-  }
+  // &__title {
+  //   // margin-bottom: 20px;
+  //   // text-align: left;
+  // }
 
   &__form {
     display: flex;

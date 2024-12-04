@@ -4,7 +4,6 @@
     <div class="orchestra-information-view__title">
       <h1>Orchestra Information</h1>
     </div>
-    {{ route.params }}
 
     <div v-if="loadingOrchestraInformation">
       <ProgressSpinner />
@@ -242,10 +241,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { storeToRefs } from 'pinia'
-import { useAuthStore } from '@/stores/useAuthStore'
 import { useOrchestraInformation } from '@/composables/useOrchestraInformation'
-import { API_BASE_URL } from '@/constants/config'
 import {
   messageInputRequired,
   messageValidationEmail,
@@ -266,14 +262,10 @@ import FloatLabel from 'primevue/floatlabel'
 import Fluid from 'primevue/fluid'
 import InputText from 'primevue/inputtext'
 import Message from 'primevue/message'
+import ProgressSpinner from 'primevue/progressspinner'
 import Textarea from 'primevue/textarea'
 import Toast from 'primevue/toast'
-import { useToast } from 'primevue/usetoast'
 
-const authStore = useAuthStore()
-const { token } = storeToRefs(authStore)
-
-const toast = useToast()
 const route = useRoute()
 
 const {
@@ -291,18 +283,6 @@ watch(
   },
   { immediate: true },
 )
-
-// const authStore = useAuthStore()
-// const { token } = storeToRefs(authStore)
-// const orchestraStore = useOrchestraStore()
-
-// const orchestra = ref<TOrchestra>(initOrchestra)
-
-// onMounted(() => {
-//   if (orchestraStore.orchestraToUpdate) {
-//     orchestra.value = orchestraStore.orchestraToUpdate
-//   }
-// })
 
 const errorMessage = ref('')
 const showNameErrors = ref(false)
