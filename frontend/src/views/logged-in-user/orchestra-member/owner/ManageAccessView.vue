@@ -20,14 +20,15 @@
         <Accordion :value="['0']" multiple>
           <AccordionPanel
             v-for="manager in orchestraManagers"
-            :key="manager.email"
+            :key="manager.email ?? ''"
             :value="manager.value"
           >
             <!-- <div class="manage-access-view__accordion-position"> -->
             <AccordionHeader
-              ><Avatar :image="manager.profilePicture" size="xlarge" />{{
-                manager.firstName
-              }}
+              ><Avatar
+                :image="manager.profilePicture ?? undefined"
+                size="xlarge"
+              />{{ manager.firstName }}
               {{ manager.lastName }}
             </AccordionHeader>
             <!-- <i class="pi pi-trash manage-access-view__trash-icon" @click="revertManagerToPlayer(manager)"></i> -->
@@ -178,12 +179,7 @@ const fetchOrchestraManagers = async () => {
     const counter = ref(1)
     orchestraManagers.value = data.map((manager: TManager) => ({
       ...manager,
-      id: manager.id,
-      email: manager.email,
-      firstName: manager.first_name,
-      lastName: manager.last_name,
-      profilePicture: manager.profile_picture || null,
-      description: manager.description,
+      profilePicture: manager.profilePicture || null,
       value: `${counter.value++}`,
     }))
   } catch (error) {
