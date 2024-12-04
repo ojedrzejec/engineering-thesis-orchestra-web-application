@@ -96,12 +96,12 @@ export const useMembers = () => {
             : EOrchestraRole.PLAYER,
       }))
 
-      // // convert instruments string array to string of instruments
-      // allOrchestraMembers.value.forEach(orchestraMember => {
-      //   if (Array.isArray(orchestraMember.instruments)) {
-      //     orchestraMember.instruments = orchestraMember.instruments.join(', ')
-      //   }
-      // })
+      // convert instruments string array to string of instruments
+      allOrchestraMembers.value.forEach(orchestraMember => {
+        if (Array.isArray(orchestraMember.instruments)) {
+          orchestraMember.instruments = orchestraMember.instruments.join(', ')
+        }
+      })
 
       console.log('Fetched orchestra members: ', allOrchestraMembers.value)
     } catch (e) {

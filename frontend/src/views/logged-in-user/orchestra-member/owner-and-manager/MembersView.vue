@@ -289,14 +289,14 @@ watch(
     await fetchAllAppUsersNotInOrchestra(orchestraId.toString())
     await fetchAllOrchestraMembers(orchestraId.toString())
 
-    // convert instruments string array to string of instruments
-    allOrchestraMembers.value.forEach(orchestraMember => {
-      if (Array.isArray(orchestraMember.instruments)) {
-        orchestraMember.instruments = orchestraMember.instruments
-          .map((instrument: string) => instrument)
-          .join(', ')
-      }
-    })
+    // // convert instruments string array to string of instruments
+    // allOrchestraMembers.value.forEach(orchestraMember => {
+    //   if (Array.isArray(orchestraMember.instruments)) {
+    //     orchestraMember.instruments = orchestraMember.instruments
+    //       .map((instrument: string) => instrument)
+    //       .join(', ')
+    //   }
+    // })
   },
   { immediate: true },
 )
