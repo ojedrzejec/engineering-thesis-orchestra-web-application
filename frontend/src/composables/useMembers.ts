@@ -103,23 +103,63 @@ export const useMembers = () => {
       //   }
       // })
 
-      console.log('Fetched orchestra members: ', allOrchestraMembers)
-      console.log(
-        'Fetched orchestra members VALUE: ',
-        allOrchestraMembers.value,
-      )
-    } catch (error) {
-      console.error('Failed to fetch orchestra members: ', error)
+      console.log('Fetched orchestra members: ', allOrchestraMembers.value)
+    } catch (e) {
+      const baseErrorMessage = 'Failed to fetch orchestra members.'
+      console.error(baseErrorMessage, e)
       allOrchestraMembers.value = []
     } finally {
       loadingAllOrchestraMembers.value = false
     }
   }
 
-  const UpdateAllOrchestraMembers = async () => {
+  const updateAllOrchestraMembers = async (
+    selectedOrchestraId: string,
+    foundOrchestraMember: { id: string; email: string },
+  ) => {
     loadingOrchestraMembersUpdate.value = true
 
+    const postData = {
+      id_orchestra: selectedOrchestraId,
+      id_orchestra_member: foundOrchestraMember.id,
+      is_owner: false,
+      is_manager: false,
+    }
+    console.log('postData: ', JSON.stringify(postData, null, 2))
+
     try {
+      const response = await fetch(
+        `${API_BASE_URL}/orchestra-orchestra-member/`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token.value}`,
+          },
+          body: JSON.stringify(postData),
+        },
+      )
+
+      if (!response.ok) {
+        throw new Error('Response not ok.')
+      }
+
+      toast.add({
+        severity: 'success',
+        summary: `The member ${foundOrchestraMember.email} added successfully!`,
+        detail: 'Check the orchestra member details!',
+        life: 3000,
+      })
+    } catch (e) {
+      const baseErrorMessage = 'Failed to update orchestra members.'
+      console.error(baseErrorMessage, e)
+
+      toast.add({
+        severity: 'error',
+        summary: 'Adding failed.',
+        detail: baseErrorMessage,
+        life: 3000,
+      })
     } finally {
       loadingOrchestraMembersUpdate.value = false
     }
@@ -133,6 +173,6 @@ export const useMembers = () => {
     loadingOrchestraMembersUpdate,
     fetchAllAppUsersNotInOrchestra,
     fetchAllOrchestraMembers,
-    UpdateAllOrchestraMembers,
+    updateAllOrchestraMembers,
   }
 }

@@ -10,7 +10,6 @@
         Members
       </h1>
     </div>
-    {{ route.params }}
 
     <div class="members-view__form">
       <div class="members-view__form-input card flex justify-center">
@@ -31,8 +30,8 @@
         <Button
           class="members-view__form-button"
           @click.prevent="handleAddMember"
-          :disabled="loadingAdding || !selectedEmail"
-          :label="loadingAdding ? 'Adding...' : 'Add Member'"
+          :disabled="loadingOrchestraMembersUpdate || !selectedEmail"
+          :label="loadingOrchestraMembersUpdate ? 'Adding...' : 'Add Member'"
         ></Button>
       </div>
     </div>
@@ -274,7 +273,7 @@ import { useToast } from 'primevue/usetoast'
 const authStore = useAuthStore()
 const { token } = storeToRefs(authStore)
 // const orchestraStore = useOrchestraStore()
-const orchestraMemberStore = useOrchestraMemberStore()
+// const orchestraMemberStore = useOrchestraMemberStore()
 
 const availableOrchestrasStore = useAvailableOrchestrasStore()
 const { selectedOrchestraId, selectedOrchestraDetails } = storeToRefs(
@@ -289,7 +288,7 @@ const {
   loadingOrchestraMembersUpdate,
   fetchAllAppUsersNotInOrchestra,
   fetchAllOrchestraMembers,
-  UpdateAllOrchestraMembers,
+  updateAllOrchestraMembers,
 } = useMembers()
 
 const toast = useToast()
@@ -297,7 +296,7 @@ const route = useRoute()
 const selectedEmail = ref<string | null>(null)
 const selectedUser = ref<TMember>(initMember)
 const drawerVisible = ref(false)
-const loadingAdding = ref(false)
+// const loadingAdding = ref(false)
 
 watch(
   () => route.params.orchestraId,
@@ -397,65 +396,34 @@ const tagSeverity = (accessType: string) => {
 // }
 
 const handleAddMember = async () => {
-  console.log('Button clicked! Inside handleAddMember function.')
+  if (!selectedOrchestraId.value) return
 
-  loadingAdding.value = true
+  console.log('Button clicked! Inside handleAddMember function.')
 
   const foundOrchestraMember = allAppUsersNotInOrchestra.value.find(
     user => user === selectedEmail.value,
   )
+
+  if (!foundOrchestraMember) {
+    console.error('No member found with the selected email.')
+    return
+  }
+
   console.log(
     'foundOrchestraMember:',
     JSON.stringify(foundOrchestraMember, null, 2),
   )
 
-  // const postData = {
-  //   id_orchestra: orchestraStore.selectedOrchestra?.id,
-  //   id_orchestra_member: foundOrchestraMember?.id,
-  //   is_owner: false,
-  //   is_manager: false,
-  // }
-  // console.log('postData:', JSON.stringify(postData, null, 2))
-
   try {
-    //   const response = await fetch(
-    //     `${API_BASE_URL}/orchestra-orchestra-member/`,
-    //     {
-    //       method: 'POST',
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //         Authorization: `Bearer ${token}`,
-    //       },
-    //       body: JSON.stringify(postData),
-    //     },
-    //   )
-    //   if (!response) {
-    //     const errorData = await response.json()
-    //     const errorMessage =
-    //       errorData.msg || 'Adding a member to the orchestra failed.'
-    //     toast.add({
-    //       severity: 'error',
-    //       summary: 'Adding failed',
-    //       detail: errorMessage,
-    //       life: 3000,
-    //     })
-    //     throw new Error(`${errorMessage}`)
-    //   }
-    //   toast.add({
-    //     severity: 'success',
-    //     summary: `The member ${foundOrchestraMember} added successfully!`,
-    //     detail: 'Check the orchestra member details!',
-    //     life: 3000,
-    //   })
-    // } catch (error) {
-    //   console.error('Error:', error)
+    await updateAllOrchestraMembers(
+      selectedOrchestraId.value,
+      foundOrchestraMember,
+    )
+    fetchAllAppUsersNotInOrchestra(selectedOrchestraId.value)
+    fetchAllOrchestraMembers(selectedOrchestraId.value)
   } finally {
-    loadingAdding.value = false
     selectedEmail.value = null
   }
-
-  // fetchEmails()
-  // fetchOrchestraMembers()
 }
 </script>
 
