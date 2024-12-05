@@ -16,7 +16,7 @@ export const useManageAccess = () => {
   const orchestraPlayers = ref<TPlayer[]>([])
   const loadingOrchestraManagers = ref(false)
   const loadingOrchestraPlayers = ref(false)
-  const loadingPlayerAsManager = ref(false)
+  const loadingPlayerToManager = ref(false)
   const loadingManagerToPlayer = ref(false)
 
   const fetchOrchestraManagers = async (orchestraId: string) => {
@@ -94,11 +94,11 @@ export const useManageAccess = () => {
     }
   }
 
-  const setPlayerAsManager = async (
+  const updatePlayerToManager = async (
     orchestraId: string,
     selectedPlayerId: string,
   ) => {
-    loadingPlayerAsManager.value = true
+    loadingPlayerToManager.value = true
 
     const updateData = {
       id_orchestra: orchestraId,
@@ -114,7 +114,7 @@ export const useManageAccess = () => {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${authStore.getToken()}`,
+            Authorization: `Bearer ${token.value}`,
           },
           body: JSON.stringify(updateData),
         },
@@ -139,21 +139,69 @@ export const useManageAccess = () => {
         life: 3000,
       })
     } finally {
-      loadingPlayerAsManager.value = false
+      loadingPlayerToManager.value = false
     }
   }
-  const revertManagerToPlayer = () => {}
+
+  const updateManagerToPlayer = async (
+    orchestraId: string,
+    managerId: string,
+  ) => {
+    loadingManagerToPlayer.value = true
+
+    const updateData = {
+      id_orchestra: orchestraId,
+      id_orchestra_member: managerId,
+      is_manager: false,
+    }
+    console.log('updateData:', JSON.stringify(updateData, null, 2))
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/orchestra-orchestra-member/`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token.value}`,
+          },
+          body: JSON.stringify(updateData),
+        },
+      )
+
+      if (!response) {
+        throw new Error('Response not ok.')
+      }
+
+      toast.add({
+        severity: 'success',
+        summary: 'Success!',
+        detail: 'Orchestra member reverted to player!',
+        life: 3000,
+      })
+    } catch (error) {
+      const baseErrorMessage = 'Failed to set orchestra member as player.'
+      console.error(baseErrorMessage, error)
+      toast.add({
+        severity: 'error',
+        summary: baseErrorMessage,
+        life: 3000,
+      })
+    } finally {
+      loadingManagerToPlayer.value = false
+    }
+  }
 
   return {
     orchestraManagers,
     orchestraPlayers,
     loadingOrchestraManagers,
     loadingOrchestraPlayers,
-    loadingPlayerAsManager,
+    loadingPlayerToManager,
     loadingManagerToPlayer,
     fetchOrchestraManagers,
     fetchOrchestraPlayers,
-    setPlayerAsManager,
-    revertManagerToPlayer,
+    updatePlayerToManager,
+    updateManagerToPlayer,
   }
 }

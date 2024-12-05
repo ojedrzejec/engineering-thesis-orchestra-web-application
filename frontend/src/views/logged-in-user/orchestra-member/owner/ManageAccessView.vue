@@ -40,6 +40,8 @@
               rounded
               aria-label="Cancel"
               @click="revertManagerToPlayer(manager)"
+              :loading="loadingManagerToPlayer"
+              :disabled="loadingManagerToPlayer"
             ></Button>
             <!-- </div> -->
             <AccordionContent>
@@ -112,9 +114,9 @@
       <div>
         <Button
           class="manage-access-view__form-button"
-          @click.prevent="handleSetAsManager"
-          :disabled="loadingPlayerAsManager || !selectedPlayer"
-          :label="loadingPlayerAsManager ? 'Setting...' : 'Set as Manager'"
+          @click.prevent="setPlayerAsManager"
+          :disabled="loadingPlayerToManager || !selectedPlayer"
+          :label="loadingPlayerToManager ? 'Setting...' : 'Set as Manager'"
         ></Button>
       </div>
     </div>
@@ -161,10 +163,10 @@ const {
   fetchOrchestraPlayers,
   orchestraPlayers,
   loadingOrchestraPlayers,
-  setPlayerAsManager,
-  loadingPlayerAsManager,
-  // revertManagerToPlayer,
-  // loadingManagerToPlayer,
+  updatePlayerToManager,
+  loadingPlayerToManager,
+  updateManagerToPlayer,
+  loadingManagerToPlayer,
 } = useManageAccess()
 
 watch(
@@ -284,8 +286,8 @@ watch(
 //   }
 // }
 
-const handleSetAsManager = async () => {
-  console.log('handleSetAsManager')
+const setPlayerAsManager = async () => {
+  console.log('setPlayerAsManager')
 
   if (!selectedPlayer.value || !selectedPlayer.value.id) {
     return
@@ -339,12 +341,12 @@ const handleSetAsManager = async () => {
     //   life: 3000,
     // })
 
-    await setPlayerAsManager(
+    await updatePlayerToManager(
       route.params.orchestraId.toString(),
       selectedPlayer.value.id,
     )
   } catch (error) {
-    const baseErrorMessage = 'Failed while handleSetAsManager.'
+    const baseErrorMessage = 'Failed while setPlayerAsManager.'
     console.error(baseErrorMessage, error)
   } finally {
     // loadingSetting.value = false
@@ -357,56 +359,65 @@ const handleSetAsManager = async () => {
 const revertManagerToPlayer = async (manager: TManager) => {
   console.log('revertManagerToPlayer', manager)
 
-  const token = authStore.getToken()
-  if (!token) {
-    throw new Error('No token available')
+  if (!manager || !manager.id) {
+    return
   }
 
-  const updateData = {
-    id_orchestra: orchestraStore.selectedOrchestra?.id,
-    id_orchestra_member: manager.id,
-    is_manager: false,
-  }
-  console.log('updateData:', JSON.stringify(updateData, null, 2))
+  // const token = authStore.getToken()
+  // if (!token) {
+  //   throw new Error('No token available')
+  // }
+
+  // const updateData = {
+  //   id_orchestra: orchestraStore.selectedOrchestra?.id,
+  //   id_orchestra_member: manager.id,
+  //   is_manager: false,
+  // }
+  // console.log('updateData:', JSON.stringify(updateData, null, 2))
 
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/orchestra-orchestra-member/`,
-      {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authStore.getToken()}`,
-        },
-        body: JSON.stringify(updateData),
-      },
-    )
+    // const response = await fetch(
+    //   `${API_BASE_URL}/orchestra-orchestra-member/`,
+    //   {
+    //     method: 'PATCH',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       Authorization: `Bearer ${authStore.getToken()}`,
+    //     },
+    //     body: JSON.stringify(updateData),
+    //   },
+    // )
 
-    if (!response) {
-      const errorData = await response.json()
-      const errorMessage =
-        errorData.msg ||
-        'Apologies for the inconvenience. Please try again later.'
-      toast.add({
-        severity: 'error',
-        summary: 'Action failed: ',
-        detail: errorMessage,
-        life: 3000,
-      })
-      throw new Error(`Action failed: ${errorMessage}`)
+    // if (!response) {
+    //   const errorData = await response.json()
+    //   const errorMessage =
+    //     errorData.msg ||
+    //     'Apologies for the inconvenience. Please try again later.'
+    //   toast.add({
+    //     severity: 'error',
+    //     summary: 'Action failed: ',
+    //     detail: errorMessage,
+    //     life: 3000,
+    //   })
+    //   throw new Error(`Action failed: ${errorMessage}`)
+    // }
+
+    // toast.add({
+    //   severity: 'success',
+    //   summary: 'Success!',
+    //   detail: 'Orchestra member reverted to player!',
+    //   life: 3000,
+    // })
+
+    if (route.params.orchestraId) {
+      await updateManagerToPlayer(
+        route.params.orchestraId.toString(),
+        manager.id,
+      )
     }
-
-    toast.add({
-      severity: 'success',
-      summary: 'Success!',
-      detail: 'Orchestra member reverted to player!',
-      life: 3000,
-    })
   } catch (error) {
-    console.error(error)
-    errorMessage.value =
-      error.message ||
-      'An error occurred during reverting the orchestra member to a player.'
+    const baseErrorMessage = 'Failed while revertManagerToPlayer.'
+    console.error(baseErrorMessage, error)
   } finally {
     fetchOrchestraManagers(route.params.orchestraId.toString())
     fetchOrchestraPlayers(route.params.orchestraId.toString())
