@@ -45,19 +45,49 @@
             <AccordionContent>
               <div class="manage-access-view__accordion-item">
                 <h4 class="m-0">First Name:</h4>
-                <p class="m-0">{{ manager.first_name }}</p>
+                <p class="m-0" v-if="manager.first_name">
+                  {{ manager.first_name }}
+                </p>
+                <p
+                  class="manage-access-view__accordion-item-info-not-provided"
+                  v-if="!manager.first_name"
+                >
+                  Not provided
+                </p>
               </div>
               <div class="manage-access-view__accordion-item">
                 <h4 class="m-0">Last Name:</h4>
-                <p class="m-0">{{ manager.last_name }}</p>
+                <p class="m-0" v-if="manager.last_name">
+                  {{ manager.last_name }}
+                </p>
+                <p
+                  class="manage-access-view__accordion-item-info-not-provided"
+                  v-if="!manager.last_name"
+                >
+                  Not provided
+                </p>
               </div>
               <div class="manage-access-view__accordion-item">
                 <h4 class="m-0">Email:</h4>
-                <p class="m-0">{{ manager.email }}</p>
+                <p class="m-0" v-if="manager.email">{{ manager.email }}</p>
+                <p
+                  class="manage-access-view__accordion-item-info-not-provided"
+                  v-if="!manager.email"
+                >
+                  Not provided
+                </p>
               </div>
               <div class="manage-access-view__accordion-item">
                 <h4 class="m-0">Description:</h4>
-                <p class="m-0">{{ manager.description }}</p>
+                <p class="m-0" v-if="manager.description">
+                  {{ manager.description }}
+                </p>
+                <p
+                  class="manage-access-view__accordion-item-info-not-provided"
+                  v-if="!manager.description"
+                >
+                  Not provided
+                </p>
               </div>
             </AccordionContent>
           </AccordionPanel>
@@ -432,6 +462,10 @@ const revertManagerToPlayer = async (manager: TManager) => {
     grid-template-columns: 1fr 3fr;
     gap: 2px;
     align-items: center;
+  }
+
+  &__accordion-item-info-not-provided {
+    color: #b8b8b8;
   }
 
   // &__accordion-position {
