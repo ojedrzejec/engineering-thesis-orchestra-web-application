@@ -124,7 +124,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import Accordion from 'primevue/accordion'
 import AccordionContent from 'primevue/accordioncontent'
@@ -135,26 +135,13 @@ import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner'
 import Select from 'primevue/select'
 import Toast from 'primevue/toast'
-import { useToast } from 'primevue/usetoast'
-import { API_BASE_URL } from '@/constants/config'
-import { useAuthStore } from '@/stores/useAuthStore'
-import { useOrchestraStore } from '@/stores/useOrchestraStore'
 import { useManageAccess } from '@/composables/useManageAccess'
 import type { TManager } from '@/types/TManager'
 import type { TPlayer } from '@/types/TPlayer'
 
-const authStore = useAuthStore()
-const orchestraStore = useOrchestraStore()
-
-const toast = useToast()
 const route = useRoute()
 
-// const orchestraManagers = ref<TManager[]>([])
-// const loadingGettingManagers = ref(false)
-// const orchestraPlayers = ref<TPlayer[]>([])
 const selectedPlayer = ref<TPlayer | null>(null)
-// const loadingGettingPlayers = ref(false)
-// const loadingSetting = ref(false)
 
 const {
   fetchOrchestraManagers,
@@ -178,114 +165,6 @@ watch(
   { immediate: true },
 )
 
-// onMounted(async () => {
-//   await fetchOrchestraManagers()
-//   await fetchOrchestraPlayers()
-
-//   // wait 1 second
-//   await new Promise(resolve => setTimeout(resolve, 1000))
-//   isloadingSprinner.value = false
-// })
-
-// onUnmounted(() => {
-//   if (
-//     orchestraManagers.value === null ||
-//     orchestraManagers.value.length === 0
-//   ) {
-//     fetchOrchestraManagers()
-//   }
-
-//   if (orchestraPlayers.value === null || orchestraPlayers.value.length === 0) {
-//     fetchOrchestraPlayers()
-//   }
-// })
-
-// const fetchOrchestraManagers = async () => {
-//   console.log('fetchOrchestraManagers')
-
-//   loadingGettingManagers.value = true
-
-//   const token = authStore.getToken()
-//   if (!token) {
-//     throw new Error('No token available')
-//   }
-
-//   try {
-//     const response = await fetch(
-//       `${API_BASE_URL}/orchestra-member/orchestra-managers/${orchestraStore.selectedOrchestra?.id}`,
-//       {
-//         method: 'GET',
-//         headers: {
-//           'Content-Type': 'application/json',
-//           Authorization: `Bearer ${token}`,
-//         },
-//       },
-//     )
-
-//     if (!response.ok) {
-//       const errorData = await response.json()
-//       console.error(errorData)
-//       throw new Error(
-//         'Failed to fetch orchestra managers: ' + errorData.message,
-//       )
-//     }
-
-//     const data = await response.json()
-//     console.log('getAllOrchestraManagerByOrchestraId: ', data)
-
-//     const counter = ref(1)
-//     orchestraManagers.value = data.map((manager: TManager) => ({
-//       ...manager,
-//       profilePicture: manager.profilePicture || null,
-//       value: `${counter.value++}`,
-//     }))
-//   } catch (error) {
-//     console.error(error)
-//     orchestraManagers.value = []
-//   } finally {
-//     loadingGettingManagers.value = false
-//   }
-// }
-
-// const fetchOrchestraPlayers = async () => {
-//   console.log('fetchOrchestraPlayers')
-
-//   loadingGettingPlayers.value = true
-
-//   const token = authStore.getToken()
-//   if (!token) {
-//     throw new Error('No token available')
-//   }
-
-//   try {
-//     const response = await fetch(
-//       `${API_BASE_URL}/orchestra-member/orchestra-players/${orchestraStore.selectedOrchestra?.id}`,
-//       {
-//         method: 'GET',
-//         headers: {
-//           'Content-Type': 'application/json',
-//           Authorization: `Bearer ${token}`,
-//         },
-//       },
-//     )
-
-//     if (!response.ok) {
-//       const errorData = await response.json()
-//       console.error(errorData)
-//       throw new Error('Failed to fetch orchestra players: ' + errorData.message)
-//     }
-
-//     const data = await response.json()
-//     console.log('getAllOrchestraPlayerByOrchestraId: ', data)
-//     orchestraPlayers.value = data
-//   } catch (error) {
-//     console.error(error)
-//     orchestraPlayers.value = []
-//   } finally {
-//     loadingGettingPlayers.value = false
-//   }
-// }
-
 const setPlayerAsManager = async () => {
   console.log('setPlayerAsManager')
 
@@ -293,54 +172,7 @@ const setPlayerAsManager = async () => {
     return
   }
 
-  // const token = authStore.getToken()
-  // if (!token) {
-  //   throw new Error('No token available')
-  // }
-
-  // loadingSetting.value = true
-
-  // const updateData = {
-  //   id_orchestra: route.params.orchestraId.toString(),
-  //   id_orchestra_member: selectedPlayer.value.id,
-  //   is_manager: true,
-  // }
-  // console.log('updateData:', JSON.stringify(updateData, null, 2))
-
   try {
-    // const response = await fetch(
-    //   `${API_BASE_URL}/orchestra-orchestra-member/`,
-    //   {
-    //     method: 'PATCH',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       Authorization: `Bearer ${authStore.getToken()}`,
-    //     },
-    //     body: JSON.stringify(updateData),
-    //   },
-    // )
-
-    // if (!response) {
-    //   const errorData = await response.json()
-    //   const errorMessage =
-    //     errorData.msg ||
-    //     'Apologies for the inconvenience. Please try again later.'
-    //   toast.add({
-    //     severity: 'error',
-    //     summary: 'Action failed: ',
-    //     detail: errorMessage,
-    //     life: 3000,
-    //   })
-    //   throw new Error(`Action failed: ${errorMessage}`)
-    // }
-
-    // toast.add({
-    //   severity: 'success',
-    //   summary: 'Success!',
-    //   detail: 'Orchestra member set as manager!',
-    //   life: 3000,
-    // })
-
     await updatePlayerToManager(
       route.params.orchestraId.toString(),
       selectedPlayer.value.id,
@@ -349,7 +181,6 @@ const setPlayerAsManager = async () => {
     const baseErrorMessage = 'Failed while setPlayerAsManager.'
     console.error(baseErrorMessage, error)
   } finally {
-    // loadingSetting.value = false
     selectedPlayer.value = null
     fetchOrchestraManagers(route.params.orchestraId.toString())
     fetchOrchestraPlayers(route.params.orchestraId.toString())
@@ -363,52 +194,7 @@ const revertManagerToPlayer = async (manager: TManager) => {
     return
   }
 
-  // const token = authStore.getToken()
-  // if (!token) {
-  //   throw new Error('No token available')
-  // }
-
-  // const updateData = {
-  //   id_orchestra: orchestraStore.selectedOrchestra?.id,
-  //   id_orchestra_member: manager.id,
-  //   is_manager: false,
-  // }
-  // console.log('updateData:', JSON.stringify(updateData, null, 2))
-
   try {
-    // const response = await fetch(
-    //   `${API_BASE_URL}/orchestra-orchestra-member/`,
-    //   {
-    //     method: 'PATCH',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       Authorization: `Bearer ${authStore.getToken()}`,
-    //     },
-    //     body: JSON.stringify(updateData),
-    //   },
-    // )
-
-    // if (!response) {
-    //   const errorData = await response.json()
-    //   const errorMessage =
-    //     errorData.msg ||
-    //     'Apologies for the inconvenience. Please try again later.'
-    //   toast.add({
-    //     severity: 'error',
-    //     summary: 'Action failed: ',
-    //     detail: errorMessage,
-    //     life: 3000,
-    //   })
-    //   throw new Error(`Action failed: ${errorMessage}`)
-    // }
-
-    // toast.add({
-    //   severity: 'success',
-    //   summary: 'Success!',
-    //   detail: 'Orchestra member reverted to player!',
-    //   life: 3000,
-    // })
-
     if (route.params.orchestraId) {
       await updateManagerToPlayer(
         route.params.orchestraId.toString(),
