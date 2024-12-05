@@ -4,6 +4,7 @@ const {
     getAllInstruments,
     getAllInstrumentsWithoutRepeatingTheirNames,
     getInstrumentsForUser,
+    getAllByOrchestraId,
     updateAllInstrumentsNames,
     deleteInstrumentsByName,
     addInstrumentByOrchestraMemberId,
@@ -15,6 +16,11 @@ router.get(
     '/distinctedNames',
     authMiddleware.authenticateToken,
     getAllInstrumentsWithoutRepeatingTheirNames
+)
+router.get(
+    '/get-all-by-orchestra-id/:id',
+    authMiddleware.authenticateToken,
+    getAllByOrchestraId
 )
 router.get('/:id', authMiddleware.authenticateToken, getInstrumentsForUser)
 router.put('/', authMiddleware.authenticateToken, updateAllInstrumentsNames)

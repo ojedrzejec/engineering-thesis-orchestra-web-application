@@ -1,4 +1,5 @@
 const InstrumentModel = require('../models/InstrumentModel')
+const Orchestra_OrchestraOrchestraMember_Owner_Model = require('../models/OrchestraModel_OrchestraOrchestraMember_OWNER')
 
 const getAllInstruments = async (req, res) => {
     try {
@@ -24,6 +25,40 @@ const getAllInstrumentsWithoutRepeatingTheirNames = async (req, res) => {
     } catch (err) {
         res.status(500).json({
             msg: 'Server error while getting all instruments distincted.',
+        })
+    }
+}
+
+//  fetch all instruments of all Orchestra Members associated with a specific orchestra (by orchestra id)
+const getAllByOrchestraId = async (req, res) => {
+    // const { id } = req.params
+    const orchestraId = req.params.id
+    try {
+        console.log('getAllByOrchestraId')
+        console.log('orchestraId: ', orchestraId)
+
+        // Check if the orchestra exists
+        const orchestraExistance =
+            await Orchestra_OrchestraOrchestraMember_Owner_Model.getOrchestraById(
+                orchestraId
+            )
+        if (!orchestraExistance) {
+            return res.status(404).json({ msg: 'Orchestra not found' })
+        }
+        console.log('orchestraExistance:', orchestraExistance)
+
+        const instruments = await InstrumentModel.getInstrumentsByOrchestraId(
+            orchestraId
+        )
+        if (!instruments.length) {
+            return res.status(404).json({ msg: 'No instruments found.' })
+        }
+        console.log('instruments:', instruments)
+
+        res.status(200).json(instruments)
+    } catch (err) {
+        res.status(500).json({
+            msg: 'Server error while getting instruments for the orchestra.',
         })
     }
 }
@@ -117,6 +152,7 @@ const deleteInstrumentsByOrchestraMemberId = async (req, res) => {
 module.exports = {
     getAllInstruments,
     getAllInstrumentsWithoutRepeatingTheirNames,
+    getAllByOrchestraId,
     getInstrumentsForUser,
     updateAllInstrumentsNames,
     deleteInstrumentsByName,

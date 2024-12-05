@@ -29,6 +29,25 @@ const getInstrumentsByMemberId = async (orchestraMemberId) => {
     return result.rows
 }
 
+//  fetch all instruments of all Orchestra Members associated with a specific orchestra (by orchestra id)
+const getInstrumentsByOrchestraId = async (orchestraId) => {
+    const result = await pool.query(
+        `
+          SELECT instrument.*, orchestra_member.email, orchestra_member.first_name, orchestra_member.last_name
+          FROM instrument
+          JOIN orchestra_member
+          ON instrument.id_orchestra_member = orchestra_member.id
+          WHERE orchestra_member.id IN (
+            SELECT id_orchestra_member 
+            FROM orchestra_orchestra_member
+            WHERE (id_orchestra = $1)
+          );
+        `,
+        [orchestraId]
+    )
+    return result.rows
+}
+
 // Update all instruments that share the same name
 const updateAllInstrumentsByName = async (currentName, newName) => {
     const result = await pool.query(
@@ -75,6 +94,7 @@ module.exports = {
     getAllInstruments,
     getAllInstrumentsDistincted,
     getInstrumentsByMemberId,
+    getInstrumentsByOrchestraId,
     updateAllInstrumentsByName,
     deleteAllInstrumentsByName,
     createInstrument,
