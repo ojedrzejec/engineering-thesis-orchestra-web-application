@@ -83,8 +83,8 @@
         <Button
           class="manage-access-view__form-button"
           @click.prevent="handleSetAsManager"
-          :disabled="loadingSetting || !selectedPlayer"
-          :label="loadingSetting ? 'Setting...' : 'Set as Manager'"
+          :disabled="loadingPlayerAsManager || !selectedPlayer"
+          :label="loadingPlayerAsManager ? 'Setting...' : 'Set as Manager'"
         ></Button>
       </div>
     </div>
@@ -122,8 +122,7 @@ const route = useRoute()
 // const orchestraPlayers = ref<TPlayer[]>([])
 const selectedPlayer = ref<TPlayer | null>(null)
 // const loadingGettingPlayers = ref(false)
-const loadingSetting = ref(false)
-const isloadingSprinner = ref(false)
+// const loadingSetting = ref(false)
 
 const {
   fetchOrchestraManagers,
@@ -132,12 +131,15 @@ const {
   fetchOrchestraPlayers,
   orchestraPlayers,
   loadingOrchestraPlayers,
+  setPlayerAsManager,
+  loadingPlayerAsManager,
+  // revertManagerToPlayer,
+  // loadingManagerToPlayer,
 } = useManageAccess()
 
 watch(
   () => route.params.orchestraId,
   async orchestraId => {
-    isloadingSprinner.value = true
     await fetchOrchestraManagers(orchestraId.toString())
     await fetchOrchestraPlayers(orchestraId.toString())
   },
@@ -255,67 +257,70 @@ watch(
 const handleSetAsManager = async () => {
   console.log('handleSetAsManager')
 
-  if (!selectedPlayer.value) {
+  if (!selectedPlayer.value || !selectedPlayer.value.id) {
     return
   }
 
-  const token = authStore.getToken()
-  if (!token) {
-    throw new Error('No token available')
-  }
+  // const token = authStore.getToken()
+  // if (!token) {
+  //   throw new Error('No token available')
+  // }
 
-  loadingSetting.value = true
+  // loadingSetting.value = true
 
-  const updateData = {
-    id_orchestra: orchestraStore.selectedOrchestra?.id,
-    id_orchestra_member: selectedPlayer.value.id,
-    is_manager: true,
-  }
-  console.log('updateData:', JSON.stringify(updateData, null, 2))
+  // const updateData = {
+  //   id_orchestra: route.params.orchestraId.toString(),
+  //   id_orchestra_member: selectedPlayer.value.id,
+  //   is_manager: true,
+  // }
+  // console.log('updateData:', JSON.stringify(updateData, null, 2))
 
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/orchestra-orchestra-member/`,
-      {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authStore.getToken()}`,
-        },
-        body: JSON.stringify(updateData),
-      },
+    // const response = await fetch(
+    //   `${API_BASE_URL}/orchestra-orchestra-member/`,
+    //   {
+    //     method: 'PATCH',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       Authorization: `Bearer ${authStore.getToken()}`,
+    //     },
+    //     body: JSON.stringify(updateData),
+    //   },
+    // )
+
+    // if (!response) {
+    //   const errorData = await response.json()
+    //   const errorMessage =
+    //     errorData.msg ||
+    //     'Apologies for the inconvenience. Please try again later.'
+    //   toast.add({
+    //     severity: 'error',
+    //     summary: 'Action failed: ',
+    //     detail: errorMessage,
+    //     life: 3000,
+    //   })
+    //   throw new Error(`Action failed: ${errorMessage}`)
+    // }
+
+    // toast.add({
+    //   severity: 'success',
+    //   summary: 'Success!',
+    //   detail: 'Orchestra member set as manager!',
+    //   life: 3000,
+    // })
+
+    await setPlayerAsManager(
+      route.params.orchestraId.toString(),
+      selectedPlayer.value.id,
     )
-
-    if (!response) {
-      const errorData = await response.json()
-      const errorMessage =
-        errorData.msg ||
-        'Apologies for the inconvenience. Please try again later.'
-      toast.add({
-        severity: 'error',
-        summary: 'Action failed: ',
-        detail: errorMessage,
-        life: 3000,
-      })
-      throw new Error(`Action failed: ${errorMessage}`)
-    }
-
-    toast.add({
-      severity: 'success',
-      summary: 'Success!',
-      detail: 'Orchestra member set as manager!',
-      life: 3000,
-    })
   } catch (error) {
-    console.error(error)
-    errorMessage.value =
-      error.message ||
-      'An error occurred during setting the orchestra member as a manager.'
+    const baseErrorMessage = 'Failed while handleSetAsManager.'
+    console.error(baseErrorMessage, error)
   } finally {
-    loadingSetting.value = false
+    // loadingSetting.value = false
     selectedPlayer.value = null
-    fetchOrchestraManagers(orchestraId)
-    fetchOrchestraPlayers(orchestraId)
+    fetchOrchestraManagers(route.params.orchestraId.toString())
+    fetchOrchestraPlayers(route.params.orchestraId.toString())
   }
 }
 
@@ -373,8 +378,8 @@ const revertManagerToPlayer = async (manager: TManager) => {
       error.message ||
       'An error occurred during reverting the orchestra member to a player.'
   } finally {
-    fetchOrchestraManagers(orchestraId)
-    fetchOrchestraPlayers(orchestraId)
+    fetchOrchestraManagers(route.params.orchestraId.toString())
+    fetchOrchestraPlayers(route.params.orchestraId.toString())
   }
 }
 </script>

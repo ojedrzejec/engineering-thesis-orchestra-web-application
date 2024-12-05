@@ -16,6 +16,8 @@ export const useManageAccess = () => {
   const orchestraPlayers = ref<TPlayer[]>([])
   const loadingOrchestraManagers = ref(false)
   const loadingOrchestraPlayers = ref(false)
+  const loadingPlayerAsManager = ref(false)
+  const loadingManagerToPlayer = ref(false)
 
   const fetchOrchestraManagers = async (orchestraId: string) => {
     loadingOrchestraManagers.value = true
@@ -92,7 +94,54 @@ export const useManageAccess = () => {
     }
   }
 
-  const setPlayerAsManager = () => {}
+  const setPlayerAsManager = async (
+    orchestraId: string,
+    selectedPlayerId: string,
+  ) => {
+    loadingPlayerAsManager.value = true
+
+    const updateData = {
+      id_orchestra: orchestraId,
+      id_orchestra_member: selectedPlayerId,
+      is_manager: true,
+    }
+    console.log('updateData:', JSON.stringify(updateData, null, 2))
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/orchestra-orchestra-member/`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authStore.getToken()}`,
+          },
+          body: JSON.stringify(updateData),
+        },
+      )
+
+      if (!response) {
+        throw new Error('Response not ok.')
+      }
+
+      toast.add({
+        severity: 'success',
+        summary: 'Success!',
+        detail: 'Orchestra member set as manager!',
+        life: 3000,
+      })
+    } catch (error) {
+      const baseErrorMessage = 'Failed to set orchestra member as manager.'
+      console.error(baseErrorMessage, error)
+      toast.add({
+        severity: 'error',
+        summary: baseErrorMessage,
+        life: 3000,
+      })
+    } finally {
+      loadingPlayerAsManager.value = false
+    }
+  }
   const revertManagerToPlayer = () => {}
 
   return {
@@ -100,6 +149,8 @@ export const useManageAccess = () => {
     orchestraPlayers,
     loadingOrchestraManagers,
     loadingOrchestraPlayers,
+    loadingPlayerAsManager,
+    loadingManagerToPlayer,
     fetchOrchestraManagers,
     fetchOrchestraPlayers,
     setPlayerAsManager,
