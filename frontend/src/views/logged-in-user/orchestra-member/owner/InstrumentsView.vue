@@ -35,8 +35,8 @@
               </IconField>
             </div>
           </template>
-          <template #empty> No customers found. </template>
-          <template #loading> Loading customers data. Please wait. </template>
+          <template #empty> No instruments found. </template>
+          <template #loading> Loading instruments data. Please wait. </template>
           <Column
             field="instrumentName"
             header="Instrument"
