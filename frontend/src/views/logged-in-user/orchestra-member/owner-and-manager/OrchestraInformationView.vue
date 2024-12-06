@@ -392,7 +392,12 @@ const handleOrchestraUpdate = async () => {
 
   errorMessage.value = ''
 
-  await updateOrchestraInformation(orchestraInformation.value)
+  try {
+    await updateOrchestraInformation(orchestraInformation.value)
+  } catch (error) {
+    const baseErrorMessage = 'Failed while updateOrchestraInformation.'
+    console.error(baseErrorMessage, error)
+  }
 }
 </script>
 
