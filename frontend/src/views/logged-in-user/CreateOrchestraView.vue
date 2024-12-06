@@ -224,7 +224,7 @@ import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
-import FileUpload from 'primevue/fileupload'
+import FileUpload, { type FileUploadSelectEvent } from 'primevue/fileupload'
 import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
 const toast = useToast()
@@ -306,24 +306,33 @@ const showErrors = () => {
   showYouTubeUrlErrors.value = true
 }
 
-const onFileSelect = async event => {
-  const file = event.files[0]
+const onFileSelect = async (event: FileUploadSelectEvent) => {
+  if (!orchestra.value) return
+
+  const file: File = Array.isArray(event.files) ? event.files[0] : event.files
+
   if (file) {
-    orchestra.value.logo = (await fileToBase64(file)) as string
+    orchestra.value.logo = await fileToBase64(file)
   }
 }
 
-const fileToBase64 = file => {
-  return new Promise((resolve, reject) => {
+const fileToBase64 = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.readAsDataURL(file)
-    reader.onload = () => resolve(reader.result)
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        resolve(reader.result)
+      } else {
+        reject(new Error('File could not be converted to base64 string'))
+      }
+    }
     reader.onerror = error => reject(error)
   })
-}
 
-const removeFileCallback = file => {
-  console.log(file)
+const removeFileCallback = () => {
+  if (!orchestra.value) return
+
   orchestra.value.logo = null
 }
 
