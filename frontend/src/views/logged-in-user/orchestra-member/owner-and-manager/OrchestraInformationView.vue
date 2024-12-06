@@ -5,236 +5,242 @@
       <h1>Orchestra Information</h1>
     </div>
 
-    <div v-if="loadingOrchestraInformation">
-      <ProgressSpinner />
-    </div>
-    <div v-else-if="!orchestraInformation">
-      <Message severity="error">Failed to load orchestra information.</Message>
-    </div>
-    <Form v-else>
-      <Fluid>
-        <div class="orchestra-information-view__form">
-          <div class="orchestra-information-view__form-input">
-            <FloatLabel variant="on">
-              <InputText
-                class="orchestra-information-view__form-input-field"
-                id="name"
-                v-model="orchestraInformation.name"
-                @input="validateNameInput"
-                :invalid="!isNameValid && showNameErrors"
-              ></InputText>
-              <label for="name">Orchestra’s Name</label>
-            </FloatLabel>
-            <div class="orchestra-information-view__form-error-messages">
-              <Message
-                severity="error"
-                v-if="!orchestraInformation.name && showNameErrors"
-                >{{ messageInputRequired('Name') }}</Message
-              >
-              <Message
-                severity="error"
-                v-if="
-                  orchestraInformation.name &&
-                  !validateNameLength(orchestraInformation.name) &&
-                  showNameErrors
-                "
-                >{{ messageValidationInputLength('Name') }}</Message
-              >
-              <Message
-                severity="error"
-                v-if="
-                  orchestraInformation.name &&
-                  !validateWhitespaces(orchestraInformation.name) &&
-                  showNameErrors
-                "
-                >{{ messageValidationWhitespaces('Name') }}</Message
-              >
+    <div class="orchestra-information-view__content">
+      <div v-if="loadingOrchestraInformation">
+        <ProgressSpinner />
+      </div>
+      <div v-else-if="!orchestraInformation">
+        <Message severity="error"
+          >Failed to load orchestra information.</Message
+        >
+      </div>
+      <Form v-else>
+        <Fluid>
+          <div class="orchestra-information-view__form">
+            <div class="orchestra-information-view__form-input">
+              <FloatLabel variant="on">
+                <InputText
+                  class="orchestra-information-view__form-input-field"
+                  id="name"
+                  v-model="orchestraInformation.name"
+                  @input="validateNameInput"
+                  :invalid="!isNameValid && showNameErrors"
+                ></InputText>
+                <label for="name">Orchestra’s Name</label>
+              </FloatLabel>
+              <div class="orchestra-information-view__form-error-messages">
+                <Message
+                  severity="error"
+                  v-if="!orchestraInformation.name && showNameErrors"
+                  >{{ messageInputRequired('Name') }}</Message
+                >
+                <Message
+                  severity="error"
+                  v-if="
+                    orchestraInformation.name &&
+                    !validateNameLength(orchestraInformation.name) &&
+                    showNameErrors
+                  "
+                  >{{ messageValidationInputLength('Name') }}</Message
+                >
+                <Message
+                  severity="error"
+                  v-if="
+                    orchestraInformation.name &&
+                    !validateWhitespaces(orchestraInformation.name) &&
+                    showNameErrors
+                  "
+                  >{{ messageValidationWhitespaces('Name') }}</Message
+                >
+              </div>
             </div>
-          </div>
 
-          <div
-            class="orchestra-information-view__form-input orchestra-information-view__file"
-            style="align-items: center"
-          >
-            <FileUpload
-              mode="advanced"
-              name="logo"
-              accept="image/*"
-              :maxFileSize="1000000"
-              class="p-button-outlined"
-              :auto="false"
-              :customUpload="true"
-              :show-cancel-button="false"
-              :show-upload-button="false"
-              :chooseLabel="
-                orchestraInformation.logo
-                  ? 'Change Logo'
-                  : 'Choose Orchestra Logo'
-              "
-              :multiple="false"
-              @remove="removeFileCallback"
-              @select="onFileSelect"
+            <div
+              class="orchestra-information-view__form-input orchestra-information-view__file"
+              style="align-items: center"
             >
-              <!-- @upload="onFileSelect" -->
-              <template v-if="!orchestraInformation.logo" #empty>
-                <span>Drag and drop files to here to upload.</span>
-              </template>
-            </FileUpload>
-            <div v-if="orchestraInformation.logo">
-              <img
-                :src="orchestraInformation.logo"
-                alt="Orchestra Logo"
-                style="
-                  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                  border-radius: 0.75rem;
-                  width: 100%;
-                  max-width: 10rem;
+              <FileUpload
+                mode="advanced"
+                name="logo"
+                accept="image/*"
+                :maxFileSize="1000000"
+                class="p-button-outlined"
+                :auto="false"
+                :customUpload="true"
+                :show-cancel-button="false"
+                :show-upload-button="false"
+                :chooseLabel="
+                  orchestraInformation.logo
+                    ? 'Change Logo'
+                    : 'Choose Orchestra Logo'
                 "
-              />
-            </div>
-          </div>
-
-          <div class="orchestra-information-view__form-input">
-            <FloatLabel variant="on">
-              <InputText
-                class="orchestra-information-view__form-input-field"
-                id="email"
-                v-model="orchestraInformation.email"
-                v-keyfilter="/[^\s]/"
-                @input="validateEmailInput"
-                :invalid="!isEmailValid && showEmailErrors"
-              ></InputText>
-              <label for="email">Email</label>
-            </FloatLabel>
-            <div class="orchestra-information-view__form-error-messages">
-              <Message
-                severity="error"
-                v-if="
-                  orchestraInformation.email && !isEmailValid && showEmailErrors
-                "
-                >{{ messageValidationEmail }}</Message
+                :multiple="false"
+                @remove="removeFileCallback"
+                @select="onFileSelect"
               >
+                <!-- @upload="onFileSelect" -->
+                <template v-if="!orchestraInformation.logo" #empty>
+                  <span>Drag and drop files to here to upload.</span>
+                </template>
+              </FileUpload>
+              <div v-if="orchestraInformation.logo">
+                <img
+                  :src="orchestraInformation.logo"
+                  alt="Orchestra Logo"
+                  style="
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    border-radius: 0.75rem;
+                    width: 100%;
+                    max-width: 10rem;
+                  "
+                />
+              </div>
             </div>
-          </div>
 
-          <div class="orchestra-information-view__form-input">
-            <FloatLabel variant="on">
-              <Textarea
-                id="address"
-                v-model="orchestraInformation.address"
-                rows="2"
-                cols="30"
-                autoResize
-              ></Textarea>
-              <label for="address">Address</label>
-            </FloatLabel>
-          </div>
+            <div class="orchestra-information-view__form-input">
+              <FloatLabel variant="on">
+                <InputText
+                  class="orchestra-information-view__form-input-field"
+                  id="email"
+                  v-model="orchestraInformation.email"
+                  v-keyfilter="/[^\s]/"
+                  @input="validateEmailInput"
+                  :invalid="!isEmailValid && showEmailErrors"
+                ></InputText>
+                <label for="email">Email</label>
+              </FloatLabel>
+              <div class="orchestra-information-view__form-error-messages">
+                <Message
+                  severity="error"
+                  v-if="
+                    orchestraInformation.email &&
+                    !isEmailValid &&
+                    showEmailErrors
+                  "
+                  >{{ messageValidationEmail }}</Message
+                >
+              </div>
+            </div>
 
-          <div class="orchestra-information-view__form-input">
-            <FloatLabel variant="on">
-              <Textarea
-                id="history"
-                v-model="orchestraInformation.history"
-                rows="7"
-                cols="30"
-                autoResize
-              ></Textarea>
-              <label for="history">History</label>
-            </FloatLabel>
-          </div>
+            <div class="orchestra-information-view__form-input">
+              <FloatLabel variant="on">
+                <Textarea
+                  id="address"
+                  v-model="orchestraInformation.address"
+                  rows="2"
+                  cols="30"
+                  autoResize
+                ></Textarea>
+                <label for="address">Address</label>
+              </FloatLabel>
+            </div>
 
-          <div class="orchestra-information-view__form-input">
-            <FloatLabel variant="on">
-              <InputText
-                class="orchestra-information-view__form-input-field"
-                id="facebookUrl"
-                v-model="orchestraInformation.facebookUrl"
-                v-keyfilter="/[^\s]/"
-                @input="validateFacebookUrlInput"
-                :invalid="!isFacebookUrlValid && showFacebookUrlErrors"
-              ></InputText>
-              <label for="facebookUrl">Facebook Link</label>
-            </FloatLabel>
-            <div class="orchestra-information-view__form-error-messages">
-              <Message
-                severity="error"
-                v-if="
-                  orchestraInformation.facebookUrl &&
-                  !isFacebookUrlValid &&
-                  showFacebookUrlErrors
+            <div class="orchestra-information-view__form-input">
+              <FloatLabel variant="on">
+                <Textarea
+                  id="history"
+                  v-model="orchestraInformation.history"
+                  rows="7"
+                  cols="30"
+                  autoResize
+                ></Textarea>
+                <label for="history">History</label>
+              </FloatLabel>
+            </div>
+
+            <div class="orchestra-information-view__form-input">
+              <FloatLabel variant="on">
+                <InputText
+                  class="orchestra-information-view__form-input-field"
+                  id="facebookUrl"
+                  v-model="orchestraInformation.facebookUrl"
+                  v-keyfilter="/[^\s]/"
+                  @input="validateFacebookUrlInput"
+                  :invalid="!isFacebookUrlValid && showFacebookUrlErrors"
+                ></InputText>
+                <label for="facebookUrl">Facebook Link</label>
+              </FloatLabel>
+              <div class="orchestra-information-view__form-error-messages">
+                <Message
+                  severity="error"
+                  v-if="
+                    orchestraInformation.facebookUrl &&
+                    !isFacebookUrlValid &&
+                    showFacebookUrlErrors
+                  "
+                  >{{ messageValidationLink }}</Message
+                >
+              </div>
+            </div>
+
+            <div class="orchestra-information-view__form-input">
+              <FloatLabel variant="on">
+                <InputText
+                  class="orchestra-information-view__form-input-field"
+                  id="instagramUrl"
+                  v-model="orchestraInformation.instagramUrl"
+                  v-keyfilter="/[^\s]/"
+                  @input="validateInstagramUrlInput"
+                  :invalid="!isInstagramUrlValid && showInstagramUrlErrors"
+                ></InputText>
+                <label for="instagramUrl">Instagram Link</label>
+              </FloatLabel>
+              <div class="orchestra-information-view__form-error-messages">
+                <Message
+                  severity="error"
+                  v-if="
+                    orchestraInformation.instagramUrl &&
+                    !isInstagramUrlValid &&
+                    showInstagramUrlErrors
+                  "
+                  >{{ messageValidationLink }}</Message
+                >
+              </div>
+            </div>
+
+            <div class="orchestra-information-view__form-input">
+              <FloatLabel variant="on">
+                <InputText
+                  class="orchestra-information-view__form-input-field"
+                  id="youtubeUrl"
+                  v-model="orchestraInformation.youtubeUrl"
+                  v-keyfilter="/[^\s]/"
+                  @input="validateYouTubeUrlInput"
+                  :invalid="!isYouTubeUrlValid && showYouTubeUrlErrors"
+                ></InputText>
+                <label for="youtubeUrl">YouTube Link</label>
+              </FloatLabel>
+              <div class="orchestra-information-view__form-error-messages">
+                <Message
+                  severity="error"
+                  v-if="
+                    orchestraInformation.youtubeUrl &&
+                    !isYouTubeUrlValid &&
+                    showYouTubeUrlErrors
+                  "
+                  >{{ messageValidationLink }}</Message
+                >
+              </div>
+            </div>
+
+            <div v-if="errorMessage" class="error-message">
+              <Message severity="error">{{ errorMessage }}</Message>
+            </div>
+
+            <div>
+              <Button
+                class="orchestra-information-view__form-button"
+                @click.prevent="handleOrchestraUpdate"
+                :disabled="loadingOrchestraInformationUpdate"
+                :label="
+                  loadingOrchestraInformationUpdate ? 'Updating...' : 'Update'
                 "
-                >{{ messageValidationLink }}</Message
-              >
+              ></Button>
             </div>
           </div>
-
-          <div class="orchestra-information-view__form-input">
-            <FloatLabel variant="on">
-              <InputText
-                class="orchestra-information-view__form-input-field"
-                id="instagramUrl"
-                v-model="orchestraInformation.instagramUrl"
-                v-keyfilter="/[^\s]/"
-                @input="validateInstagramUrlInput"
-                :invalid="!isInstagramUrlValid && showInstagramUrlErrors"
-              ></InputText>
-              <label for="instagramUrl">Instagram Link</label>
-            </FloatLabel>
-            <div class="orchestra-information-view__form-error-messages">
-              <Message
-                severity="error"
-                v-if="
-                  orchestraInformation.instagramUrl &&
-                  !isInstagramUrlValid &&
-                  showInstagramUrlErrors
-                "
-                >{{ messageValidationLink }}</Message
-              >
-            </div>
-          </div>
-
-          <div class="orchestra-information-view__form-input">
-            <FloatLabel variant="on">
-              <InputText
-                class="orchestra-information-view__form-input-field"
-                id="youtubeUrl"
-                v-model="orchestraInformation.youtubeUrl"
-                v-keyfilter="/[^\s]/"
-                @input="validateYouTubeUrlInput"
-                :invalid="!isYouTubeUrlValid && showYouTubeUrlErrors"
-              ></InputText>
-              <label for="youtubeUrl">YouTube Link</label>
-            </FloatLabel>
-            <div class="orchestra-information-view__form-error-messages">
-              <Message
-                severity="error"
-                v-if="
-                  orchestraInformation.youtubeUrl &&
-                  !isYouTubeUrlValid &&
-                  showYouTubeUrlErrors
-                "
-                >{{ messageValidationLink }}</Message
-              >
-            </div>
-          </div>
-
-          <div v-if="errorMessage" class="error-message">
-            <Message severity="error">{{ errorMessage }}</Message>
-          </div>
-
-          <div>
-            <Button
-              class="orchestra-information-view__form-button"
-              @click.prevent="handleOrchestraUpdate"
-              :disabled="loadingOrchestraInformationUpdate"
-              :label="
-                loadingOrchestraInformationUpdate ? 'Updating...' : 'Update'
-              "
-            ></Button>
-          </div>
-        </div>
-      </Fluid>
-    </Form>
+        </Fluid>
+      </Form>
+    </div>
   </div>
 </template>
 
@@ -403,13 +409,16 @@ const handleOrchestraUpdate = async () => {
 
 <style setup lang="scss">
 .orchestra-information-view {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-
   &__title {
-    margin-bottom: 20px;
+    margin-bottom: 50px;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    // align-items: center;
+    gap: 50px;
+    width: 100%;
   }
 
   &__form {

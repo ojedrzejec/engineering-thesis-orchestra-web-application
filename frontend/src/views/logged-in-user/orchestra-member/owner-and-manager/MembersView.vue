@@ -11,236 +11,237 @@
       </h1>
     </div>
 
-    <div class="members-view__form">
-      <div class="members-view__form-input card flex justify-center">
-        <Select
-          v-model="selectedEmail"
-          showClear
-          filter
-          :loading="loadingAllAppUsersNotInOrchestra"
-          :options="allAppUsersNotInOrchestra"
-          optionLabel="email"
-          placeholder="Select an email"
-          :disabled="loadingAllAppUsersNotInOrchestra"
-          class="w-full md:w-56"
-        ></Select>
+    <div class="members-view__content">
+      <div class="members-view__form">
+        <div class="members-view__form-input card flex justify-center">
+          <Select
+            v-model="selectedEmail"
+            showClear
+            filter
+            :loading="loadingAllAppUsersNotInOrchestra"
+            :options="allAppUsersNotInOrchestra"
+            optionLabel="email"
+            placeholder="Select an email"
+            :disabled="loadingAllAppUsersNotInOrchestra"
+            class="w-full md:w-56"
+          ></Select>
+        </div>
+        <div>
+          <Button
+            class="members-view__form-button"
+            @click.prevent="handleAddMember"
+            :disabled="loadingOrchestraMembersUpdate || !selectedEmail"
+            :label="loadingOrchestraMembersUpdate ? 'Adding...' : 'Add Member'"
+          ></Button>
+        </div>
       </div>
 
-      <div>
-        <Button
-          class="members-view__form-button"
-          @click.prevent="handleAddMember"
-          :disabled="loadingOrchestraMembersUpdate || !selectedEmail"
-          :label="loadingOrchestraMembersUpdate ? 'Adding...' : 'Add Member'"
-        ></Button>
-      </div>
-    </div>
-
-    <div class="members-view__datatable">
-      <DataTable
-        :value="allOrchestraMembers"
-        :loading="loadingAllOrchestraMembers"
-        removableSort
-        tableStyle="min-width: 50rem"
-      >
-        <Column header="Avatar">
-          <template #body="{ data }">
-            <Avatar
-              :image="data.profilePicture"
-              class="flex items-center justify-center mr-2"
-              size="large"
-            />
-          </template>
-        </Column>
-        <Column
-          field="email"
-          header="Email"
-          sortable
-          style="width: 25%"
-        ></Column>
-        <Column
-          field="firstName"
-          header="First Name"
-          sortable
-          style="width: 25%"
-        ></Column>
-        <Column
-          field="lastName"
-          header="Last Name"
-          sortable
-          style="width: 25%"
-        ></Column>
-        <Column
-          field="instruments"
-          header="Instruments"
-          sortable
-          style="width: 25%"
-        ></Column>
-        <Column
-          field="accessType"
-          header="Access Type"
-          sortable
-          style="width: 25%"
+      <div class="members-view__datatable">
+        <DataTable
+          :value="allOrchestraMembers"
+          :loading="loadingAllOrchestraMembers"
+          removableSort
+          tableStyle="min-width: 50rem"
         >
-          <template #body="{ data }">
-            <Tag
-              v-if="data.accessType"
-              :value="data.accessType"
-              :severity="tagSeverity(data.accessType)"
-            ></Tag>
-          </template>
-        </Column>
-        <Column class="w-24 !text-end">
-          <template #body="{ data }">
-            <Button
-              icon="pi pi-user"
-              @click="openDrawer(data)"
-              rounded
-            ></Button>
-            <Drawer
-              v-model:visible="drawerVisible"
-              position="right"
-              header="Orchestra Member Details"
-              :pt="{ root: 'members-view__drawer' }"
-            >
-              <div class="members-view__drawer-content">
-                <div
-                  class="members-view__drawer-single-info members-view__drawer-avatar"
-                >
-                  <Avatar
-                    :image="selectedUser.profilePicture || undefined"
-                    size="xlarge"
-                  />
-                </div>
-                <div class="members-view__drawer-single-info">
-                  <h4>Access Type:</h4>
-                  <p>
-                    <Tag
-                      v-if="selectedUser.accessType"
-                      :value="selectedUser.accessType"
-                      :severity="tagSeverity(selectedUser.accessType)"
-                    ></Tag>
-                  </p>
+          <Column header="Avatar">
+            <template #body="{ data }">
+              <Avatar
+                :image="data.profilePicture"
+                class="flex items-center justify-center mr-2"
+                size="large"
+              />
+            </template>
+          </Column>
+          <Column
+            field="email"
+            header="Email"
+            sortable
+            style="width: 25%"
+          ></Column>
+          <Column
+            field="firstName"
+            header="First Name"
+            sortable
+            style="width: 25%"
+          ></Column>
+          <Column
+            field="lastName"
+            header="Last Name"
+            sortable
+            style="width: 25%"
+          ></Column>
+          <Column
+            field="instruments"
+            header="Instruments"
+            sortable
+            style="width: 25%"
+          ></Column>
+          <Column
+            field="accessType"
+            header="Access Type"
+            sortable
+            style="width: 25%"
+          >
+            <template #body="{ data }">
+              <Tag
+                v-if="data.accessType"
+                :value="data.accessType"
+                :severity="tagSeverity(data.accessType)"
+              ></Tag>
+            </template>
+          </Column>
+          <Column class="w-24 !text-end">
+            <template #body="{ data }">
+              <Button
+                icon="pi pi-user"
+                @click="openDrawer(data)"
+                rounded
+              ></Button>
+              <Drawer
+                v-model:visible="drawerVisible"
+                position="right"
+                header="Orchestra Member Details"
+                :pt="{ root: 'members-view__drawer' }"
+              >
+                <div class="members-view__drawer-content">
                   <div
-                    class="members-view__drawer-single-info-not-provided"
-                    v-if="!selectedUser.accessType"
+                    class="members-view__drawer-single-info members-view__drawer-avatar"
                   >
-                    Not provided
+                    <Avatar
+                      :image="selectedUser.profilePicture || undefined"
+                      size="xlarge"
+                    />
+                  </div>
+                  <div class="members-view__drawer-single-info">
+                    <h4>Access Type:</h4>
+                    <p>
+                      <Tag
+                        v-if="selectedUser.accessType"
+                        :value="selectedUser.accessType"
+                        :severity="tagSeverity(selectedUser.accessType)"
+                      ></Tag>
+                    </p>
+                    <div
+                      class="members-view__drawer-single-info-not-provided"
+                      v-if="!selectedUser.accessType"
+                    >
+                      Not provided
+                    </div>
+                  </div>
+                  <div class="members-view__drawer-single-info">
+                    <h4>First Name:</h4>
+                    <p v-if="selectedUser.firstName">
+                      {{ selectedUser.firstName }}
+                    </p>
+                    <div
+                      class="members-view__drawer-single-info-not-provided"
+                      v-if="!selectedUser.firstName"
+                    >
+                      Not provided
+                    </div>
+                  </div>
+                  <div class="members-view__drawer-single-info">
+                    <h4>Last Name:</h4>
+                    <p v-if="selectedUser.lastName">
+                      {{ selectedUser.lastName }}
+                    </p>
+                    <div
+                      class="members-view__drawer-single-info-not-provided"
+                      v-if="!selectedUser.lastName"
+                    >
+                      Not provided
+                    </div>
+                  </div>
+                  <div class="members-view__drawer-single-info">
+                    <h4>Instruments:</h4>
+                    <p v-if="selectedUser.instruments">
+                      {{ selectedUser.instruments }}
+                    </p>
+                    <div
+                      class="members-view__drawer-single-info-not-provided"
+                      v-if="!selectedUser.instruments"
+                    >
+                      Not provided
+                    </div>
+                  </div>
+                  <div class="members-view__drawer-single-info">
+                    <h4>Email:</h4>
+                    <p v-if="selectedUser.email">{{ selectedUser.email }}</p>
+                    <div
+                      class="members-view__drawer-single-info-not-provided"
+                      v-if="!selectedUser.email"
+                    >
+                      Not provided
+                    </div>
+                  </div>
+                  <div class="members-view__drawer-single-info">
+                    <h4>Phone:</h4>
+                    <p v-if="selectedUser.phone">{{ selectedUser.phone }}</p>
+                    <div
+                      class="members-view__drawer-single-info-not-provided"
+                      v-if="!selectedUser.phone"
+                    >
+                      Not provided
+                    </div>
+                  </div>
+                  <div class="members-view__drawer-single-info">
+                    <h4>Date of Birth:</h4>
+                    <p v-if="selectedUser.dateOfBirth">
+                      {{ selectedUser.dateOfBirth }}
+                    </p>
+                    <div
+                      class="members-view__drawer-single-info-not-provided"
+                      v-if="!selectedUser.dateOfBirth"
+                    >
+                      Not provided
+                    </div>
+                  </div>
+                  <div class="members-view__drawer-single-info">
+                    <h4>Is a Student:</h4>
+                    <p v-if="selectedUser.isStudent">
+                      {{ selectedUser.isStudent }}
+                    </p>
+                    <div
+                      class="members-view__drawer-single-info-not-provided"
+                      v-if="!selectedUser.isStudent"
+                    >
+                      Not provided
+                    </div>
+                  </div>
+                  <div
+                    v-if="selectedUser.isStudent"
+                    class="members-view__drawer-single-info"
+                  >
+                    <h4>University:</h4>
+                    <p v-if="selectedUser.university">
+                      {{ selectedUser.university }}
+                    </p>
+                    <div
+                      class="members-view__drawer-single-info-not-provided"
+                      v-if="!selectedUser.university"
+                    >
+                      Not provided
+                    </div>
+                  </div>
+                  <div class="members-view__drawer-single-info">
+                    <h4>Description:</h4>
+                    <p v-if="selectedUser.description">
+                      {{ selectedUser.description }}
+                    </p>
+                    <div
+                      class="members-view__drawer-single-info-not-provided"
+                      v-if="!selectedUser.description"
+                    >
+                      Not provided
+                    </div>
                   </div>
                 </div>
-                <div class="members-view__drawer-single-info">
-                  <h4>First Name:</h4>
-                  <p v-if="selectedUser.firstName">
-                    {{ selectedUser.firstName }}
-                  </p>
-                  <div
-                    class="members-view__drawer-single-info-not-provided"
-                    v-if="!selectedUser.firstName"
-                  >
-                    Not provided
-                  </div>
-                </div>
-                <div class="members-view__drawer-single-info">
-                  <h4>Last Name:</h4>
-                  <p v-if="selectedUser.lastName">
-                    {{ selectedUser.lastName }}
-                  </p>
-                  <div
-                    class="members-view__drawer-single-info-not-provided"
-                    v-if="!selectedUser.lastName"
-                  >
-                    Not provided
-                  </div>
-                </div>
-                <div class="members-view__drawer-single-info">
-                  <h4>Instruments:</h4>
-                  <p v-if="selectedUser.instruments">
-                    {{ selectedUser.instruments }}
-                  </p>
-                  <div
-                    class="members-view__drawer-single-info-not-provided"
-                    v-if="!selectedUser.instruments"
-                  >
-                    Not provided
-                  </div>
-                </div>
-                <div class="members-view__drawer-single-info">
-                  <h4>Email:</h4>
-                  <p v-if="selectedUser.email">{{ selectedUser.email }}</p>
-                  <div
-                    class="members-view__drawer-single-info-not-provided"
-                    v-if="!selectedUser.email"
-                  >
-                    Not provided
-                  </div>
-                </div>
-                <div class="members-view__drawer-single-info">
-                  <h4>Phone:</h4>
-                  <p v-if="selectedUser.phone">{{ selectedUser.phone }}</p>
-                  <div
-                    class="members-view__drawer-single-info-not-provided"
-                    v-if="!selectedUser.phone"
-                  >
-                    Not provided
-                  </div>
-                </div>
-                <div class="members-view__drawer-single-info">
-                  <h4>Date of Birth:</h4>
-                  <p v-if="selectedUser.dateOfBirth">
-                    {{ selectedUser.dateOfBirth }}
-                  </p>
-                  <div
-                    class="members-view__drawer-single-info-not-provided"
-                    v-if="!selectedUser.dateOfBirth"
-                  >
-                    Not provided
-                  </div>
-                </div>
-                <div class="members-view__drawer-single-info">
-                  <h4>Is a Student:</h4>
-                  <p v-if="selectedUser.isStudent">
-                    {{ selectedUser.isStudent }}
-                  </p>
-                  <div
-                    class="members-view__drawer-single-info-not-provided"
-                    v-if="!selectedUser.isStudent"
-                  >
-                    Not provided
-                  </div>
-                </div>
-                <div
-                  v-if="selectedUser.isStudent"
-                  class="members-view__drawer-single-info"
-                >
-                  <h4>University:</h4>
-                  <p v-if="selectedUser.university">
-                    {{ selectedUser.university }}
-                  </p>
-                  <div
-                    class="members-view__drawer-single-info-not-provided"
-                    v-if="!selectedUser.university"
-                  >
-                    Not provided
-                  </div>
-                </div>
-                <div class="members-view__drawer-single-info">
-                  <h4>Description:</h4>
-                  <p v-if="selectedUser.description">
-                    {{ selectedUser.description }}
-                  </p>
-                  <div
-                    class="members-view__drawer-single-info-not-provided"
-                    v-if="!selectedUser.description"
-                  >
-                    Not provided
-                  </div>
-                </div>
-              </div>
-            </Drawer>
-          </template>
-        </Column>
-      </DataTable>
-      <Toast />
+              </Drawer>
+            </template>
+          </Column>
+        </DataTable>
+        <Toast />
+      </div>
     </div>
   </div>
 </template>
@@ -350,16 +351,17 @@ const handleAddMember = async () => {
 
 <style setup lang="scss">
 .members-view {
-  display: flex;
-  flex-direction: column;
-  gap: 50px;
-  align-items: center;
-  width: 100%;
+  &__title {
+    margin-bottom: 50px;
+  }
 
-  // &__title {
-  //   // margin-bottom: 20px;
-  //   // text-align: left;
-  // }
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    // align-items: center;
+    width: 100%;
+  }
 
   &__form {
     display: flex;
