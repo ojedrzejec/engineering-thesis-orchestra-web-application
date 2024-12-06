@@ -4,7 +4,18 @@
       <h1>Groups</h1>
     </div>
 
-    <div class="groups-view__content">
+    <div v-if="loadingGroups">
+      <ProgressSpinner />
+    </div>
+    <div v-else-if="!groups">
+      <Message severity="error">Failed to load orchestra groups.</Message>
+    </div>
+    <div v-else class="groups-view__content">
+      <pre>
+        {{ route.params }}
+        {{ { groups } }}
+      </pre>
+
       <pre>
       <div>
         See all Orchestra Groups:
@@ -27,7 +38,23 @@
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { useGroups } from '@/composables/useGroups'
+
+const { groups, loadingGroups, fetchGroups } = useGroups()
+
+const route = useRoute()
+
+watch(
+  () => route.params.orchestraId,
+  async orchestraId => {
+    await fetchGroups(orchestraId.toString())
+  },
+  { immediate: true },
+)
+</script>
 
 <style setup lang="scss">
 .groups-view {

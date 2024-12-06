@@ -7,6 +7,7 @@ const orchestraMemberRoutes = require('./src/routes/orchestraMemberRoutes')
 const orchestraRoutes = require('./src/routes/orchestraRoutes')
 const orchestraOrchestraMemberRoutes = require('./src/routes/orchestraOrchestraMemberRoutes')
 const instrumentRoutes = require('./src/routes/instrumentRoutes')
+const groupRoutes = require('./src/routes/groupRoutes')
 
 const app = express()
 
@@ -29,5 +30,6 @@ app.use('/orchestra-member', orchestraMemberRoutes)
 app.use('/orchestra', orchestraRoutes)
 app.use('/orchestra-orchestra-member', orchestraOrchestraMemberRoutes)
 app.use('/instrument', instrumentRoutes)
+app.use('/group', groupRoutes)
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
