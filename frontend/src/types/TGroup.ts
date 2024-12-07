@@ -1,3 +1,4 @@
 export type TGroup = {
-  name: string | null
+  id: string
+  name: string
 }
