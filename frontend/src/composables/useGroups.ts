@@ -12,9 +12,11 @@ export const useGroups = () => {
   const toast = useToast()
 
   const groups = ref<TGroup[]>([])
+  const groupsWithMembersAndInstruments = ref<TGroup[]>([])
 
   const loadingGroups = ref(false)
   const loadingNewGroupCreate = ref(false)
+  const loadingGroupsWithMembersAndInstruments = ref(false)
 
   const fetchGroups = async (orchestraId: string) => {
     loadingGroups.value = true
@@ -46,6 +48,71 @@ export const useGroups = () => {
       groups.value = []
     } finally {
       loadingGroups.value = false
+    }
+  }
+
+  const fetchGroupsWithMembersAndTheirInstruments = async (
+    orchestraId: string,
+  ) => {
+    loadingGroupsWithMembersAndInstruments.value = true
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/group/with-members/${orchestraId}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token.value}`,
+          },
+        },
+      )
+
+      // if (response.status === 404) {
+      //   throw new Error('Groups not found.')
+      // }
+
+      if (!response.ok) {
+        throw new Error('Response not ok.')
+      }
+
+      const data = await response.json()
+      console.log('Fetched data (groups): ', data)
+
+      groupsWithMembersAndInstruments.value = data
+
+      const counter = ref(1)
+      groupsWithMembersAndInstruments.value = data.map((group: TGroup) => ({
+        ...group,
+        value: `${counter.value++}`,
+      }))
+
+      console.log(
+        'Fetched groupsWithMembersAndInstruments: ',
+        groupsWithMembersAndInstruments.value,
+      )
+
+      groupsWithMembersAndInstruments.value.forEach(group => {
+        console.log('members: ', group.members)
+        if (Array.isArray(group.members)) {
+          group.members.forEach(member => {
+            if (Array.isArray(member.instruments)) {
+              member.instruments = member.instruments.join(', ')
+            }
+          })
+        }
+      })
+
+      console.log(
+        'Fetched groups With Members And Instruments: ',
+        groupsWithMembersAndInstruments.value,
+      )
+    } catch (e) {
+      console.error(e)
+      const baseErrorMessage =
+        'Failed to fetch orchestra groupsWithMembersAndInstruments.'
+      console.error(baseErrorMessage, e)
+      groupsWithMembersAndInstruments.value = []
+    } finally {
+      loadingGroupsWithMembersAndInstruments.value = false
     }
   }
 
@@ -93,9 +160,12 @@ export const useGroups = () => {
 
   return {
     groups,
+    groupsWithMembersAndInstruments,
     loadingGroups,
+    loadingGroupsWithMembersAndInstruments,
     loadingNewGroupCreate,
     fetchGroups,
+    fetchGroupsWithMembersAndTheirInstruments,
     createNewGroup,
   }
 }

@@ -25,7 +25,7 @@
           <Accordion :value="['0']" multiple>
             <AccordionPanel
               v-for="manager in orchestraManagers"
-              :key="manager.email ?? ''"
+              :key="manager.id ?? ''"
               :value="manager.value"
             >
               <!-- <div class="manage-access-view__accordion-position"> -->

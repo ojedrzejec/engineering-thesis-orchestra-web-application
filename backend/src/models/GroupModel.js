@@ -9,6 +9,14 @@ const getAllGroupsByOrchestraId = async (orchestraId) => {
     return result.rows
 }
 
+const getAllMembersByGroupId = async (groupId) => {
+    const result = await pool.query(
+        `SELECT id, email, first_name, last_name FROM orchestra_member WHERE id IN (SELECT id_orchestra_member FROM orchestra_group_orchestra_member WHERE id_orchestra_group = $1)`,
+        [groupId]
+    )
+    return result.rows
+}
+
 const getGroupByName = async (name) => {
     const result = await pool.query(
         `SELECT * FROM orchestra_group WHERE name = $1`,
@@ -27,6 +35,7 @@ const createGroup = async (name, orchestraId) => {
 
 module.exports = {
     getAllGroupsByOrchestraId,
+    getAllMembersByGroupId,
     getGroupByName,
     createGroup,
 }

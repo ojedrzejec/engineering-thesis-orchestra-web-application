@@ -6,17 +6,18 @@
 
     <pre>
       {{ route.params }}
-      {{ { groups } }}
+      <!-- {{ { groups } }} -->
+      {{ { groupsWithMembersAndInstruments } }}
     </pre>
 
     <div class="groups-view__content">
-      <div v-if="loadingGroups">
+      <div v-if="loadingGroupsWithMembersAndInstruments">
         <ProgressSpinner />
       </div>
-      <div v-else-if="!groups">
+      <div v-else-if="!groupsWithMembersAndInstruments">
         <Message severity="error">Failed to load orchestra groups.</Message>
       </div>
-      <div v-else-if="groups.length === 0">
+      <div v-else-if="groupsWithMembersAndInstruments.length === 0">
         <Message severity="error"
           >Failed to load orchestra groups <strong>or</strong> no orchestra
           groups found.
@@ -24,18 +25,54 @@
       </div>
 
       <div v-else>
-        <pre>
-          See all Orchestra Groups: 
-          -> delete group 
-          -> see all assigned members
-        </pre>
+        <p
+          v-for="gr in groupsWithMembersAndInstruments"
+          v-bind:key="gr.id"
+          style="
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            gap: 10px;
+          "
+        >
+          <Tag :value="gr.name"></Tag>
+        </p>
+        <div class="card">
+          <Accordion :value="['0']" multiple>
+            <AccordionPanel
+              v-for="gr in groupsWithMembersAndInstruments"
+              :key="gr.id"
+              :value="gr.value"
+            >
+              <AccordionHeader>
+                <Tag :value="gr.name" rounded></Tag>
+                <Badge :value="gr.members.length" severity="secondary"></Badge>
+              </AccordionHeader>
+              <AccordionContent>
+                <Button
+                  label="Add a member"
+                  severity="secondary"
+                  icon="pi pi-plus"
+                  rounded
+                  @click="addMember(gr)"
+                ></Button>
+                <!-- :loading="loadingAddMember"  -->
+                <!-- :disabled="loadingAddMember" -->
+                <p class="m-0">{{ gr.id }}</p>
+                <!-- <p class="m-0">{{ gr.members }}</p> -->
+                <DataTable :value="gr.members" tableStyle="min-width: 50rem">
+                  <Column field="email" header="Email"></Column>
+                  <Column field="first_name" header="First Name"></Column>
+                  <Column field="last_name" header="Last Name"></Column>
+                  <Column field="instruments" header="Instruments"></Column>
+                </DataTable>
+              </AccordionContent>
+            </AccordionPanel>
+          </Accordion>
+        </div>
       </div>
+
       <div class="groups-view__form">
-        <pre>
-          Create Orchestra Group (form):
-          - name
-          = button (Create new group)
-        </pre>
         <div class="groups-view__form-input">
           <FloatLabel variant="on">
             <InputText
@@ -71,10 +108,11 @@
             class="members-view__form-button"
             @click.prevent="handleCreateNewGroup"
             :disabled="loadingNewGroupCreate || !newGroupName"
-            :label="loadingNewGroupCreate ? 'Creating...' : 'Create Group'"
+            :label="loadingNewGroupCreate ? 'Creating...' : 'Create new group'"
           ></Button>
         </div>
       </div>
+
       <div>
         <pre>
           Add Orchesstra Member to the Group (form): - orchestra member email
@@ -95,15 +133,27 @@ import Message from 'primevue/message'
 import FloatLabel from 'primevue/floatlabel'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
+import Tag from 'primevue/tag'
+import Accordion from 'primevue/accordion'
+import AccordionPanel from 'primevue/accordionpanel'
+import AccordionHeader from 'primevue/accordionheader'
+import AccordionContent from 'primevue/accordioncontent'
+import Badge from 'primevue/badge'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
 import {
   messageValidationNewGroupNameLength,
   validateNewGroupNameLength,
 } from '@/constants/validation/groupValidation'
+import type { TGroup } from '@/types/TGroup'
 
 const {
   groups,
   loadingGroups,
   fetchGroups,
+  groupsWithMembersAndInstruments,
+  loadingGroupsWithMembersAndInstruments,
+  fetchGroupsWithMembersAndTheirInstruments,
   loadingNewGroupCreate,
   createNewGroup,
 } = useGroups()
@@ -111,7 +161,6 @@ const {
 const route = useRoute()
 
 const newGroupName = ref('')
-
 const errorMessage = ref('')
 const showNewGroupNameErrors = ref(false)
 
@@ -130,7 +179,8 @@ const showErrors = (message: string) => {
 watch(
   () => route.params.orchestraId,
   async orchestraId => {
-    await fetchGroups(orchestraId.toString())
+    // await fetchGroups(orchestraId.toString())
+    await fetchGroupsWithMembersAndTheirInstruments(orchestraId.toString())
   },
   { immediate: true },
 )
@@ -148,7 +198,11 @@ const handleCreateNewGroup = async () => {
   }
 
   // check if in groups the newGroupName already exists in the fetched groups
-  if (groups.value.some(group => group.name === newGroupName.value)) {
+  if (
+    groupsWithMembersAndInstruments.value.some(
+      group => group.name === newGroupName.value,
+    )
+  ) {
     showErrors('Group name already exists.')
     return
   }
@@ -165,8 +219,14 @@ const handleCreateNewGroup = async () => {
     console.error(baseErrorMessage, e)
   } finally {
     newGroupName.value = ''
-    fetchGroups(route.params.orchestraId.toString())
+    fetchGroupsWithMembersAndTheirInstruments(
+      route.params.orchestraId.toString(),
+    )
   }
+}
+
+const addMember = (gr: TGroup) => {
+  console.log('addMember to group (gr.id): ', gr.id)
 }
 </script>
 
