@@ -1,5 +1,6 @@
 const GroupModel = require('../models/GroupModel')
 const Orchestra_OrchestraOrchestraMember_Owner_Model = require('../models/OrchestraModel_OrchestraOrchestraMember_OWNER')
+const OrchestraMemberModel = require('../models/OrchestraMemberModel')
 const InstrumentModel = require('../models/InstrumentModel')
 
 const getAllGroups = async (req, res) => {
@@ -140,9 +141,63 @@ const createNewGroup = async (req, res) => {
     }
 }
 
+const addMemberToGroup = async (req, res) => {
+    const { id_orchestra, id_group, id_member } = req.body
+
+    try {
+        // check if the orchestra exists
+        const orchestraExistance =
+            await Orchestra_OrchestraOrchestraMember_Owner_Model.getOrchestraById(
+                id_orchestra
+            )
+        if (!orchestraExistance) {
+            return res.status(404).json({ msg: 'Orchestra not found' })
+        }
+
+        // check if the group exists
+        const groupExistance = await GroupModel.getGroupById(id_group)
+        if (!groupExistance) {
+            return res.status(404).json({ msg: 'Group not found' })
+        }
+
+        // check if the member exists
+        const memberExistance =
+            await OrchestraMemberModel.getOrchestraMemberById(id_member)
+        if (!memberExistance) {
+            return res.status(404).json({ msg: 'Member not found' })
+        }
+
+        // check if the member is already in the group
+        const memberInGroupExistance = await GroupModel.getMemberInGroup(
+            id_group,
+            id_member
+        )
+        if (memberInGroupExistance) {
+            return res
+                .status(400)
+                .json({ msg: 'Member is already in the group.' })
+        }
+
+        // add member to the group
+        const newMember = await GroupModel.addMemberToGroup(id_group, id_member)
+        if (!newMember) {
+            return res
+                .status(500)
+                .json({ msg: 'Failed to add member to the group.' })
+        }
+
+        res.status(201).json(newMember)
+    } catch (err) {
+        res.status(500).json({
+            msg: 'Server error while adding member to the group.',
+        })
+    }
+}
+
 module.exports = {
     getAllGroups,
     getAllGroupsWithMembers,
     getAllMembersNotInAnyGroup,
     createNewGroup,
+    addMemberToGroup,
 }

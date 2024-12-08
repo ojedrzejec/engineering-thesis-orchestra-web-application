@@ -7,6 +7,7 @@ const {
     getAllGroupsWithMembers,
     getAllMembersNotInAnyGroup,
     createNewGroup,
+    addMemberToGroup,
 } = require('../controllers/groupController')
 
 router.get('/:id', authMiddleware.authenticateToken, getAllGroups)
@@ -21,5 +22,10 @@ router.get(
     getAllMembersNotInAnyGroup
 )
 router.post('/', authMiddleware.authenticateToken, createNewGroup)
+router.post(
+    '/assign-member',
+    authMiddleware.authenticateToken,
+    addMemberToGroup
+)
 
 module.exports = router

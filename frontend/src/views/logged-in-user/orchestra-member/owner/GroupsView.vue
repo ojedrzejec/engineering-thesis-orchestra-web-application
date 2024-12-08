@@ -1,10 +1,11 @@
 <template>
   <div class="groups-view">
+    <Toast />
     <div class="groups-view__title">
       <h1>Groups</h1>
     </div>
 
-    <div>
+    <div class="groups-view__content">
       <div v-if="loadingGroups">
         <ProgressSpinner />
       </div>
@@ -18,51 +19,7 @@
         </Message>
       </div>
 
-      <div v-else class="groups-view__content">
-        <div class="groups-view__form">
-          <div class="groups-view__form-input">
-            <FloatLabel variant="on">
-              <InputText
-                class="groups-view__form-input-field"
-                id="groupName"
-                v-model="newGroupName"
-                @input="validateNewGroupNameInput"
-                :invalid="!isNewGroupNameValid && showNewGroupNameErrors"
-              ></InputText>
-              <label for="groupName">New Group Name</label>
-            </FloatLabel>
-            <div class="groups-view__form-error-messages">
-              <Message
-                severity="error"
-                v-if="
-                  newGroupName &&
-                  !validateNewGroupNameLength(newGroupName) &&
-                  showNewGroupNameErrors
-                "
-                >{{
-                  messageValidationNewGroupNameLength('New Group Name')
-                }}</Message
-              >
-            </div>
-          </div>
-
-          <div v-if="errorMessage" class="error-message">
-            <Message severity="error">{{ errorMessage }}</Message>
-          </div>
-
-          <div>
-            <Button
-              class="groups-view__form-button"
-              icon="pi pi-plus"
-              @click.prevent="handleCreateNewGroup"
-              :disabled="loadingNewGroupCreate || !newGroupName"
-              :label="
-                loadingNewGroupCreate ? 'Creating...' : 'Create new group'
-              "
-            ></Button>
-          </div>
-        </div>
-
+      <div v-else>
         <div class="card">
           <Accordion :value="['0']" multiple>
             <AccordionPanel v-for="gr in groups" :key="gr.id" :value="gr.value">
@@ -83,47 +40,90 @@
             </AccordionPanel>
           </Accordion>
         </div>
+      </div>
 
-        <div class="groups-view__form">
-          <div class="groups-view__form-input card flex justify-center">
-            <Select
-              v-model="selectedMember"
-              showClear
-              filter
-              :loading="loadingMembersNotInAnyGroup"
-              :options="membersNotInAnyGroup"
-              optionLabel="email"
-              placeholder="Select member's email"
-              :disabled="loadingMembersNotInAnyGroup"
-              class="w-full md:w-56"
-            ></Select>
-            <Select
-              v-model="selectedGroup"
-              showClear
-              filter
-              :loading="loadingGroups"
-              :options="groups"
-              optionLabel="name"
-              placeholder="Select a group"
-              :disabled="loadingGroups"
-              class="w-full md:w-56"
-            ></Select>
-          </div>
-          <div>
-            <Button
-              class="groups-view__form-button"
-              label="Assign member to the group"
-              severity="secondary"
-              @click="
-                selectedMember &&
-                  selectedGroup &&
-                  addMember(selectedMember, selectedGroup)
+      <div class="groups-view__form">
+        <div class="groups-view__form-input">
+          <FloatLabel variant="on">
+            <InputText
+              class="groups-view__form-input-field"
+              id="groupName"
+              v-model="newGroupName"
+              @input="validateNewGroupNameInput"
+              :invalid="!isNewGroupNameValid && showNewGroupNameErrors"
+            ></InputText>
+            <label for="groupName">New Group Name</label>
+          </FloatLabel>
+          <div class="groups-view__form-error-messages">
+            <Message
+              severity="error"
+              v-if="
+                newGroupName &&
+                !validateNewGroupNameLength(newGroupName) &&
+                showNewGroupNameErrors
               "
-              :disabled="!selectedMember || !selectedGroup"
-            ></Button>
-            <!-- :loading="loadingAddMember"  -->
-            <!-- :disabled="loadingAddMember" -->
+              >{{
+                messageValidationNewGroupNameLength('New Group Name')
+              }}</Message
+            >
           </div>
+        </div>
+
+        <div v-if="errorMessage" class="error-message">
+          <Message severity="error">{{ errorMessage }}</Message>
+        </div>
+
+        <div>
+          <Button
+            class="groups-view__form-button"
+            icon="pi pi-plus"
+            @click.prevent="handleCreateNewGroup"
+            :disabled="loadingNewGroupCreate || !newGroupName"
+            :label="loadingNewGroupCreate ? 'Creating...' : 'Create new group'"
+          ></Button>
+        </div>
+      </div>
+
+      <div class="groups-view__form">
+        <div class="groups-view__form-input card flex justify-center">
+          <Select
+            v-model="selectedMember"
+            showClear
+            filter
+            :loading="loadingMembersNotInAnyGroup"
+            :options="membersNotInAnyGroup"
+            optionLabel="email"
+            placeholder="Select member's email"
+            :disabled="loadingMembersNotInAnyGroup"
+            class="w-full md:w-56"
+          ></Select>
+          <Select
+            v-model="selectedGroup"
+            showClear
+            filter
+            :loading="loadingGroups"
+            :options="groups"
+            optionLabel="name"
+            placeholder="Select a group"
+            :disabled="loadingGroups"
+            class="w-full md:w-56"
+          ></Select>
+        </div>
+        <div>
+          <Button
+            class="groups-view__form-button"
+            label="Assign member to the group"
+            severity="secondary"
+            @click="
+              selectedMember &&
+                selectedGroup &&
+                addMember(selectedMember, selectedGroup)
+            "
+            :loading="loadingMemberToGroupAssign"
+            :disabled="
+              !selectedMember || !selectedGroup || loadingMemberToGroupAssign
+            "
+          ></Button>
         </div>
       </div>
     </div>
@@ -134,6 +134,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useGroups } from '@/composables/useGroups'
+import Toast from 'primevue/toast'
 import ProgressSpinner from 'primevue/progressspinner'
 import Message from 'primevue/message'
 import FloatLabel from 'primevue/floatlabel'
@@ -153,6 +154,7 @@ import {
   validateNewGroupNameLength,
 } from '@/constants/validation/groupValidation'
 import type { TGroup } from '@/types/TGroup'
+import type { TPlayer } from '@/types/TPlayer'
 
 const {
   groups,
@@ -163,12 +165,14 @@ const {
   fetchMembersNotInAnyGroup,
   loadingNewGroupCreate,
   createNewGroup,
+  loadingMemberToGroupAssign,
+  assignMemberToGroup,
 } = useGroups()
 
 const route = useRoute()
 
-const selectedMember = ref<string | null>(null)
-const selectedGroup = ref<string | null>(null)
+const selectedMember = ref<TPlayer | null>(null)
+const selectedGroup = ref<TGroup | null>(null)
 const newGroupName = ref('')
 const errorMessage = ref('')
 const showNewGroupNameErrors = ref(false)
@@ -228,7 +232,7 @@ const handleCreateNewGroup = async () => {
   }
 }
 
-const addMember = (selectedMember: string, selectedGroup: string) => {
+const addMember = async (selectedMember: TPlayer, selectedGroup: TGroup) => {
   console.log(
     'addMember: selectedMember, selectedGroup: ',
     selectedMember,
@@ -236,12 +240,16 @@ const addMember = (selectedMember: string, selectedGroup: string) => {
   )
 
   try {
-  } catch (error) {
-    const baseErrorMessage = 'Failed while addMember.'
-    console.error(baseErrorMessage, error)
+    await assignMemberToGroup(
+      route.params.orchestraId.toString(),
+      selectedGroup,
+      selectedMember,
+    )
   } finally {
     fetchGroups(route.params.orchestraId.toString())
     fetchMembersNotInAnyGroup(route.params.orchestraId.toString())
+    selectedMember.value = null
+    selectedGroup.value = null
   }
 }
 </script>

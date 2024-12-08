@@ -50,6 +50,14 @@ const getAllMembersNotInAnyGroup = async (orchestraId) => {
     return result.rows
 }
 
+const getMemberInGroup = async (groupId, memberId) => {
+    const result = await pool.query(
+        `SELECT * FROM orchestra_group_orchestra_member WHERE id_orchestra_group = $1 AND id_orchestra_member = $2`,
+        [groupId, memberId]
+    )
+    return result.rows[0]
+}
+
 const createGroup = async (name, orchestraId) => {
     const id = uuidv4() // Generate a new UUID
 
@@ -60,11 +68,21 @@ const createGroup = async (name, orchestraId) => {
     return result.rows[0]
 }
 
+const addMemberToGroup = async (groupId, memberId) => {
+    const result = await pool.query(
+        `INSERT INTO orchestra_group_orchestra_member (id_orchestra_group, id_orchestra_member) VALUES ($1, $2) RETURNING *`,
+        [groupId, memberId]
+    )
+    return result.rows[0]
+}
+
 module.exports = {
     getAllGroupsByOrchestraId,
     getAllMembersByGroupId,
     getGroupByName,
     getGroupById,
     getAllMembersNotInAnyGroup,
+    getMemberInGroup,
     createGroup,
+    addMemberToGroup,
 }

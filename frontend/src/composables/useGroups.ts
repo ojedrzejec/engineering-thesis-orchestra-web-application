@@ -4,7 +4,7 @@ import { API_BASE_URL } from '@/constants/config'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useToast } from 'primevue/usetoast'
 import type { TGroup } from '@/types/TGroup'
-// import type { TPlayer } from '@/types/TPlayer'
+import type { TPlayer } from '@/types/TPlayer'
 
 export const useGroups = () => {
   const authStore = useAuthStore()
@@ -19,6 +19,7 @@ export const useGroups = () => {
   const loadingAvailableGroups = ref(false)
   const loadingMembersNotInAnyGroup = ref(false)
   const loadingNewGroupCreate = ref(false)
+  const loadingMemberToGroupAssign = ref(false)
 
   const fetchAvailableGroups = async (orchestraId: string) => {
     loadingAvailableGroups.value = true
@@ -179,6 +180,53 @@ export const useGroups = () => {
     }
   }
 
+  const assignMemberToGroup = async (
+    orchestraId: string,
+    group: TGroup,
+    member: TPlayer,
+  ) => {
+    loadingMemberToGroupAssign.value = true
+
+    const postData = {
+      id_orchestra: orchestraId,
+      id_group: group.id,
+      id_member: member.id,
+    }
+    console.log('postData:', JSON.stringify(postData, null, 2))
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/group/assign-member`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token.value}`,
+        },
+        body: JSON.stringify(postData),
+      })
+
+      if (!response) {
+        throw new Error('Response not ok.')
+      }
+
+      toast.add({
+        severity: 'success',
+        summary: 'Success!',
+        detail: 'Member assigned to the group!',
+        life: 3000,
+      })
+    } catch (error) {
+      const baseErrorMessage = 'Failed to assign a member to the group.'
+      console.error(baseErrorMessage, error)
+      toast.add({
+        severity: 'error',
+        summary: baseErrorMessage,
+        life: 3000,
+      })
+    } finally {
+      loadingMemberToGroupAssign.value = false
+    }
+  }
+
   return {
     // availableGroups,
     groups,
@@ -187,9 +235,11 @@ export const useGroups = () => {
     loadingGroups,
     loadingMembersNotInAnyGroup,
     loadingNewGroupCreate,
+    loadingMemberToGroupAssign,
     // fetchAvailableGroups,
     fetchGroups,
     fetchMembersNotInAnyGroup,
     createNewGroup,
+    assignMemberToGroup,
   }
 }
