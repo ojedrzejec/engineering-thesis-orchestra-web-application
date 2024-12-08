@@ -62,14 +62,14 @@ const getAllGroupsWithMembers = async (req, res) => {
                 member.instruments = instruments.map(
                     (instrument) => instrument.name
                 )
-                console.log('instruments:', instruments)
+                // console.log('instruments:', instruments)
             }
-            console.log('members:', members)
+            // console.log('members:', members)
 
             groups[i].members = members
         }
 
-        console.log('groups:', groups)
+        // console.log('groups:', groups)
 
         res.status(200).json(groups)
     } catch (err) {
@@ -91,10 +91,12 @@ const createNewGroup = async (req, res) => {
         if (!orchestraExistance) {
             return res.status(404).json({ msg: 'Orchestra not found' })
         }
-        console.log('orchestraExistance:', orchestraExistance)
 
         // check if the group name is unique
-        const groupExistance = await GroupModel.getGroupByName(name)
+        const groupExistance = await GroupModel.getGroupByName(
+            name,
+            id_orchestra
+        )
         if (groupExistance) {
             return res.status(400).json({ msg: 'Group name already exists.' })
         }
@@ -104,6 +106,7 @@ const createNewGroup = async (req, res) => {
         if (!newGroup) {
             return res.status(500).json({ msg: 'Failed to create new group.' })
         }
+
         res.status(201).json(newGroup)
     } catch (err) {
         res.status(500).json({ msg: 'Server error while creating new group.' })

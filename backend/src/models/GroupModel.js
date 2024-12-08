@@ -17,10 +17,10 @@ const getAllMembersByGroupId = async (groupId) => {
     return result.rows
 }
 
-const getGroupByName = async (name) => {
+const getGroupByName = async (name, orchestraId) => {
     const result = await pool.query(
-        `SELECT * FROM orchestra_group WHERE name = $1`,
-        [name]
+        `SELECT * FROM orchestra_group WHERE name = $1 AND id_orchestra = $2`,
+        [name, orchestraId]
     )
     return result.rows[0]
 }
@@ -31,6 +31,7 @@ const createGroup = async (name, orchestraId) => {
         `INSERT INTO orchestra_group (id, id_orchestra, name) VALUES ($1, $2, $3) RETURNING *`,
         [id, orchestraId, name]
     )
+    return result.rows[0]
 }
 
 module.exports = {
