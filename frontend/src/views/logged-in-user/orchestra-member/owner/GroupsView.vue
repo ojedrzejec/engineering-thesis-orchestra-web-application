@@ -4,20 +4,14 @@
       <h1>Groups</h1>
     </div>
 
-    <pre>
-      {{ route.params }}
-      <!-- {{ { groups } }} -->
-      {{ { groupsWithMembersAndInstruments } }}
-    </pre>
-
     <div class="groups-view__content">
-      <div v-if="loadingGroupsWithMembersAndInstruments">
+      <div v-if="loadingGroups">
         <ProgressSpinner />
       </div>
-      <div v-else-if="!groupsWithMembersAndInstruments">
+      <div v-else-if="!groups">
         <Message severity="error">Failed to load orchestra groups.</Message>
       </div>
-      <div v-else-if="groupsWithMembersAndInstruments.length === 0">
+      <div v-else-if="groups.length === 0">
         <Message severity="error"
           >Failed to load orchestra groups <strong>or</strong> no orchestra
           groups found.
@@ -25,30 +19,22 @@
       </div>
 
       <div v-else>
-        <p
-          v-for="gr in groupsWithMembersAndInstruments"
-          v-bind:key="gr.id"
-          style="
-            display: flex;
-            flex-direction: column;
-            justify-content: space-evenly;
-            gap: 10px;
-          "
-        >
-          <Tag :value="gr.name"></Tag>
-        </p>
         <div class="card">
           <Accordion :value="['0']" multiple>
-            <AccordionPanel
-              v-for="gr in groupsWithMembersAndInstruments"
-              :key="gr.id"
-              :value="gr.value"
-            >
+            <AccordionPanel v-for="gr in groups" :key="gr.id" :value="gr.value">
               <AccordionHeader>
                 <Tag :value="gr.name" rounded></Tag>
+                <!-- Badge presents number of members in the group -->
                 <Badge :value="gr.members.length" severity="secondary"></Badge>
               </AccordionHeader>
               <AccordionContent>
+                <!-- <p class="m-0">Group id: {{ gr.id }}</p> -->
+                <DataTable :value="gr.members" tableStyle="min-width: 50rem">
+                  <Column field="email" header="Email"></Column>
+                  <Column field="first_name" header="First Name"></Column>
+                  <Column field="last_name" header="Last Name"></Column>
+                  <Column field="instruments" header="Instruments"></Column>
+                </DataTable>
                 <Button
                   label="Add a member"
                   severity="secondary"
@@ -58,14 +44,6 @@
                 ></Button>
                 <!-- :loading="loadingAddMember"  -->
                 <!-- :disabled="loadingAddMember" -->
-                <p class="m-0">{{ gr.id }}</p>
-                <!-- <p class="m-0">{{ gr.members }}</p> -->
-                <DataTable :value="gr.members" tableStyle="min-width: 50rem">
-                  <Column field="email" header="Email"></Column>
-                  <Column field="first_name" header="First Name"></Column>
-                  <Column field="last_name" header="Last Name"></Column>
-                  <Column field="instruments" header="Instruments"></Column>
-                </DataTable>
               </AccordionContent>
             </AccordionPanel>
           </Accordion>
@@ -151,9 +129,6 @@ const {
   groups,
   loadingGroups,
   fetchGroups,
-  groupsWithMembersAndInstruments,
-  loadingGroupsWithMembersAndInstruments,
-  fetchGroupsWithMembersAndTheirInstruments,
   loadingNewGroupCreate,
   createNewGroup,
 } = useGroups()
@@ -179,8 +154,8 @@ const showErrors = (message: string) => {
 watch(
   () => route.params.orchestraId,
   async orchestraId => {
+    await fetchGroups(orchestraId.toString())
     // await fetchGroups(orchestraId.toString())
-    await fetchGroupsWithMembersAndTheirInstruments(orchestraId.toString())
   },
   { immediate: true },
 )
@@ -198,11 +173,7 @@ const handleCreateNewGroup = async () => {
   }
 
   // check if in groups the newGroupName already exists in the fetched groups
-  if (
-    groupsWithMembersAndInstruments.value.some(
-      group => group.name === newGroupName.value,
-    )
-  ) {
+  if (groups.value.some(group => group.name === newGroupName.value)) {
     showErrors('Group name already exists.')
     return
   }
@@ -219,9 +190,7 @@ const handleCreateNewGroup = async () => {
     console.error(baseErrorMessage, e)
   } finally {
     newGroupName.value = ''
-    fetchGroupsWithMembersAndTheirInstruments(
-      route.params.orchestraId.toString(),
-    )
+    fetchGroups(route.params.orchestraId.toString())
   }
 }
 
