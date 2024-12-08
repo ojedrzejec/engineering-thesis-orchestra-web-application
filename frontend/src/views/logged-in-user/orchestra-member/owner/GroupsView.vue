@@ -4,7 +4,7 @@
       <h1>Groups</h1>
     </div>
 
-    <div class="groups-view__content">
+    <div>
       <div v-if="loadingGroups">
         <ProgressSpinner />
       </div>
@@ -18,7 +18,51 @@
         </Message>
       </div>
 
-      <div v-else>
+      <div v-else class="groups-view__content">
+        <div class="groups-view__form">
+          <div class="groups-view__form-input">
+            <FloatLabel variant="on">
+              <InputText
+                class="groups-view__form-input-field"
+                id="groupName"
+                v-model="newGroupName"
+                @input="validateNewGroupNameInput"
+                :invalid="!isNewGroupNameValid && showNewGroupNameErrors"
+              ></InputText>
+              <label for="groupName">New Group Name</label>
+            </FloatLabel>
+            <div class="groups-view__form-error-messages">
+              <Message
+                severity="error"
+                v-if="
+                  newGroupName &&
+                  !validateNewGroupNameLength(newGroupName) &&
+                  showNewGroupNameErrors
+                "
+                >{{
+                  messageValidationNewGroupNameLength('New Group Name')
+                }}</Message
+              >
+            </div>
+          </div>
+
+          <div v-if="errorMessage" class="error-message">
+            <Message severity="error">{{ errorMessage }}</Message>
+          </div>
+
+          <div>
+            <Button
+              class="groups-view__form-button"
+              icon="pi pi-plus"
+              @click.prevent="handleCreateNewGroup"
+              :disabled="loadingNewGroupCreate || !newGroupName"
+              :label="
+                loadingNewGroupCreate ? 'Creating...' : 'Create new group'
+              "
+            ></Button>
+          </div>
+        </div>
+
         <div class="card">
           <Accordion :value="['0']" multiple>
             <AccordionPanel v-for="gr in groups" :key="gr.id" :value="gr.value">
@@ -35,68 +79,52 @@
                   <Column field="last_name" header="Last Name"></Column>
                   <Column field="instruments" header="Instruments"></Column>
                 </DataTable>
-                <Button
-                  label="Add a member"
-                  severity="secondary"
-                  icon="pi pi-plus"
-                  rounded
-                  @click="addMember(gr)"
-                ></Button>
-                <!-- :loading="loadingAddMember"  -->
-                <!-- :disabled="loadingAddMember" -->
               </AccordionContent>
             </AccordionPanel>
           </Accordion>
         </div>
-      </div>
 
-      <div class="groups-view__form">
-        <div class="groups-view__form-input">
-          <FloatLabel variant="on">
-            <InputText
-              class="groups-view__form-input-field"
-              id="groupName"
-              v-model="newGroupName"
-              @input="validateNewGroupNameInput"
-              :invalid="!isNewGroupNameValid && showNewGroupNameErrors"
-            ></InputText>
-            <label for="groupName">New Group Name</label>
-          </FloatLabel>
-          <div class="groups-view__form-error-messages">
-            <Message
-              severity="error"
-              v-if="
-                newGroupName &&
-                !validateNewGroupNameLength(newGroupName) &&
-                showNewGroupNameErrors
+        <div class="groups-view__form">
+          <div class="groups-view__form-input card flex justify-center">
+            <Select
+              v-model="selectedMember"
+              showClear
+              filter
+              :loading="loadingMembersNotInAnyGroup"
+              :options="membersNotInAnyGroup"
+              optionLabel="email"
+              placeholder="Select member's email"
+              :disabled="loadingMembersNotInAnyGroup"
+              class="w-full md:w-56"
+            ></Select>
+            <Select
+              v-model="selectedGroup"
+              showClear
+              filter
+              :loading="loadingGroups"
+              :options="groups"
+              optionLabel="name"
+              placeholder="Select a group"
+              :disabled="loadingGroups"
+              class="w-full md:w-56"
+            ></Select>
+          </div>
+          <div>
+            <Button
+              class="groups-view__form-button"
+              label="Assign member to the group"
+              severity="secondary"
+              @click="
+                selectedMember &&
+                  selectedGroup &&
+                  addMember(selectedMember, selectedGroup)
               "
-              >{{
-                messageValidationNewGroupNameLength('New Group Name')
-              }}</Message
-            >
+              :disabled="!selectedMember || !selectedGroup"
+            ></Button>
+            <!-- :loading="loadingAddMember"  -->
+            <!-- :disabled="loadingAddMember" -->
           </div>
         </div>
-
-        <div v-if="errorMessage" class="error-message">
-          <Message severity="error">{{ errorMessage }}</Message>
-        </div>
-
-        <div>
-          <Button
-            class="members-view__form-button"
-            @click.prevent="handleCreateNewGroup"
-            :disabled="loadingNewGroupCreate || !newGroupName"
-            :label="loadingNewGroupCreate ? 'Creating...' : 'Create new group'"
-          ></Button>
-        </div>
-      </div>
-
-      <div>
-        <pre>
-          Add Orchesstra Member to the Group (form): - orchestra member email
-          (select) - orchestra group (select) = button (Assign Member to the
-          Group)
-        </pre>
       </div>
     </div>
   </div>
@@ -119,6 +147,7 @@ import AccordionContent from 'primevue/accordioncontent'
 import Badge from 'primevue/badge'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
+import Select from 'primevue/select'
 import {
   messageValidationNewGroupNameLength,
   validateNewGroupNameLength,
@@ -129,12 +158,17 @@ const {
   groups,
   loadingGroups,
   fetchGroups,
+  membersNotInAnyGroup,
+  loadingMembersNotInAnyGroup,
+  fetchMembersNotInAnyGroup,
   loadingNewGroupCreate,
   createNewGroup,
 } = useGroups()
 
 const route = useRoute()
 
+const selectedMember = ref<string | null>(null)
+const selectedGroup = ref<string | null>(null)
 const newGroupName = ref('')
 const errorMessage = ref('')
 const showNewGroupNameErrors = ref(false)
@@ -155,7 +189,7 @@ watch(
   () => route.params.orchestraId,
   async orchestraId => {
     await fetchGroups(orchestraId.toString())
-    // await fetchGroups(orchestraId.toString())
+    await fetchMembersNotInAnyGroup(orchestraId.toString())
   },
   { immediate: true },
 )
@@ -194,8 +228,21 @@ const handleCreateNewGroup = async () => {
   }
 }
 
-const addMember = (gr: TGroup) => {
-  console.log('addMember to group (gr.id): ', gr.id)
+const addMember = (selectedMember: string, selectedGroup: string) => {
+  console.log(
+    'addMember: selectedMember, selectedGroup: ',
+    selectedMember,
+    selectedGroup,
+  )
+
+  try {
+  } catch (error) {
+    const baseErrorMessage = 'Failed while addMember.'
+    console.error(baseErrorMessage, error)
+  } finally {
+    fetchGroups(route.params.orchestraId.toString())
+    fetchMembersNotInAnyGroup(route.params.orchestraId.toString())
+  }
 }
 </script>
 
@@ -211,6 +258,31 @@ const addMember = (gr: TGroup) => {
     // align-items: center;
     gap: 50px;
     width: 100%;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 30px;
+  }
+
+  &__form-input {
+    display: flex;
+    flex-direction: column;
+    // align-items: center;
+    gap: 5px;
+    min-width: 300px;
+  }
+
+  &__form-button {
+    width: 100%;
+    min-width: 150px;
+  }
+
+  &__datatable {
+    // width: 100%;
+    margin-top: 15px;
   }
 }
 </style>

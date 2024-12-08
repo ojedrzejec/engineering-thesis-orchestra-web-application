@@ -41,7 +41,6 @@ const getAllGroupsWithMembers = async (req, res) => {
         if (!orchestraExistance) {
             return res.status(404).json({ msg: 'Orchestra not found' })
         }
-        // console.log('orchestraExistance:', orchestraExistance)
 
         // select all groups by orchestra id
         const groups = await GroupModel.getAllGroupsByOrchestraId(orchestraId)
@@ -75,6 +74,34 @@ const getAllGroupsWithMembers = async (req, res) => {
     } catch (err) {
         res.status(500).json({
             msg: 'Server error while getting all orchestra groups with members and their instruments.',
+        })
+    }
+}
+
+const getAllMembersNotInAnyGroup = async (req, res) => {
+    // on frontend: `${API_BASE_URL}/group/members-out-of-the-group/${orchestraId}/${groupId}`
+    const orchestraId = req.params.id
+
+    try {
+        // check if the orchestra exists
+        const orchestraExistance =
+            await Orchestra_OrchestraOrchestraMember_Owner_Model.getOrchestraById(
+                orchestraId
+            )
+        if (!orchestraExistance) {
+            return res.status(404).json({ msg: 'Orchestra not found' })
+        }
+
+        // select all members out of the group by group id
+        const members = await GroupModel.getAllMembersNotInAnyGroup(orchestraId)
+        if (!members.length) {
+            return res.status(404).json({ msg: 'No orchestra members found.' })
+        }
+
+        res.status(200).json(members)
+    } catch (err) {
+        res.status(500).json({
+            msg: 'Server error while getting all orchestra members not assigned to any group.',
         })
     }
 }
@@ -116,5 +143,6 @@ const createNewGroup = async (req, res) => {
 module.exports = {
     getAllGroups,
     getAllGroupsWithMembers,
+    getAllMembersNotInAnyGroup,
     createNewGroup,
 }

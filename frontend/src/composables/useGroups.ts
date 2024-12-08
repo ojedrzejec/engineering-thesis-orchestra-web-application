@@ -4,6 +4,7 @@ import { API_BASE_URL } from '@/constants/config'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useToast } from 'primevue/usetoast'
 import type { TGroup } from '@/types/TGroup'
+// import type { TPlayer } from '@/types/TPlayer'
 
 export const useGroups = () => {
   const authStore = useAuthStore()
@@ -12,10 +13,44 @@ export const useGroups = () => {
   const toast = useToast()
 
   const groups = ref<TGroup[]>([])
+  const availableGroups = ref<TGroup[]>([])
+  const membersNotInAnyGroup = ref<string[]>([])
   const loadingGroups = ref(false)
+  const loadingAvailableGroups = ref(false)
+  const loadingMembersNotInAnyGroup = ref(false)
   const loadingNewGroupCreate = ref(false)
 
-  // fetch groups with members and their instruments
+  const fetchAvailableGroups = async (orchestraId: string) => {
+    loadingAvailableGroups.value = true
+    try {
+      const response = await fetch(`${API_BASE_URL}/group/${orchestraId}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token.value}`,
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error('Response not ok.')
+      }
+
+      const data = await response.json()
+      console.log('Fetched data (available groups): ', data)
+
+      availableGroups.value = data
+
+      console.log('Fetched available groups: ', availableGroups.value)
+    } catch (e) {
+      console.error(e)
+      const baseErrorMessage = 'Failed to fetch available orchestra groups.'
+      console.error(baseErrorMessage, e)
+      availableGroups.value = []
+    } finally {
+      loadingAvailableGroups.value = false
+    }
+  }
+
+  // fetch orchestra groups with members and their instruments
   const fetchGroups = async (orchestraId: string) => {
     loadingGroups.value = true
     try {
@@ -28,10 +63,6 @@ export const useGroups = () => {
           },
         },
       )
-
-      // if (response.status === 404) {
-      //   throw new Error('Groups not found.')
-      // }
 
       if (!response.ok) {
         throw new Error('Response not ok.')
@@ -69,6 +100,40 @@ export const useGroups = () => {
       groups.value = []
     } finally {
       loadingGroups.value = false
+    }
+  }
+
+  const fetchMembersNotInAnyGroup = async (groupId: string) => {
+    loadingMembersNotInAnyGroup.value = true
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/group/members-not-in-any-group/${groupId}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token.value}`,
+          },
+        },
+      )
+
+      if (!response.ok) {
+        throw new Error('Response not ok.')
+      }
+
+      const data = await response.json()
+      console.log('Fetched data (membersNotInAnyGroup): ', data)
+
+      membersNotInAnyGroup.value = data
+      console.log('Fetched membersNotInAnyGroup: ', membersNotInAnyGroup.value)
+    } catch (e) {
+      console.error(e)
+      const baseErrorMessage =
+        'Failed to fetch members not assigned to any group.'
+      console.error(baseErrorMessage, e)
+      membersNotInAnyGroup.value = []
+    } finally {
+      loadingMembersNotInAnyGroup.value = false
     }
   }
 
@@ -115,10 +180,16 @@ export const useGroups = () => {
   }
 
   return {
+    // availableGroups,
     groups,
+    membersNotInAnyGroup,
+    // loadingAvailableGroups,
     loadingGroups,
+    loadingMembersNotInAnyGroup,
     loadingNewGroupCreate,
+    // fetchAvailableGroups,
     fetchGroups,
+    fetchMembersNotInAnyGroup,
     createNewGroup,
   }
 }
