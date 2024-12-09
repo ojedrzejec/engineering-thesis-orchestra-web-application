@@ -48,10 +48,27 @@ export const useConcerts = () => {
   const createConcert = async (orchestraId: string, concert: TConcert) => {
     loadingCreateConcert.value = true
 
+    const date = concert.date_and_time
+      ?.toISOString()
+      .split('T')[0]
+      .split('-')
+      .reverse()
+      .join('.')
+
+    const time = concert.date_and_time
+      ?.toISOString()
+      .split('T')[1]
+      .split('.')[0]
+      .slice(0, 5)
+
+    // console.log('date:', date)
+    // console.log('time:', time)
+
     const formData = {
       id_orchestra: orchestraId,
       name: concert.name,
-      date_and_time: concert.date_and_time,
+      date: date,
+      time: time,
       place: concert.place,
       reservation_url: concert.reservation_url,
       description: concert.description,
