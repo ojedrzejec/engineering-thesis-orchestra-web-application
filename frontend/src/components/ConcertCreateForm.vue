@@ -37,78 +37,41 @@
               </div>
             </div>
 
-            <div class="flex-auto">
-              <label for="templatedisplay" class="font-bold block mb-2">
-                Custom Icon
-              </label>
-              <DatePicker
-                v-model="concert.time"
-                showIcon
-                fluid
-                iconDisplay="input"
-                timeOnly
-                inputId="templatedisplay"
-              >
-                <template #inputicon="slotProps">
-                  <i class="pi pi-clock" @click="slotProps.clickCallback"></i>
-                </template>
-              </DatePicker>
-            </div>
-
-            <div class="create-concert-view__form-input">
-              <label for="templatedisplay" class="font-bold block mb-2">
-                Custom Icon
-              </label>
-              <DatePicker
-                v-model="concert.time"
-                showIcon
-                fluid
-                iconDisplay="input"
-                timeOnly
-                inputId="templatedisplay"
-              >
-                <template #inputicon="slotProps">
-                  <i class="pi pi-clock" @click="slotProps.clickCallback" />
-                </template>
-              </DatePicker>
-            </div>
-
-            <div class="create-concert-view__form-input">
-              <label for="datepicker-24h" class="font-bold block mb-2">
-                24h Format
-              </label>
-              <DatePicker
-                id="datepicker-24h"
-                v-model="concert.date_and_time"
-                showTime
-                hourFormat="24"
-                fluid
-                iconDisplay="input"
-              >
-                <template #inputicon="slotProps">
-                  <i class="pi pi-clock" @click="slotProps.clickCallback" />
-                </template>
-              </DatePicker>
-            </div>
-
             <div class="create-concert-view__form-input">
               <FloatLabel variant="on">
                 <DatePicker
                   v-model="concert.date_and_time"
+                  id="datepicker-24h"
                   dateFormat="dd/mm/yy"
+                  showTime
+                  hourFormat="24"
+                  fluid
                   showIcon
-                  inputId="dateOfBirth"
                   iconDisplay="input"
                   @input="validateDateAndTimeInput"
                   :invalid="!concert.date_and_time && showDateAndTimeErrors"
-                />
-                <label for="dateOfBirth">Date of Birth</label>
+                >
+                  <template #inputicon="slotProps">
+                    <div style="display: flex; gap: 10px">
+                      <i
+                        class="pi pi-calendar"
+                        @click="slotProps.clickCallback"
+                      ></i>
+                      <i
+                        class="pi pi-clock"
+                        @click="slotProps.clickCallback"
+                      ></i>
+                    </div>
+                  </template>
+                </DatePicker>
+
+                <label for="datepicker-24h">Date and Time</label>
               </FloatLabel>
               <div class="create-concert-view__form-error-messages">
                 <Message
                   severity="error"
                   v-if="!concert.date_and_time && showDateAndTimeErrors"
-                  >{{ messageInputRequired }}</Message
+                  >{{ messageInputRequired('Date and Time') }}</Message
                 >
               </div>
             </div>
@@ -217,8 +180,8 @@
               <Button
                 class="create-concert-view__form-button"
                 @click.prevent="handleConcertCreation()"
-                :disabled="loading"
-                :label="loading ? 'Creating...' : 'Create'"
+                :disabled="loadingCreateConcert"
+                :label="loadingCreateConcert ? 'Creating...' : 'Create'"
               ></Button>
             </div>
           </div>
@@ -238,6 +201,7 @@ import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
+import DatePicker from 'primevue/datepicker'
 import FileUpload, { type FileUploadSelectEvent } from 'primevue/fileupload'
 import Toast from 'primevue/toast'
 import { useConcerts } from '@/composables/useConcerts'
@@ -271,7 +235,6 @@ watch(
 
 const concert = ref<TConcert>(initConcert)
 
-const loading = ref(false)
 const errorMessage = ref('')
 
 const showNameErrors = ref(false)
@@ -361,65 +324,11 @@ const handleConcertCreation = async () => {
   errorMessage.value = ''
 
   try {
-    await createConcert(
-      route.params.selectedOrchestraId.toString(),
-      concert.value,
-    )
-    await fetchConcerts(route.params.selectedOrchestraId.toString())
+    await createConcert(route.params.orchestraId.toString(), concert.value)
+    await fetchConcerts(route.params.orchestraId.toString())
   } finally {
     concert.value = initConcert
   }
-
-  // loading.value = true
-
-  // const formData = {
-  //   name: concert.value.name,
-  //   date_and_time: concert.value.date_and_time,
-  //   place: concert.value.place,
-  //   graphic: concert.value.graphic,
-  //   reservation_url: concert.value.reservation_url,
-  //   description: concert.value.description,
-  // }
-  // console.log('formData:', JSON.stringify(formData, null, 2))
-
-  // try {
-  //   const response = await fetch(`${API_BASE_URL}/concert/`, {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       Authorization: `Bearer ${authStore.getToken()}`,
-  //     },
-  //     body: JSON.stringify(formData),
-  //   })
-
-  //   if (!response) {
-  //     const errorData = await response.json()
-  //     const errorMessage =
-  //       errorData.msg ||
-  //       'Apologies for the inconvenience. Please try again later.'
-  //     toast.add({
-  //       severity: 'error',
-  //       summary: 'Orchestra creation failed',
-  //       detail: errorMessage,
-  //       life: 3000,
-  //     })
-  //     throw new Error(`${errorMessage}`)
-  //   }
-
-  //   toast.add({
-  //     severity: 'success',
-  //     summary: `${orchestra.value.name} created successfully!`,
-  //     detail: 'You are the orchestra owner! :)',
-  //     life: 3000,
-  //   })
-  //   orchestra.value = initOrchestra
-  // } catch (error) {
-  //   console.error('Error:', error)
-  //   errorMessage.value =
-  //     error.message || 'An error occurred during orchestra creation.'
-  // } finally {
-  //   loading.value = false
-  // }
 }
 </script>
 
