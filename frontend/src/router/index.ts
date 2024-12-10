@@ -7,6 +7,7 @@ import UpcomingConcertsView from '@/views/guest/concerts/UpcomingConcertsView.vu
 import PhotosGalleryView from '@/views/guest/gallery/PhotosGalleryView.vue'
 import VideosGalleryView from '@/views/guest/gallery/VideosGalleryView.vue'
 import ProfileView from '@/views/logged-in-user/ProfileView.vue'
+import ConcertsView from '@/views/logged-in-user/orchestra-member/owner-and-manager/ConcertsView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/guest/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
@@ -120,10 +121,7 @@ const router = createRouter({
         {
           path: 'concerts',
           name: 'concerts',
-          component: () =>
-            import(
-              '@/views/logged-in-user/orchestra-member/owner-and-manager/ConcertsView.vue'
-            ),
+          component: () => ConcertsView,
           meta: { logInOnly: true },
         },
         {
