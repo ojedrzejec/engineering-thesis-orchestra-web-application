@@ -116,7 +116,7 @@
                 mode="advanced"
                 name="graphic"
                 accept="image/*"
-                :maxFileSize="20000000"
+                :maxFileSize="1000000"
                 class="p-button-outlined"
                 :auto="false"
                 :customUpload="true"
@@ -217,13 +217,7 @@ import {
 
 const route = useRoute()
 
-const {
-  concerts,
-  loadingConcerts,
-  loadingCreateConcert,
-  fetchConcerts,
-  createConcert,
-} = useConcerts()
+const { loadingCreateConcert, fetchConcerts, createConcert } = useConcerts()
 
 watch(
   () => route.params.orchestraId,

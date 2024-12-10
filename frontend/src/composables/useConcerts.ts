@@ -30,14 +30,14 @@ export const useConcerts = () => {
       }
 
       const data = await response.json()
-      console.log('Fetched data (available groups): ', data)
+      console.log('Fetched data (available concerts): ', data)
 
       concerts.value = data
 
-      console.log('Fetched available groups: ', concerts.value)
+      console.log('Fetched available concerts: ', concerts.value)
     } catch (e) {
       console.error(e)
-      const baseErrorMessage = 'Failed to fetch available orchestra groups.'
+      const baseErrorMessage = 'Failed to fetch available orchestra concerts.'
       console.error(baseErrorMessage, e)
       concerts.value = []
     } finally {
