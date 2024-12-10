@@ -49,17 +49,20 @@
             <Card style="max-width: 40rem; overflow: hidden">
               <template #header>
                 <img
+                  v-if="concert.graphic"
                   alt="concert graphic"
                   :src="
-                    concert.graphic ?? 'https://via.placeholder.com/528x280'
+                    concert.graphic ?? 'https://via.placeholder.com/640x200'
                   "
                   class="concerts-view__concert-image"
                 />
               </template>
-              <template #title>{{ concert.name }}</template>
+              <template #title
+                ><strong>{{ concert.name }}</strong></template
+              >
               <template #subtitle>
                 <!-- Card subtitle -->
-                <div>
+                <div class="concerts-view__concert-details-subtitle">
                   <div
                     class="concerts-view__concert-details-subtitle-single-info"
                   >
@@ -83,7 +86,7 @@
                   >
                     <div>
                       <i class="pi pi-clock" style="color: #708090"></i>
-                      HOUR:
+                      TIME:
                     </div>
                     <div>
                       <strong>{{
@@ -128,10 +131,10 @@
                     >
                       <ConcertDetails :concertDetails="selectedConcert" />
                     </Drawer>
-                    <Button
-                      label="See details"
-                      @click="openConcertDetails(concert)"
-                    ></Button>
+                    <Button @click="openConcertDetails(concert)"
+                      >See details
+                      <i class="pi pi-angle-right"></i>
+                    </Button>
                   </div>
                 </div>
               </template>
@@ -234,9 +237,10 @@ const openConcertDetails = (concert: TConcert) => {
   }
 
   &__concert-details-subtitle {
-    display: flex;
-    flex-direction: row;
-    gap: px;
+    margin: 5px 0;
+    // display: flex;
+    // flex-direction: row;
+    // gap: 15px;
     // justify-content: space-between;
   }
 
@@ -261,13 +265,13 @@ const openConcertDetails = (concert: TConcert) => {
 
   &__concert-image {
     width: 100%;
-    max-height: 280px;
+    max-height: 200px;
     object-fit: cover;
   }
 
   &__drawer {
     width: 100% !important;
-    max-width: 30rem;
+    max-width: 40rem;
   }
 }
 </style>
