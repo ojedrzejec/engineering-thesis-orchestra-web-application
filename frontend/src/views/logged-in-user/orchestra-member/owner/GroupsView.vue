@@ -223,12 +223,12 @@ const handleCreateNewGroup = async () => {
       route.params.orchestraId.toString(),
       newGroupName.value,
     )
+    await fetchGroups(route.params.orchestraId.toString())
   } catch (e) {
     const baseErrorMessage = 'Failed while createNewGroup.'
     console.error(baseErrorMessage, e)
   } finally {
     newGroupName.value = ''
-    fetchGroups(route.params.orchestraId.toString())
   }
 }
 
@@ -245,9 +245,9 @@ const addMember = async (selectedMember: TPlayer, selectedGroup: TGroup) => {
       selectedGroup,
       selectedMember,
     )
+    await fetchGroups(route.params.orchestraId.toString())
+    await fetchMembersNotInAnyGroup(route.params.orchestraId.toString())
   } finally {
-    fetchGroups(route.params.orchestraId.toString())
-    fetchMembersNotInAnyGroup(route.params.orchestraId.toString())
     selectedMember.value = null
     selectedGroup.value = null
   }

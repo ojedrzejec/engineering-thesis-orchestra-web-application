@@ -183,13 +183,13 @@ const setPlayerAsManager = async () => {
       route.params.orchestraId.toString(),
       selectedPlayer.value.id,
     )
+    await fetchOrchestraManagers(route.params.orchestraId.toString())
+    await fetchOrchestraPlayers(route.params.orchestraId.toString())
   } catch (error) {
     const baseErrorMessage = 'Failed while setPlayerAsManager.'
     console.error(baseErrorMessage, error)
   } finally {
     selectedPlayer.value = null
-    fetchOrchestraManagers(route.params.orchestraId.toString())
-    fetchOrchestraPlayers(route.params.orchestraId.toString())
   }
 }
 

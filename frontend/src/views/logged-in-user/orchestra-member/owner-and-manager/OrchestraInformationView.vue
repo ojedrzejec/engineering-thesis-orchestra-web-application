@@ -400,6 +400,7 @@ const handleOrchestraUpdate = async () => {
 
   try {
     await updateOrchestraInformation(orchestraInformation.value)
+    // await fetchOrchestraInformation(route.params.orchestraId.toString())
   } catch (error) {
     const baseErrorMessage = 'Failed while updateOrchestraInformation.'
     console.error(baseErrorMessage, error)

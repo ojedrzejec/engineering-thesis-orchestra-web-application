@@ -374,8 +374,8 @@ const handleAddMember = async () => {
       selectedOrchestraId.value,
       foundOrchestraMember,
     )
-    fetchAllAppUsersNotInOrchestra(selectedOrchestraId.value)
-    fetchAllOrchestraMembers(selectedOrchestraId.value)
+    await fetchAllAppUsersNotInOrchestra(selectedOrchestraId.value)
+    await fetchAllOrchestraMembers(selectedOrchestraId.value)
   } finally {
     selectedEmail.value = null
   }
