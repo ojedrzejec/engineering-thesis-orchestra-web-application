@@ -7,7 +7,7 @@ import UpcomingConcertsView from '@/views/guest/concerts/UpcomingConcertsView.vu
 import PhotosGalleryView from '@/views/guest/gallery/PhotosGalleryView.vue'
 import VideosGalleryView from '@/views/guest/gallery/VideosGalleryView.vue'
 import ProfileView from '@/views/logged-in-user/ProfileView.vue'
-import ConcertsView from '@/views/logged-in-user/orchestra-member/owner-and-manager/ConcertsView.vue'
+// import ConcertsView from '@/views/logged-in-user/orchestra-member/owner-and-manager/ConcertsView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/guest/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
@@ -121,7 +121,10 @@ const router = createRouter({
         {
           path: 'concerts',
           name: 'concerts',
-          component: () => ConcertsView,
+          component: () =>
+            import(
+              '@/views/logged-in-user/orchestra-member/owner-and-manager/ConcertsView.vue'
+            ),
           meta: { logInOnly: true },
         },
         {
@@ -158,6 +161,18 @@ const router = createRouter({
             import(
               '@/views/logged-in-user/orchestra-member/owner/ManageAccessView.vue'
             ),
+          meta: { logInOnly: true },
+        },
+        {
+          path: 'concert-create-form',
+          name: 'concert-create-form',
+          component: () => import('@/components/ConcertCreateForm.vue'),
+          meta: { logInOnly: true },
+        },
+        {
+          path: 'concert-details',
+          name: 'concert-details',
+          component: () => import('@/components/ConcertDetails.vue'),
           meta: { logInOnly: true },
         },
       ],
