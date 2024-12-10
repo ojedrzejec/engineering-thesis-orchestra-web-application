@@ -66,8 +66,8 @@
                 "
                 @remove="removeFileCallback"
                 @select="onFileSelect"
-                @upload="onFileSelect"
               >
+                <!-- @upload="onFileSelect" -->
                 <template v-if="!orchestra.logo" #empty>
                   <span>Drag and drop files to here to upload.</span>
                 </template>
