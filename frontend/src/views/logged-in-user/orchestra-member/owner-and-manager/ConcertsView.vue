@@ -60,25 +60,40 @@
               <template #subtitle>
                 <!-- Card subtitle -->
                 <div>
-                  <div class="concerts-view__concert-details-subtitle">
+                  <div
+                    class="concerts-view__concert-details-subtitle-single-info"
+                  >
                     <div>
                       <i class="pi pi-calendar" style="color: #708090"></i>
                       DATE:
                     </div>
                     <div>
-                      <strong>{{ concert.date_and_time }}</strong>
+                      <strong>{{
+                        concert.date
+                          ?.toString()
+                          .split('T')[0]
+                          .split('-')
+                          .reverse()
+                          .join('.')
+                      }}</strong>
                     </div>
                   </div>
-                  <div class="concerts-view__concert-details-subtitle">
+                  <div
+                    class="concerts-view__concert-details-subtitle-single-info"
+                  >
                     <div>
                       <i class="pi pi-clock" style="color: #708090"></i>
                       HOUR:
                     </div>
                     <div>
-                      <strong>{{ concert.date_and_time }}</strong>
+                      <strong>{{
+                        concert.time?.toString().split('.')[0].slice(0, 5)
+                      }}</strong>
                     </div>
                   </div>
-                  <div class="concerts-view__concert-details-subtitle">
+                  <div
+                    class="concerts-view__concert-details-subtitle-single-info"
+                  >
                     <div>
                       <i class="pi pi-map-marker" style="color: #708090"></i>
                       LOCATION:
@@ -221,7 +236,15 @@ const openConcertDetails = (concert: TConcert) => {
   &__concert-details-subtitle {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    gap: px;
+    // justify-content: space-between;
+  }
+
+  &__concert-details-subtitle-single-info {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    gap: 0px;
+    align-items: flex-start;
   }
 
   &__single-button {

@@ -34,6 +34,25 @@ export const useConcerts = () => {
 
       concerts.value = data
 
+      // if (data.value && Array.isArray(data.value)) {
+      //   concerts.value = data.value.map((c: TConcert) => {
+      //     return {
+      //       id: c.id,
+      //       id_orchestra: c.id_orchestra,
+      //       name: c.name,
+      //       date_and_time: new Date(c.date + 'T' + c.time),
+      //       date: c.date ? new Date(c.date) : null,
+      //       time: c.time ? new Date(c.time) : null,
+      //       place: c.place,
+      //       description: c.description,
+      //       reservation_url: c.reservation_url,
+      //       graphic: c.graphic,
+      //     }
+      //   })
+      // } else {
+      //   concerts.value = []
+      // }
+
       console.log('Fetched available concerts: ', concerts.value)
     } catch (e) {
       console.error(e)
