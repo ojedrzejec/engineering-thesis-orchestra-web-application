@@ -13,10 +13,11 @@
       >
         <ConcertCreateForm />
       </Drawer>
-      <div>
-        <h3>Create new concert</h3>
+      <div class="concerts-view__component-create">
+        <h3>Create new concert:</h3>
         <div class="concerts-view__component-create-button">
           <Button
+            label="Create new concert"
             size="large"
             icon="pi pi-plus"
             @click="visibleDrawerConcertCreateForm = true"
@@ -28,83 +29,101 @@
       <div v-if="loadingConcerts">
         <ProgressSpinner />
       </div>
-      <div v-else-if="!concerts">
-        <Message severity="error">Failed to load concerts.</Message>
+      <div v-else-if="concerts.length === 0">
+        <h3>Concerts:</h3>
+        <Message severity="error"
+          >Failed to load concerts <strong>OR</strong> no concerts
+          found.</Message
+        >
       </div>
 
-      <div v-else class="concerts-view__concert-list">
-        <h3>Concerts</h3>
-        <div
-          v-for="(concert, id) in concerts"
-          :key="id"
-          class="concerts-view__concert-details"
-        >
-          <Card style="max-width: 33rem; overflow: hidden">
-            <template #header>
-              <img
-                alt="concert graphic"
-                :src="concert.graphic ?? 'https://placehold.co/'"
-                class="concerts-view__concert-image"
-              />
-            </template>
-            <template #title>{{ concert.name }}</template>
-            <template #subtitle>
-              <!-- Card subtitle -->
-              <div>
-                <div class="concerts-view__concert-details-subtitle">
-                  <div>
-                    <i class="pi pi-calendar" style="color: #708090"></i>
-                    DATE:
+      <div v-else>
+        <h3>Concerts:</h3>
+        <div class="concerts-view__concert-list">
+          <div
+            v-for="(concert, id) in concerts"
+            :key="id"
+            class="concerts-view__concert-details"
+            style="display: flex; justify-content: center"
+          >
+            <Card style="max-width: 40rem; overflow: hidden">
+              <template #header>
+                <img
+                  alt="concert graphic"
+                  :src="
+                    concert.graphic ?? 'https://via.placeholder.com/528x280'
+                  "
+                  class="concerts-view__concert-image"
+                />
+              </template>
+              <template #title>{{ concert.name }}</template>
+              <template #subtitle>
+                <!-- Card subtitle -->
+                <div>
+                  <div class="concerts-view__concert-details-subtitle">
+                    <div>
+                      <i class="pi pi-calendar" style="color: #708090"></i>
+                      DATE:
+                    </div>
+                    <div>
+                      <strong>{{ concert.date_and_time }}</strong>
+                    </div>
                   </div>
-                  <div>
-                    <strong>{{ concert.date_and_time }}</strong>
+                  <div class="concerts-view__concert-details-subtitle">
+                    <div>
+                      <i class="pi pi-clock" style="color: #708090"></i>
+                      HOUR:
+                    </div>
+                    <div>
+                      <strong>{{ concert.date_and_time }}</strong>
+                    </div>
+                  </div>
+                  <div class="concerts-view__concert-details-subtitle">
+                    <div>
+                      <i class="pi pi-map-marker" style="color: #708090"></i>
+                      LOCATION:
+                    </div>
+                    <div>
+                      <strong>{{ concert.place }}</strong>
+                    </div>
                   </div>
                 </div>
-                <div class="concerts-view__concert-details-subtitle">
-                  <div>
-                    <i class="pi pi-clock" style="color: #708090"></i>
-                    HOUR:
-                  </div>
-                  <div>
-                    <strong>{{ concert.date_and_time }}</strong>
+              </template>
+              <template #content>
+                <div
+                  style="
+                    display: -webkit-box;
+                    -webkit-line-clamp: 3;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                  "
+                >
+                  {{ concert.description }}
+                </div>
+              </template>
+              <template #footer>
+                <div class="concerts-view__single-button flex gap-4 mt-1">
+                  <div class="card flex justify-center">
+                    <Drawer
+                      v-model:visible="visibleDrawerConcertDetails"
+                      position="right"
+                      header="Concert Details"
+                      class="concerts-view__drawer !w-full md:!w-80 lg:!w-[30rem]"
+                    >
+                      <ConcertDetails :concertDetails="selectedConcert" />
+                    </Drawer>
+                    <Button
+                      label="See details"
+                      @click="openConcertDetails(concert)"
+                    ></Button>
                   </div>
                 </div>
-                <div class="concerts-view__concert-details-subtitle">
-                  <div>
-                    <i class="pi pi-map-marker" style="color: #708090"></i>
-                    LOCATION:
-                  </div>
-                  <div>
-                    <strong>{{ concert.place }}</strong>
-                  </div>
-                </div>
-              </div>
-            </template>
-            <template #content>
-              {{ concert.description }}
-            </template>
-            <template #footer>
-              <div class="concerts-view__single-button flex gap-4 mt-1">
-                <div class="card flex justify-center">
-                  <Drawer
-                    v-model:visible="visibleDrawerConcertDetails"
-                    position="right"
-                    header="Concert Details"
-                    class="concerts-view__drawer !w-full md:!w-80 lg:!w-[30rem]"
-                  >
-                    <ConcertDetails :concertDetails="selectedConcert" />
-                  </Drawer>
-                  <Button
-                    label="See details"
-                    @click="openConcertDetails(concert)"
-                  ></Button>
-                </div>
-              </div>
-            </template>
-          </Card>
-        </div>
+              </template>
+            </Card>
+          </div>
 
-        <pre>
+          <pre>
           <div>Create a concerts (seperate component)</div>
           
           <div>Display all concerts -> go to details (seperate component)</div>
@@ -121,6 +140,7 @@
             - save button
           </div>
         </pre>
+        </div>
       </div>
     </div>
   </div>
@@ -134,6 +154,7 @@ import Button from 'primevue/button'
 import Card from 'primevue/card'
 import Toast from 'primevue/toast'
 import ProgressSpinner from 'primevue/progressspinner'
+import Message from 'primevue/message'
 import ConcertCreateForm from '@/components/ConcertCreateForm.vue'
 import ConcertDetails from '@/components/ConcertDetails.vue'
 import { useConcerts } from '@/composables/useConcerts'
@@ -177,8 +198,24 @@ const openConcertDetails = (concert: TConcert) => {
     width: 100%;
   }
 
+  &__component-create {
+    display: flex;
+    flex-direction: row;
+    // justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+
   &__component-create-button {
     padding-left: 4rem;
+  }
+
+  &__concert-details {
+    display: flex;
+    // flex-direction: row;
+    justify-content: center;
+    gap: 20px;
   }
 
   &__concert-details-subtitle {
@@ -193,9 +230,15 @@ const openConcertDetails = (concert: TConcert) => {
     justify-content: end;
   }
 
+  &__concert-list {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+  }
+
   &__concert-image {
     width: 100%;
-    max-height: 300px;
+    max-height: 280px;
     object-fit: cover;
   }
 
