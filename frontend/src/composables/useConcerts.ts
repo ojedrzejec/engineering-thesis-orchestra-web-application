@@ -4,6 +4,7 @@ import { useToast } from 'primevue/usetoast'
 import { API_BASE_URL } from '@/constants/config'
 import { useAuthStore } from '@/stores/useAuthStore'
 import type { TConcert } from '@/types/TConcert'
+import type { TAvailability } from '@/types/TAvailability'
 
 export const useConcerts = () => {
   const authStore = useAuthStore()
@@ -12,7 +13,9 @@ export const useConcerts = () => {
   const toast = useToast()
 
   const concerts = ref<TConcert[]>([])
+  const memberAvailability = ref<TAvailability[]>([])
   const loadingConcerts = ref(false)
+  const loadingMemberAvailabilityFetch = ref(false)
   const loadingCreateConcert = ref(false)
   const loadingMemberAvailabilityUpdate = ref(false)
 
@@ -43,6 +46,39 @@ export const useConcerts = () => {
       concerts.value = []
     } finally {
       loadingConcerts.value = false
+    }
+  }
+
+  const fetchMemberAvailability = async (orchestraId: string) => {
+    loadingMemberAvailabilityFetch.value = true
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/concert/member-availability/${orchestraId}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token.value}`,
+          },
+        },
+      )
+
+      if (!response.ok) {
+        throw new Error('Response not ok.')
+      }
+
+      const data = await response.json()
+      console.log('Fetched data (memberAvailability): ', data)
+
+      memberAvailability.value = data
+      console.log('Fetched member availability: ', memberAvailability.value)
+    } catch (e) {
+      console.error(e)
+      const baseErrorMessage = 'Failed to fetch member availability.'
+      console.error(baseErrorMessage, e)
+      memberAvailability.value = []
+    } finally {
+      loadingMemberAvailabilityFetch.value = false
     }
   }
 
@@ -156,10 +192,13 @@ export const useConcerts = () => {
 
   return {
     concerts,
+    memberAvailability,
     loadingConcerts,
+    loadingMemberAvailabilityFetch,
     loadingCreateConcert,
     loadingMemberAvailabilityUpdate,
     fetchConcerts,
+    fetchMemberAvailability,
     createConcert,
     updateMemberAvailability,
   }

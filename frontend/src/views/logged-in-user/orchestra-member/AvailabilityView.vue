@@ -10,7 +10,7 @@
         Please mark your availability for upcoming concerts.
       </Message>
 
-      <div v-if="loadingConcerts">
+      <div v-if="loadingConcerts && loadingMemberAvailabilityFetch">
         <ProgressSpinner />
       </div>
       <div v-else-if="concerts.length === 0">
@@ -112,22 +112,78 @@
                 <div class="concerts-view__buttons">
                   <div>
                     <Button
+                      v-if="
+                        memberAvailability.find(
+                          availability =>
+                            availability.id_concert === concert.id,
+                        )?.is_available === true
+                      "
+                      icon="pi pi-check"
+                      style="color: #ffffff"
+                      severity="success"
+                      :loading="loadingMemberAvailabilityUpdate"
+                      :disabled="loadingMemberAvailabilityUpdate"
+                      :label="
+                        loadingMemberAvailabilityUpdate
+                          ? 'Updating...'
+                          : 'Available'
+                      "
+                      @click="updateAvailability(concert, true)"
+                      raised
+                    ></Button>
+                    <Button
+                      v-else
                       icon="pi pi-check"
                       style="color: green"
-                      label="Available"
+                      :loading="loadingMemberAvailabilityUpdate"
+                      :disabled="loadingMemberAvailabilityUpdate"
+                      :label="
+                        loadingMemberAvailabilityUpdate
+                          ? 'Updating...'
+                          : 'Available'
+                      "
                       severity="secondary"
                       outlined
                       @click="updateAvailability(concert, true)"
+                      raised
                     ></Button>
                   </div>
                   <div>
                     <Button
+                      v-if="
+                        memberAvailability.find(
+                          availability =>
+                            availability.id_concert === concert.id,
+                        )?.is_available === false
+                      "
+                      icon="pi pi-times"
+                      style="color: #ffffff"
+                      severity="danger"
+                      @click="updateAvailability(concert, false)"
+                      :loading="loadingMemberAvailabilityUpdate"
+                      :disabled="loadingMemberAvailabilityUpdate"
+                      :label="
+                        loadingMemberAvailabilityUpdate
+                          ? 'Updating...'
+                          : 'NOT Available'
+                      "
+                      raised
+                    ></Button>
+                    <Button
+                      v-else
                       icon="pi pi-times"
                       style="color: #d65a5a"
-                      label="NOT Available"
                       severity="secondary"
                       outlined
                       @click="updateAvailability(concert, false)"
+                      :loading="loadingMemberAvailabilityUpdate"
+                      :disabled="loadingMemberAvailabilityUpdate"
+                      :label="
+                        loadingMemberAvailabilityUpdate
+                          ? 'Updating...'
+                          : 'NOT Available'
+                      "
+                      raised
                     ></Button>
                   </div>
                 </div>
@@ -171,6 +227,7 @@ import ConcertDetails from '@/components/ConcertDetails.vue'
 import { useAvailableOrchestrasStore } from '@/stores/useAvailableOrchestras'
 import { useConcerts } from '@/composables/useConcerts'
 import type { TConcert } from '@/types/TConcert'
+import type { TAvailability } from '@/types/TAvailability'
 
 const route = useRoute()
 
@@ -180,13 +237,22 @@ const { selectedOrchestraDetails } = storeToRefs(availableOrchestrasStore)
 const visibleDrawerConcertDetails = ref(false)
 const selectedConcert = ref<TConcert | null>(null)
 
-const { concerts, loadingConcerts, fetchConcerts, updateMemberAvailability } =
-  useConcerts()
+const {
+  concerts,
+  loadingConcerts,
+  fetchConcerts,
+  memberAvailability,
+  loadingMemberAvailabilityFetch,
+  fetchMemberAvailability,
+  loadingMemberAvailabilityUpdate,
+  updateMemberAvailability,
+} = useConcerts()
 
 watch(
   () => route.params.orchestraId,
   async orchestraId => {
     await fetchConcerts(orchestraId.toString())
+    await fetchMemberAvailability(orchestraId.toString())
   },
   { immediate: true },
 )
@@ -205,12 +271,12 @@ const updateAvailability = async (concert: TConcert, isAvailable: boolean) => {
   try {
     await updateMemberAvailability(concert, isAvailable)
 
-const seeConcertDetails = () => {
-  console.log('see concert details')
+    await fetchMemberAvailability(route.params.orchestraId.toString())
+    await fetchConcerts(route.params.orchestraId.toString())
   } catch (error) {
     const baseErrorMessage = 'Failed while updateAvailability.'
     console.error(baseErrorMessage, error)
-  } 
+  }
 }
 </script>
 
