@@ -226,6 +226,7 @@ import Message from 'primevue/message'
 import ConcertDetails from '@/components/ConcertDetails.vue'
 import { useAvailableOrchestrasStore } from '@/stores/useAvailableOrchestras'
 import { useConcerts } from '@/composables/useConcerts'
+import { useAvailability } from '@/composables/useAvailability'
 import type { TConcert } from '@/types/TConcert'
 import type { TAvailability } from '@/types/TAvailability'
 
@@ -237,16 +238,15 @@ const { selectedOrchestraDetails } = storeToRefs(availableOrchestrasStore)
 const visibleDrawerConcertDetails = ref(false)
 const selectedConcert = ref<TConcert | null>(null)
 
+const { concerts, loadingConcerts, fetchConcerts } = useConcerts()
+
 const {
-  concerts,
-  loadingConcerts,
-  fetchConcerts,
   memberAvailability,
   loadingMemberAvailabilityFetch,
   fetchMemberAvailability,
   loadingMemberAvailabilityUpdate,
   updateMemberAvailability,
-} = useConcerts()
+} = useAvailability()
 
 watch(
   () => route.params.orchestraId,
