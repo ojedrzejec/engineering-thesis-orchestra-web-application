@@ -1,104 +1,15 @@
 <template>
-  <div class="availability-view">
-    <div class="availability-view__title">
+  <div class="concerts-view">
+    <div class="concerts-view__title">
       <h1>My Availability in {{ selectedOrchestraDetails?.name }}</h1>
     </div>
 
-    <div class="availability-view__content">
+    <div class="concerts-view__content">
       <Message severity="info">
+        <i class="pi pi-info-circle"></i>
         Please mark your availability for upcoming concerts.
       </Message>
-      <h3>My Availability in {{ selectedOrchestraId }}</h3>
-      {{ route.params }}
-      <pre>
-        Display all concerts -> go to details (seperate component)
 
-        (if one chosen, the other needs to be disabled)
-        - green button "I am available"
-        - red button "I cannot participate"
-      </pre>
-
-      <div class="availability-view__concert-list">
-        <h3>Upcoming Gigs</h3>
-        <div class="availability-view__concert-details">
-          <Card style="width: 33rem; overflow: hidden">
-            <template #header>
-              <!-- <img
-              alt="user header"
-              src="https://primefaces.org/cdn/primevue/images/usercard.png"
-            /> -->
-            </template>
-            <template #title>Concert Title</template>
-            <template #subtitle>
-              <!-- Card subtitle -->
-              <div>
-                <div class="availability-view__concert-details-subtitle">
-                  <div>
-                    <i class="pi pi-calendar" style="color: #708090"></i>
-                    DATE:
-                  </div>
-                  <div><strong>01.03.2025</strong></div>
-                </div>
-                <div class="availability-view__concert-details-subtitle">
-                  <div>
-                    <i class="pi pi-clock" style="color: #708090"></i>
-                    HOUR:
-                  </div>
-                  <div><strong>19:00</strong></div>
-                </div>
-                <div class="availability-view__concert-details-subtitle">
-                  <div>
-                    <i class="pi pi-map-marker" style="color: #708090"></i>
-                    LOCATION:
-                  </div>
-                  <div><strong>Filharmonia Łódzka</strong></div>
-                </div>
-              </div>
-            </template>
-            <template #content>
-              <p class="m-0">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Inventore sed consequuntur error repudiandae numquam deserunt
-                quisquam repellat libero asperiores earum nam nobis, culpa
-                ratione quam perferendis esse, cupiditate neque quas!
-              </p>
-            </template>
-            <template #footer>
-              <div class="availability-view__buttons">
-                <!-- flex gap-4 mt-1 -->
-                <div>
-                  <Button
-                    icon="pi pi-check"
-                    style="color: green"
-                    label="Available"
-                    severity="secondary"
-                    outlined
-                  ></Button>
-                </div>
-                <div>
-                  <Button
-                    icon="pi pi-times"
-                    style="color: #d65a5a"
-                    label="NOT Available"
-                    severity="secondary"
-                    outlined
-                  ></Button>
-                </div>
-              </div>
-              <div>
-                <Button
-                  class="availability-view__single-button"
-                  label="See details"
-                  @click="seeConcertDetails"
-                ></Button>
-              </div>
-            </template>
-          </Card>
-        </div>
-      </div>
-    </div>
-
-    <div class="concerts-view__content">
       <div v-if="loadingConcerts">
         <ProgressSpinner />
       </div>
@@ -118,7 +29,7 @@
             class="concerts-view__concert-details"
             style="display: flex; justify-content: center"
           >
-            <Card style="max-width: 40rem; overflow: hidden">
+            <Card style="min-width: 400px; max-width: 600px; overflow: hidden">
               <template #header>
                 <!-- <img
                   v-if="concert.graphic"
@@ -129,9 +40,11 @@
                   class="concerts-view__concert-image"
                 /> -->
               </template>
+
               <template #title
                 ><strong>{{ concert.name }}</strong></template
               >
+
               <template #subtitle>
                 <!-- Card subtitle -->
                 <div class="concerts-view__concert-details-subtitle">
@@ -179,6 +92,7 @@
                   </div>
                 </div>
               </template>
+
               <template #content>
                 <!-- <div
                   style="
@@ -193,9 +107,9 @@
                   {{ concert.description }}
                 </div> -->
               </template>
+
               <template #footer>
-                <div class="availability-view__buttons">
-                  <!-- flex gap-4 mt-1 -->
+                <div class="concerts-view__buttons">
                   <div>
                     <Button
                       icon="pi pi-check"
@@ -203,6 +117,7 @@
                       label="Available"
                       severity="secondary"
                       outlined
+                      @click="updateAvailability(concert, true)"
                     ></Button>
                   </div>
                   <div>
@@ -212,29 +127,28 @@
                       label="NOT Available"
                       severity="secondary"
                       outlined
+                      @click="updateAvailability(concert, false)"
                     ></Button>
                   </div>
                 </div>
 
-                <!-- <div class="concerts-view__single-button flex gap-4 mt-1"> -->
-                <!-- <div class="card flex justify-center"> -->
-                <Drawer
-                  v-model:visible="visibleDrawerConcertDetails"
-                  position="right"
-                  header="Concert Details"
-                  class="concerts-view__drawer !w-full md:!w-80 lg:!w-[30rem]"
-                >
-                  <ConcertDetails :concertDetails="selectedConcert" />
-                </Drawer>
-                <Button
-                  class="availability-view__single-button"
-                  @click="openConcertDetails(concert)"
-                >
-                  See details
-                  <i class="pi pi-angle-right"></i>
-                </Button>
-                <!-- </div> -->
-                <!-- </div> -->
+                <div>
+                  <Drawer
+                    v-model:visible="visibleDrawerConcertDetails"
+                    position="right"
+                    header="Concert Details"
+                    class="concerts-view__drawer !w-full md:!w-80 lg:!w-[30rem]"
+                  >
+                    <ConcertDetails :concertDetails="selectedConcert" />
+                  </Drawer>
+                  <Button
+                    class="concerts-view__single-button"
+                    @click="openConcertDetails(concert)"
+                  >
+                    See details
+                    <i class="pi pi-angle-right"></i>
+                  </Button>
+                </div>
               </template>
             </Card>
           </div>
@@ -261,14 +175,13 @@ import type { TConcert } from '@/types/TConcert'
 const route = useRoute()
 
 const availableOrchestrasStore = useAvailableOrchestrasStore()
-const { selectedOrchestraId, selectedOrchestraDetails } = storeToRefs(
-  availableOrchestrasStore,
-)
+const { selectedOrchestraDetails } = storeToRefs(availableOrchestrasStore)
 
 const visibleDrawerConcertDetails = ref(false)
 const selectedConcert = ref<TConcert | null>(null)
 
-const { concerts, loadingConcerts, fetchConcerts } = useConcerts()
+const { concerts, loadingConcerts, fetchConcerts, updateMemberAvailability } =
+  useConcerts()
 
 watch(
   () => route.params.orchestraId,
@@ -285,8 +198,19 @@ const openConcertDetails = (concert: TConcert) => {
   }
 }
 
+const updateAvailability = async (concert: TConcert, isAvailable: boolean) => {
+  console.log('concert.id: ', concert.id)
+  console.log('isAvailable: ', isAvailable)
+
+  try {
+    await updateMemberAvailability(concert, isAvailable)
+
 const seeConcertDetails = () => {
   console.log('see concert details')
+  } catch (error) {
+    const baseErrorMessage = 'Failed while updateAvailability.'
+    console.error(baseErrorMessage, error)
+  } 
 }
 </script>
 
@@ -310,18 +234,6 @@ const seeConcertDetails = () => {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-  }
-
-  &__buttons {
-    display: flex;
-    // gap: 10px;
-    flex-direction: row;
-    justify-content: space-evenly;
-  }
-
-  &__single-button {
-    margin-top: 20px;
-    width: 100%;
   }
 }
 
@@ -358,14 +270,20 @@ const seeConcertDetails = () => {
   &__concert-details-subtitle-single-info {
     display: grid;
     grid-template-columns: 1fr 3fr;
-    gap: 0px;
+    gap: 20px;
     align-items: flex-start;
   }
 
-  &__single-button {
+  &__buttons {
     display: flex;
+    // gap: 10px;
     flex-direction: row;
-    justify-content: end;
+    justify-content: space-evenly;
+  }
+
+  &__single-button {
+    margin-top: 20px;
+    width: 100%;
   }
 
   &__concert-list {

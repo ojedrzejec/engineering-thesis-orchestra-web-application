@@ -14,6 +14,7 @@ export const useConcerts = () => {
   const concerts = ref<TConcert[]>([])
   const loadingConcerts = ref(false)
   const loadingCreateConcert = ref(false)
+  const loadingMemberAvailabilityUpdate = ref(false)
 
   const fetchConcerts = async (orchestraId: string) => {
     loadingConcerts.value = true
@@ -34,29 +35,10 @@ export const useConcerts = () => {
 
       concerts.value = data
 
-      // if (data.value && Array.isArray(data.value)) {
-      //   concerts.value = data.value.map((c: TConcert) => {
-      //     return {
-      //       id: c.id,
-      //       id_orchestra: c.id_orchestra,
-      //       name: c.name,
-      //       date_and_time: new Date(c.date + 'T' + c.time),
-      //       date: c.date ? new Date(c.date) : null,
-      //       time: c.time ? new Date(c.time) : null,
-      //       place: c.place,
-      //       description: c.description,
-      //       reservation_url: c.reservation_url,
-      //       graphic: c.graphic,
-      //     }
-      //   })
-      // } else {
-      //   concerts.value = []
-      // }
-
       console.log('Fetched available concerts: ', concerts.value)
     } catch (e) {
       console.error(e)
-      const baseErrorMessage = 'Failed to fetch available orchestra concerts.'
+      const baseErrorMessage = "Failed to fetch available orchestra's concerts."
       console.error(baseErrorMessage, e)
       concerts.value = []
     } finally {
@@ -79,9 +61,6 @@ export const useConcerts = () => {
       .split('T')[1]
       .split('.')[0]
       .slice(0, 5)
-
-    // console.log('date:', date)
-    // console.log('time:', time)
 
     const formData = {
       id_orchestra: orchestraId,
@@ -112,7 +91,7 @@ export const useConcerts = () => {
       toast.add({
         severity: 'success',
         summary: 'Success!',
-        detail: 'New orchestra created!',
+        detail: 'New concert created!',
         life: 3000,
       })
     } catch (e) {
@@ -129,11 +108,59 @@ export const useConcerts = () => {
     }
   }
 
+  const updateMemberAvailability = async (
+    concert: TConcert,
+    isAvailable: boolean,
+  ) => {
+    loadingMemberAvailabilityUpdate.value = true
+
+    const updateData = {
+      id_concert: concert.id,
+      is_available: isAvailable,
+    }
+    console.log('updateData:', JSON.stringify(updateData, null, 2))
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/concert/`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token.value}`,
+        },
+        body: JSON.stringify(updateData),
+      })
+
+      if (!response.ok) {
+        throw new Error('Response not ok.')
+      }
+
+      toast.add({
+        severity: 'success',
+        summary: 'Success!',
+        detail: `Your availability updated successfully for \"${concert.name}\"!`,
+        life: 3000,
+      })
+    } catch (e) {
+      console.error(e)
+      const baseErrorMessage = 'Failed to update your availability.'
+      console.error(baseErrorMessage, e)
+      toast.add({
+        severity: 'error',
+        summary: baseErrorMessage,
+        life: 3000,
+      })
+    } finally {
+      loadingMemberAvailabilityUpdate.value = false
+    }
+  }
+
   return {
     concerts,
     loadingConcerts,
     loadingCreateConcert,
+    loadingMemberAvailabilityUpdate,
     fetchConcerts,
     createConcert,
+    updateMemberAvailability,
   }
 }

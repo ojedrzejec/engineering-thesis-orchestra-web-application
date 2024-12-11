@@ -102,5 +102,5 @@ CREATE TABLE orchestra_member_concert_availability (
     id_orchestra_member uuid references orchestra_member(id),
     id_concert uuid references concert(id),
     is_available BOOLEAN NULL,
-    PRIMARY KEY (id_orchestra_member, id_concert),
+    PRIMARY KEY (id_orchestra_member, id_concert)
 );
