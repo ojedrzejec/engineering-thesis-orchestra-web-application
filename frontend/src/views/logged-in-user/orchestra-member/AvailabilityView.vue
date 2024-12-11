@@ -10,7 +10,7 @@
         Please mark your availability for upcoming concerts.
       </Message>
 
-      <div v-if="loadingConcerts && loadingMemberAvailabilityFetch">
+      <div v-if="loadingConcerts || loadingMemberAvailabilityFetch">
         <ProgressSpinner />
       </div>
       <div v-else-if="concerts.length === 0">
@@ -114,34 +114,26 @@
                     <Button
                       v-if="
                         memberAvailability.find(
-                          availability =>
+                          (availability: TAvailability) =>
                             availability.id_concert === concert.id,
                         )?.is_available === true
                       "
                       icon="pi pi-check"
+                      label="Available"
                       style="color: #ffffff"
                       severity="success"
                       :loading="loadingMemberAvailabilityUpdate"
                       :disabled="loadingMemberAvailabilityUpdate"
-                      :label="
-                        loadingMemberAvailabilityUpdate
-                          ? 'Updating...'
-                          : 'Available'
-                      "
                       @click="updateAvailability(concert, true)"
                       raised
                     ></Button>
                     <Button
                       v-else
                       icon="pi pi-check"
+                      label="Available"
                       style="color: green"
                       :loading="loadingMemberAvailabilityUpdate"
                       :disabled="loadingMemberAvailabilityUpdate"
-                      :label="
-                        loadingMemberAvailabilityUpdate
-                          ? 'Updating...'
-                          : 'Available'
-                      "
                       severity="secondary"
                       outlined
                       @click="updateAvailability(concert, true)"
@@ -152,37 +144,29 @@
                     <Button
                       v-if="
                         memberAvailability.find(
-                          availability =>
+                          (availability: TAvailability) =>
                             availability.id_concert === concert.id,
                         )?.is_available === false
                       "
                       icon="pi pi-times"
+                      label="NOT Available"
                       style="color: #ffffff"
                       severity="danger"
                       @click="updateAvailability(concert, false)"
                       :loading="loadingMemberAvailabilityUpdate"
                       :disabled="loadingMemberAvailabilityUpdate"
-                      :label="
-                        loadingMemberAvailabilityUpdate
-                          ? 'Updating...'
-                          : 'NOT Available'
-                      "
                       raised
                     ></Button>
                     <Button
                       v-else
                       icon="pi pi-times"
+                      label="NOT Available"
                       style="color: #d65a5a"
                       severity="secondary"
                       outlined
                       @click="updateAvailability(concert, false)"
                       :loading="loadingMemberAvailabilityUpdate"
                       :disabled="loadingMemberAvailabilityUpdate"
-                      :label="
-                        loadingMemberAvailabilityUpdate
-                          ? 'Updating...'
-                          : 'NOT Available'
-                      "
                       raised
                     ></Button>
                   </div>
