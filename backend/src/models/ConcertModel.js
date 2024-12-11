@@ -67,6 +67,21 @@ const getMemberAvailabilityAllConcerts = async (MemberId, OrchestraId) => {
     return result.rows
 }
 
+const getAllMembersAvailabilityByOrchestraId = async (orchestraId) => {
+    const result = await pool.query(
+        `SELECT 
+          om.id, om.first_name, om.last_name, om.email,
+          COALESCE(omca.id_concert, NULL) AS id_concert, 
+          COALESCE(omca.is_available, NULL) AS is_available
+        FROM orchestra_member om
+        LEFT JOIN orchestra_member_concert_availability omca ON om.id = omca.id_orchestra_member
+        WHERE om.id IN (SELECT id_orchestra_member FROM orchestra_orchestra_member WHERE id_orchestra = $1)
+        `,
+        [orchestraId]
+    )
+    return result.rows
+}
+
 const createMemberAvailability = async (
     id_orchestra_member,
     id_concert,
@@ -104,6 +119,7 @@ module.exports = {
     createConcert,
     getMemberAvailability,
     getMemberAvailabilityAllConcerts,
+    getAllMembersAvailabilityByOrchestraId,
     createMemberAvailability,
     updateMemberAvailability,
 }

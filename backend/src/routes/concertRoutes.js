@@ -6,6 +6,7 @@ const authMiddleware = require('../middlewares/authMiddleware')
 const {
     getAllConcerts,
     getMemberAvailabilityAllConcerts,
+    getAllMembersAvailabilityAllConcertsInOrchestra,
     createConcert,
     createOrUpdateMemberAvailability,
     // updateConcert,
@@ -16,6 +17,11 @@ router.get(
     '/member-availability/:id',
     authMiddleware.authenticateToken,
     getMemberAvailabilityAllConcerts
+)
+router.get(
+    '/all-members-availability/:id',
+    authMiddleware.authenticateToken,
+    getAllMembersAvailabilityAllConcertsInOrchestra
 )
 router.post('/', authMiddleware.authenticateToken, createConcert)
 router.put(
