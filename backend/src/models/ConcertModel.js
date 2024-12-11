@@ -55,6 +55,18 @@ const getMemberAvailability = async (id_orchestra_member, id_concert) => {
     return result.rows[0]
 }
 
+const getMemberAvailabilityAllConcerts = async (MemberId, OrchestraId) => {
+    const result = await pool.query(
+        `SELECT * FROM orchestra_member_concert_availability 
+          WHERE id_orchestra_member = $1 AND id_concert IN (
+            SELECT id FROM concert WHERE id_orchestra = $2
+          )
+        `,
+        [MemberId, OrchestraId]
+    )
+    return result.rows
+}
+
 const createMemberAvailability = async (
     id_orchestra_member,
     id_concert,
@@ -91,6 +103,7 @@ module.exports = {
     getConcertById,
     createConcert,
     getMemberAvailability,
+    getMemberAvailabilityAllConcerts,
     createMemberAvailability,
     updateMemberAvailability,
 }
