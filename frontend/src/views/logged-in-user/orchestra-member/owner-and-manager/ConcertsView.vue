@@ -5,6 +5,35 @@
       <h1>Concerts</h1>
     </div>
 
+    <pre>
+      {{ allMembersAvailability }}
+    </pre>
+
+    <DataTable
+      tableStyle="min-width: 50rem"
+      :value="allMembersAvailability"
+      :loading="loadingAllMembersAvailability"
+      removableSort
+    >
+      <Column field="first_name" header="First Name" sortable></Column>
+      <Column field="last_name" header="Last Name" sortable></Column>
+      <Column field="email" header="Email" sortable></Column>
+      <Column field="is_available" header="Availability" sortable>
+        <template #body="{ data }">
+          <Tag
+            :value="
+              data.is_available === null
+                ? 'No response'
+                : data.is_available
+                  ? 'Available'
+                  : 'Not available'
+            "
+            :severity="tagSeverity(data.is_available)"
+          ></Tag>
+        </template>
+      </Column>
+    </DataTable>
+
     <div class="concerts-view__component-create card flex justify-center">
       <Drawer
         v-model:visible="visibleDrawerConcertCreateForm"
@@ -25,16 +54,16 @@
         </div>
       </div>
     </div>
+
     <div class="concerts-view__content">
       <div v-if="loadingConcerts">
         <ProgressSpinner />
       </div>
       <div v-else-if="concerts.length === 0">
         <h3>Concerts:</h3>
-        <Message severity="error"
-          >Failed to load concerts <strong>OR</strong> no concerts
-          found.</Message
-        >
+        <Message severity="error">
+          Failed to load concerts <strong>OR</strong> no concerts found.
+        </Message>
       </div>
 
       <div v-else>
@@ -46,7 +75,7 @@
             class="concerts-view__concert-details"
             style="display: flex; justify-content: center"
           >
-            <Card style="max-width: 40rem; overflow: hidden">
+            <Card style="min-width: 400px; max-width: 600px; overflow: hidden">
               <template #header>
                 <img
                   v-if="concert.graphic"
@@ -126,15 +155,15 @@
                   <div class="card flex justify-center">
                     <Drawer
                       v-model:visible="visibleDrawerConcertDetails"
-                      position="right"
+                      position="full"
                       header="Concert Details"
                       class="concerts-view__drawer !w-full md:!w-80 lg:!w-[30rem]"
                     >
                       <ConcertDetails :concertDetails="selectedConcert" />
                     </Drawer>
-                    <Button @click="openConcertDetails(concert)"
-                      >See details
-                      <i class="pi pi-angle-right"></i>
+                    <Button @click="openConcertDetails(concert)">
+                      See details
+                      <i class="pi pi-window-maximize"></i>
                     </Button>
                   </div>
                 </div>
@@ -143,18 +172,18 @@
           </div>
 
           <pre>
-          <div>Create a concerts (seperate component)</div>
+          <div>[X] Create a concerts (seperate component)</div>
           
-          <div>Display all concerts -> go to details (seperate component)</div>
+          <div>[X] Display all concerts -> go to details (seperate component)</div>
           
           <div>concert details component:
-            - edit button on the top right -> go to edit concert (seperate component)
-            - delete button on the top right
-            - concert details
-            - list of all members with their availability (seperate component)
+            [ ] edit button on the top right -> go to edit concert (seperate component)
+            [ ] delete button on the top right
+            [X] concert details
+            [ ] list of all members with their availability (seperate component)
           </div>
   
-          <div>edit concert component:
+          <div>[ ] edit concert component:
             - form
             - save button
           </div>
@@ -174,10 +203,14 @@ import Card from 'primevue/card'
 import Toast from 'primevue/toast'
 import ProgressSpinner from 'primevue/progressspinner'
 import Message from 'primevue/message'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import Tag from 'primevue/tag'
 import ConcertCreateForm from '@/components/ConcertCreateForm.vue'
 import ConcertDetails from '@/components/ConcertDetails.vue'
 import { useConcerts } from '@/composables/useConcerts'
 import type { TConcert } from '@/types/TConcert'
+import { useAvailability } from '@/composables/useAvailability'
 
 const route = useRoute()
 
@@ -187,10 +220,17 @@ const selectedConcert = ref<TConcert | null>(null)
 
 const { concerts, loadingConcerts, fetchConcerts } = useConcerts()
 
+const {
+  allMembersAvailability,
+  loadingAllMembersAvailability,
+  fetchAllMembersAvailability,
+} = useAvailability()
+
 watch(
   () => route.params.orchestraId,
   async orchestraId => {
     await fetchConcerts(orchestraId.toString())
+    await fetchAllMembersAvailability(orchestraId.toString())
   },
   { immediate: true },
 )
@@ -201,10 +241,22 @@ const openConcertDetails = (concert: TConcert) => {
     visibleDrawerConcertDetails.value = true
   }
 }
+
+const tagSeverity = (is_available: boolean) => {
+  if (is_available === null) {
+    return 'warn'
+  } else if (!is_available) {
+    return 'danger'
+  } else {
+    return 'success'
+  }
+}
 </script>
 
 <style setup lang="scss">
 .concerts-view {
+  margin-bottom: 50px;
+
   &__title {
     margin-bottom: 50px;
   }
@@ -238,17 +290,17 @@ const openConcertDetails = (concert: TConcert) => {
   }
 
   &__concert-details-subtitle {
-    margin: 5px 0;
-    // display: flex;
-    // flex-direction: row;
-    // gap: 15px;
+    margin: 10px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
     // justify-content: space-between;
   }
 
   &__concert-details-subtitle-single-info {
     display: grid;
     grid-template-columns: 1fr 3fr;
-    gap: 0px;
+    gap: 20px;
     align-items: flex-start;
   }
 
