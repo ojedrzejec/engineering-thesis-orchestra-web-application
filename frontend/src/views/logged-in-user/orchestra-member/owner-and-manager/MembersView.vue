@@ -36,7 +36,9 @@
         </div>
       </div>
 
-      <div class="members-view__datatable">
+      <ProgressSpinner v-if="loadingAllOrchestraMembers" />
+
+      <div v-else class="members-view__datatable">
         <DataTable
           :value="allOrchestraMembers"
           :loading="loadingAllOrchestraMembers"
@@ -121,149 +123,150 @@
                 @click="openDrawer(data)"
                 rounded
               ></Button>
-              <Drawer
-                v-model:visible="drawerVisible"
-                position="right"
-                header="Orchestra Member Details"
-                :pt="{ root: 'members-view__drawer' }"
-              >
-                <div class="members-view__drawer-content">
-                  <div
-                    class="members-view__drawer-single-info members-view__drawer-avatar"
-                  >
-                    <Avatar
-                      :image="selectedUser.profilePicture || undefined"
-                      size="xlarge"
-                    />
-                  </div>
-                  <div class="members-view__drawer-single-info">
-                    <h4>Access Type:</h4>
-                    <p>
-                      <Tag
-                        v-if="selectedUser.accessType"
-                        :value="selectedUser.accessType"
-                        :severity="tagSeverity(selectedUser.accessType)"
-                      ></Tag>
-                    </p>
-                    <div
-                      class="members-view__drawer-single-info-not-provided"
-                      v-if="!selectedUser.accessType"
-                    >
-                      Not provided
-                    </div>
-                  </div>
-                  <div class="members-view__drawer-single-info">
-                    <h4>First Name:</h4>
-                    <p v-if="selectedUser.firstName">
-                      {{ selectedUser.firstName }}
-                    </p>
-                    <div
-                      class="members-view__drawer-single-info-not-provided"
-                      v-if="!selectedUser.firstName"
-                    >
-                      Not provided
-                    </div>
-                  </div>
-                  <div class="members-view__drawer-single-info">
-                    <h4>Last Name:</h4>
-                    <p v-if="selectedUser.lastName">
-                      {{ selectedUser.lastName }}
-                    </p>
-                    <div
-                      class="members-view__drawer-single-info-not-provided"
-                      v-if="!selectedUser.lastName"
-                    >
-                      Not provided
-                    </div>
-                  </div>
-                  <div class="members-view__drawer-single-info">
-                    <h4>Instruments:</h4>
-                    <p v-if="selectedUser.instruments">
-                      {{ selectedUser.instruments }}
-                    </p>
-                    <div
-                      class="members-view__drawer-single-info-not-provided"
-                      v-if="!selectedUser.instruments"
-                    >
-                      Not provided
-                    </div>
-                  </div>
-                  <div class="members-view__drawer-single-info">
-                    <h4>Email:</h4>
-                    <p v-if="selectedUser.email">{{ selectedUser.email }}</p>
-                    <div
-                      class="members-view__drawer-single-info-not-provided"
-                      v-if="!selectedUser.email"
-                    >
-                      Not provided
-                    </div>
-                  </div>
-                  <div class="members-view__drawer-single-info">
-                    <h4>Phone:</h4>
-                    <p v-if="selectedUser.phone">{{ selectedUser.phone }}</p>
-                    <div
-                      class="members-view__drawer-single-info-not-provided"
-                      v-if="!selectedUser.phone"
-                    >
-                      Not provided
-                    </div>
-                  </div>
-                  <div class="members-view__drawer-single-info">
-                    <h4>Date of Birth:</h4>
-                    <p v-if="selectedUser.dateOfBirth">
-                      {{ selectedUser.dateOfBirth }}
-                    </p>
-                    <div
-                      class="members-view__drawer-single-info-not-provided"
-                      v-if="!selectedUser.dateOfBirth"
-                    >
-                      Not provided
-                    </div>
-                  </div>
-                  <div class="members-view__drawer-single-info">
-                    <h4>Is a Student:</h4>
-                    <p v-if="selectedUser.isStudent">
-                      {{ selectedUser.isStudent }}
-                    </p>
-                    <div
-                      class="members-view__drawer-single-info-not-provided"
-                      v-if="!selectedUser.isStudent"
-                    >
-                      Not provided
-                    </div>
-                  </div>
-                  <div
-                    v-if="selectedUser.isStudent"
-                    class="members-view__drawer-single-info"
-                  >
-                    <h4>University:</h4>
-                    <p v-if="selectedUser.university">
-                      {{ selectedUser.university }}
-                    </p>
-                    <div
-                      class="members-view__drawer-single-info-not-provided"
-                      v-if="!selectedUser.university"
-                    >
-                      Not provided
-                    </div>
-                  </div>
-                  <div class="members-view__drawer-single-info">
-                    <h4>Description:</h4>
-                    <p v-if="selectedUser.description">
-                      {{ selectedUser.description }}
-                    </p>
-                    <div
-                      class="members-view__drawer-single-info-not-provided"
-                      v-if="!selectedUser.description"
-                    >
-                      Not provided
-                    </div>
-                  </div>
-                </div>
-              </Drawer>
             </template>
           </Column>
         </DataTable>
+
+        <Drawer
+          v-model:visible="drawerVisible"
+          position="right"
+          header="Orchestra Member Details"
+          :pt="{ root: 'members-view__drawer' }"
+        >
+          <div class="members-view__drawer-content">
+            <div
+              class="members-view__drawer-single-info members-view__drawer-avatar"
+            >
+              <Avatar
+                :image="selectedUser.profilePicture || undefined"
+                size="xlarge"
+              />
+            </div>
+            <div class="members-view__drawer-single-info">
+              <h4>Access Type:</h4>
+              <p>
+                <Tag
+                  v-if="selectedUser.accessType"
+                  :value="selectedUser.accessType"
+                  :severity="tagSeverity(selectedUser.accessType)"
+                ></Tag>
+              </p>
+              <div
+                class="members-view__drawer-single-info-not-provided"
+                v-if="!selectedUser.accessType"
+              >
+                Not provided
+              </div>
+            </div>
+            <div class="members-view__drawer-single-info">
+              <h4>First Name:</h4>
+              <p v-if="selectedUser.firstName">
+                {{ selectedUser.firstName }}
+              </p>
+              <div
+                class="members-view__drawer-single-info-not-provided"
+                v-if="!selectedUser.firstName"
+              >
+                Not provided
+              </div>
+            </div>
+            <div class="members-view__drawer-single-info">
+              <h4>Last Name:</h4>
+              <p v-if="selectedUser.lastName">
+                {{ selectedUser.lastName }}
+              </p>
+              <div
+                class="members-view__drawer-single-info-not-provided"
+                v-if="!selectedUser.lastName"
+              >
+                Not provided
+              </div>
+            </div>
+            <div class="members-view__drawer-single-info">
+              <h4>Instruments:</h4>
+              <p v-if="selectedUser.instruments">
+                {{ selectedUser.instruments }}
+              </p>
+              <div
+                class="members-view__drawer-single-info-not-provided"
+                v-if="!selectedUser.instruments"
+              >
+                Not provided
+              </div>
+            </div>
+            <div class="members-view__drawer-single-info">
+              <h4>Email:</h4>
+              <p v-if="selectedUser.email">{{ selectedUser.email }}</p>
+              <div
+                class="members-view__drawer-single-info-not-provided"
+                v-if="!selectedUser.email"
+              >
+                Not provided
+              </div>
+            </div>
+            <div class="members-view__drawer-single-info">
+              <h4>Phone:</h4>
+              <p v-if="selectedUser.phone">{{ selectedUser.phone }}</p>
+              <div
+                class="members-view__drawer-single-info-not-provided"
+                v-if="!selectedUser.phone"
+              >
+                Not provided
+              </div>
+            </div>
+            <div class="members-view__drawer-single-info">
+              <h4>Date of Birth:</h4>
+              <p v-if="selectedUser.dateOfBirth">
+                {{ selectedUser.dateOfBirth }}
+              </p>
+              <div
+                class="members-view__drawer-single-info-not-provided"
+                v-if="!selectedUser.dateOfBirth"
+              >
+                Not provided
+              </div>
+            </div>
+            <div class="members-view__drawer-single-info">
+              <h4>Is a Student:</h4>
+              <p v-if="selectedUser.isStudent">
+                {{ selectedUser.isStudent }}
+              </p>
+              <div
+                class="members-view__drawer-single-info-not-provided"
+                v-if="!selectedUser.isStudent"
+              >
+                Not provided
+              </div>
+            </div>
+            <div
+              v-if="selectedUser.isStudent"
+              class="members-view__drawer-single-info"
+            >
+              <h4>University:</h4>
+              <p v-if="selectedUser.university">
+                {{ selectedUser.university }}
+              </p>
+              <div
+                class="members-view__drawer-single-info-not-provided"
+                v-if="!selectedUser.university"
+              >
+                Not provided
+              </div>
+            </div>
+            <div class="members-view__drawer-single-info">
+              <h4>Description:</h4>
+              <p v-if="selectedUser.description">
+                {{ selectedUser.description }}
+              </p>
+              <div
+                class="members-view__drawer-single-info-not-provided"
+                v-if="!selectedUser.description"
+              >
+                Not provided
+              </div>
+            </div>
+          </div>
+        </Drawer>
         <Toast />
       </div>
     </div>
@@ -290,6 +293,7 @@ import Drawer from 'primevue/drawer'
 import Avatar from 'primevue/avatar'
 import Tag from 'primevue/tag'
 import Toast from 'primevue/toast'
+import ProgressSpinner from 'primevue/progressspinner'
 
 const availableOrchestrasStore = useAvailableOrchestrasStore()
 const { selectedOrchestraId, selectedOrchestraDetails } = storeToRefs(
@@ -309,8 +313,11 @@ const {
 
 const route = useRoute()
 const selectedEmail = ref<string | null>(null)
+
+// TODO: dwa źródła prawdy o otwartym drawerze | START
 const selectedUser = ref<TMember>(initMember)
 const drawerVisible = ref(false)
+// TTTT: dwa źródła prawdy o otwartym drawerze | END
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -337,7 +344,7 @@ watch(
 
 const openDrawer = (user: TMember) => {
   selectedUser.value = user
-  drawerVisible.value = true
+  // drawerVisible.value = true
 }
 
 const tagSeverity = (accessType: string) => {

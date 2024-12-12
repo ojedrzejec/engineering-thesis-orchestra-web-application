@@ -7,7 +7,7 @@
     <div class="instruments-view__content">
       <ProgressSpinner v-if="loadingInstrumentsInOrchestra" />
 
-      <div class="instruments-view__datatable">
+      <div v-else class="instruments-view__datatable">
         <DataTable
           v-model:filters="filters"
           filterDisplay="row"
