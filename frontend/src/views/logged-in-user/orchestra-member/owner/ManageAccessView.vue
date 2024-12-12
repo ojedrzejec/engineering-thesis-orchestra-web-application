@@ -201,18 +201,15 @@ const revertManagerToPlayer = async (manager: TManager) => {
   }
 
   try {
-    if (route.params.orchestraId) {
-      await updateManagerToPlayer(
-        route.params.orchestraId.toString(),
-        manager.id,
-      )
-    }
+    await updateManagerToPlayer(route.params.orchestraId.toString(), manager.id)
+
+    await fetchOrchestraManagers(route.params.orchestraId.toString())
+    await fetchOrchestraPlayers(route.params.orchestraId.toString())
   } catch (error) {
     const baseErrorMessage = 'Failed while revertManagerToPlayer.'
     console.error(baseErrorMessage, error)
   } finally {
-    fetchOrchestraManagers(route.params.orchestraId.toString())
-    fetchOrchestraPlayers(route.params.orchestraId.toString())
+    selectedPlayer.value = null
   }
 }
 </script>

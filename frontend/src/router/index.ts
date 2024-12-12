@@ -163,18 +163,6 @@ const router = createRouter({
             ),
           meta: { logInOnly: true },
         },
-        {
-          path: 'concert-create-form',
-          name: 'concert-create-form',
-          component: () => import('@/components/ConcertCreateForm.vue'),
-          meta: { logInOnly: true },
-        },
-        {
-          path: 'concert-details',
-          name: 'concert-details',
-          component: () => import('@/components/ConcertDetails.vue'),
-          meta: { logInOnly: true },
-        },
       ],
     },
     {
