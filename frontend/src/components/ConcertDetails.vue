@@ -1,5 +1,5 @@
 <template>
-  <div v-if="concertDetails" class="concert-details-view">
+  <div class="concert-details-view">
     <div
       class="concert-details-view__drawer-single-info concert-details-view__concert-title"
     >
@@ -55,6 +55,8 @@
         </div>
       </div>
     </div>
+
+    <ConcertAvailability v-if="concertDetails" :concertId="concertDetails.id" />
 
     <div class="concert-details-view__drawer-single-info">
       <div>
@@ -115,9 +117,10 @@
 
 <script setup lang="ts">
 import type { TConcert } from '@/types/TConcert'
+import ConcertAvailability from './ConcertAvailability.vue'
 
 const props = defineProps<{
-  concertDetails: TConcert | null
+  concertDetails: TConcert
 }>()
 </script>
 
@@ -175,6 +178,13 @@ const props = defineProps<{
     display: grid;
     grid-template-columns: 3fr 7fr;
     align-items: flex-start;
+  }
+
+  &__datatable-availability {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
   }
 }
 </style>

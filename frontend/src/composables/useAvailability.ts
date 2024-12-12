@@ -5,7 +5,7 @@ import { API_BASE_URL } from '@/constants/config'
 import { useAuthStore } from '@/stores/useAuthStore'
 import type { TConcert } from '@/types/TConcert'
 import type { TAvailability } from '@/types/TAvailability'
-import type { TConcertAvailability } from '@/types/TConcertAvailability'
+import type { TMemberAvailability } from '@/types/TMemberAvailability'
 
 export const useAvailability = () => {
   const authStore = useAuthStore()
@@ -14,7 +14,7 @@ export const useAvailability = () => {
   const toast = useToast()
 
   const memberAvailability = ref<TAvailability[]>([])
-  const allMembersAvailability = ref<TConcertAvailability[]>([])
+  const allMembersAvailability = ref<TMemberAvailability[]>([])
   const loadingMemberAvailabilityFetch = ref(false)
   const loadingAllMembersAvailability = ref(false)
   const loadingMemberAvailabilityUpdate = ref(false)
@@ -52,12 +52,12 @@ export const useAvailability = () => {
     }
   }
 
-  const fetchAllMembersAvailability = async (orchestraId: string) => {
+  const fetchAllMembersAvailability = async (concertId: string) => {
     loadingAllMembersAvailability.value = true
 
     try {
       const response = await fetch(
-        `${API_BASE_URL}/concert/all-members-availability/${orchestraId}`,
+        `${API_BASE_URL}/concert/all-members-availability/${concertId}`,
         {
           method: 'GET',
           headers: {
