@@ -72,24 +72,19 @@ const getMemberAvailabilityAllConcerts = async (req, res) => {
     }
 }
 
-const getAllMembersAvailabilityAllConcertsInOrchestra = async (req, res) => {
-    const orchestraId = req.params.id
+const getAllMembersAvailabilityInConcert = async (req, res) => {
+    const concertId = req.params.id
 
     try {
-        // check if the orchestra exists
-        const orchestraExistance =
-            await Orchestra_OrchestraOrchestraMember_Owner_Model.getOrchestraById(
-                orchestraId
-            )
-        if (!orchestraExistance) {
-            return res.status(404).json({ msg: 'Orchestra not found' })
+        // check if the concert exists
+        const concert = await ConcertModel.getConcertById(concertId)
+        if (!concert) {
+            return res.status(404).json({ msg: 'Concert not found' })
         }
 
         // get all members and their availability
         const membersAvailability =
-            await ConcertModel.getAllMembersAvailabilityByOrchestraId(
-                orchestraId
-            )
+            await ConcertModel.getAllMembersAvailabilityByConcertId(concertId)
         if (!membersAvailability.length) {
             return res.status(404).json({ msg: 'No members.' })
         }
@@ -221,7 +216,7 @@ const createOrUpdateMemberAvailability = async (req, res) => {
 module.exports = {
     getAllConcerts,
     getMemberAvailabilityAllConcerts,
-    getAllMembersAvailabilityAllConcertsInOrchestra,
+    getAllMembersAvailabilityInConcert,
     createConcert,
     createOrUpdateMemberAvailability,
 }
