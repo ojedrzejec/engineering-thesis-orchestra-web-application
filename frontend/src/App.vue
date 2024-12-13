@@ -58,6 +58,7 @@
         </Menubar>
       </div>
     </header>
+
     <div class="app-view__app-content">
       <div
         v-if="isLoggedIn && availableOrchestras.length && selectedOrchestraId"
@@ -71,7 +72,6 @@
         />
       </div>
 
-      <!-- v-else-if="!selectedOrchestraId" -->
       <div
         v-else-if="
           isLoggedIn && availableOrchestras.length && !selectedOrchestraId
@@ -191,13 +191,13 @@ const menubarItems = computed<MenuItem[]>(() => {
     },
   })
 
-  // TODO: availableOrchestrasStore
   menuItems.push(
     {
       label: loadingAvailableOrchestras.value
         ? 'Loading...'
-        : selectedOrchestraDetails.value?.name ||
-          'You do not belong to any orchestra',
+        : availableOrchestras.value.length === 0
+          ? 'You do not belong to any orchestra'
+          : selectedOrchestraDetails.value?.name || 'Select an orchestra',
       icon: 'pi pi-folder-open',
       badge: availableOrchestras.value.length,
       items: orchestrasSubmenu,
