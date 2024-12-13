@@ -60,7 +60,7 @@
     </header>
     <div class="app-view__app-content">
       <div
-        v-if="isLoggedIn && availableOrchestras.length"
+        v-if="isLoggedIn && availableOrchestras.length && selectedOrchestraId"
         class="app-view__navigation-menu-vertical-left"
       >
         <PanelMenu
@@ -70,6 +70,32 @@
           :expandedKeys="{ 'owner-panel': true }"
         />
       </div>
+
+      <!-- v-else-if="!selectedOrchestraId" -->
+      <div
+        v-else-if="
+          isLoggedIn && availableOrchestras.length && !selectedOrchestraId
+        "
+        class="app-view__ navigation-menu-vertical-left"
+      >
+        <Card>
+          <template #content>
+            <Message severity="info">
+              <div class="app-view__message-info">
+                <div>
+                  <i class="pi pi-info-circle"></i>
+                </div>
+                <h3>Orchestra Selection</h3>
+                <div>
+                  Go to the top left drop down menu to select the orchestra or
+                  to create a new one.
+                </div>
+              </div>
+            </Message>
+          </template>
+        </Card>
+      </div>
+
       <div class="app-view__router-view">
         <RouterView />
       </div>
@@ -90,6 +116,8 @@ import Button from 'primevue/button'
 import Menubar from 'primevue/menubar'
 import type { MenuItem } from 'primevue/menuitem'
 import PanelMenu from 'primevue/panelmenu'
+import Card from 'primevue/card'
+import Message from 'primevue/message'
 
 const availableOrchestrasStore = useAvailableOrchestrasStore()
 const {
@@ -307,6 +335,14 @@ const panelMenuItems = computed<MenuItem[]>(() => {
   &__router-view {
     margin: 20px;
     width: 100%;
+  }
+
+  &__message-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 0;
   }
 }
 </style>
