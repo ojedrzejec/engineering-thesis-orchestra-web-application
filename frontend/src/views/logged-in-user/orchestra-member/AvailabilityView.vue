@@ -6,8 +6,12 @@
 
     <div class="concerts-view__content">
       <Message severity="info">
-        <i class="pi pi-info-circle"></i>
-        Please mark your availability for upcoming concerts.
+        <div class="concerts-view__message-info">
+          <div>
+            <i class="pi pi-info-circle"></i>
+          </div>
+          <div>Please mark your availability for upcoming concerts.</div>
+        </div>
       </Message>
 
       <div v-if="loadingConcerts || loadingMemberAvailabilityFetch">
@@ -292,6 +296,14 @@ const updateAvailability = async (concert: TConcert, isAvailable: boolean) => {
 
   &__title {
     margin-bottom: 50px;
+  }
+
+  &__message-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
   }
 
   &__content {

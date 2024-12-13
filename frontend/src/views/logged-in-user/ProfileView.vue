@@ -3,6 +3,14 @@
     <div class="profile-view__title">
       <h1>My Profile</h1>
     </div>
+    <Message severity="info">
+      <div class="profile-view__message-info">
+        <div>
+          <i class="pi pi-info-circle"></i>
+        </div>
+        <div>Update your personal information if necessary.</div>
+      </div>
+    </Message>
     <Form>
       <Fluid>
         <div class="profile-view__form">
@@ -586,12 +594,22 @@ const handleUpdate = async () => {
   flex-direction: column;
   align-items: center;
   width: 100%;
+  margin-bottom: 30px;
 
   &__title {
     margin-bottom: 20px;
   }
 
+  &__message-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
   &__form {
+    margin-top: 50px;
     display: flex;
     flex-direction: column;
     align-items: center;
