@@ -1,6 +1,8 @@
 <template>
   <div class="app-view">
     <header>
+      <Toast />
+
       <div class="app-view__navigation-menu-horizontal">
         <Menubar :model="menubarItems">
           <template #start>
@@ -118,6 +120,7 @@ import type { MenuItem } from 'primevue/menuitem'
 import PanelMenu from 'primevue/panelmenu'
 import Card from 'primevue/card'
 import Message from 'primevue/message'
+import Toast from 'primevue/toast'
 
 const availableOrchestrasStore = useAvailableOrchestrasStore()
 const {

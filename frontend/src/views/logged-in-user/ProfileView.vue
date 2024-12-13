@@ -1,6 +1,5 @@
 <template>
   <div class="profile-view">
-    <Toast />
     <div class="profile-view__title">
       <h1>My Profile</h1>
     </div>
@@ -352,7 +351,6 @@ import Fluid from 'primevue/fluid'
 import DatePicker from 'primevue/datepicker'
 import FileUpload, { type FileUploadSelectEvent } from 'primevue/fileupload'
 import { Form } from '@primevue/forms'
-import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
 
 const authStore = useAuthStore()
