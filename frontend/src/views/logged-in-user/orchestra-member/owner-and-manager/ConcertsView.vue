@@ -10,6 +10,7 @@
         v-model:visible="visibleDrawerConcertCreateForm"
         header="Create new concert"
         position="full"
+        class="concerts-view__drawer !w-full md:!w-80 lg:!w-[30rem]"
       >
         <ConcertCreateForm />
       </Drawer>

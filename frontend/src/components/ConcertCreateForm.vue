@@ -1,6 +1,5 @@
 <template>
   <div class="create-concert-view">
-    <Toast />
     <div class="create-concert-view__content">
       <div class="create-concert-view__title">
         <h1>Create new concert</h1>
@@ -203,7 +202,6 @@ import Button from 'primevue/button'
 import Message from 'primevue/message'
 import DatePicker from 'primevue/datepicker'
 import FileUpload, { type FileUploadSelectEvent } from 'primevue/fileupload'
-import Toast from 'primevue/toast'
 import { useConcerts } from '@/composables/useConcerts'
 import type { TConcert } from '@/types/TConcert'
 import { initConcert } from '@/constants/initConcert'

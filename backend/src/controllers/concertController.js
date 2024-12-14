@@ -120,7 +120,7 @@ const createConcert = async (req, res) => {
             return res.status(404).json({ msg: 'Orchestra not found' })
         }
 
-        const concert = await ConcertModel.createConcert(
+        const concertCreated = await ConcertModel.createConcert(
             id_orchestra,
             name,
             date,
@@ -130,13 +130,13 @@ const createConcert = async (req, res) => {
             reservation_url,
             graphic
         )
-        if (!concert) {
+        if (!concertCreated) {
             return res
                 .status(500)
                 .json({ msg: 'Failed to create new concert.' })
         }
 
-        res.status(201).json(concert)
+        res.status(201).json(concertCreated)
     } catch (err) {
         res.status(500).json({
             msg: 'Server error while creating concert.',
