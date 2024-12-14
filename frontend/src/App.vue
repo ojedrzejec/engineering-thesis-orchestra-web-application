@@ -102,17 +102,89 @@
         <RouterView />
       </div>
     </div>
-    <footer></footer>
+
+    <footer class="app-view__footer" v-if="isLoggedIn && selectedOrchestraId">
+      <Panel>
+        <div class="app-view__footer-panel">
+          <div class="app-view__footer-panel-column">
+            <img
+              alt="orchestra logo"
+              :src="
+                orchestraInformation?.logo ??
+                'https://via.placeholder.com/640x200'
+              "
+              class="app-view__concert-image app-view__footer-panel-column"
+            />
+          </div>
+          <div class="app-view__footer-panel-column">
+            <Divider layout="vertical" />
+            <Divider layout="vertical" />
+            <Divider layout="vertical" />
+          </div>
+          <div class="app-view__footer-panel-column">
+            <div>
+              <strong>{{ orchestraInformation?.name }}</strong>
+            </div>
+          </div>
+          <div class="app-view__footer-panel-column">
+            <Divider layout="vertical" />
+            <Divider layout="vertical" />
+            <Divider layout="vertical" />
+          </div>
+          <div class="app-view__footer-panel-column">
+            <div>{{ orchestraInformation?.email }}</div>
+            <div>{{ orchestraInformation?.address }}</div>
+          </div>
+          <div class="app-view__footer-panel-column">
+            <Divider layout="vertical" />
+            <Divider layout="vertical" />
+            <Divider layout="vertical" />
+          </div>
+          <div class="app-view__footer-panel-column">
+            <a
+              v-if="orchestraInformation?.facebookUrl"
+              class="app-view__link"
+              :href="orchestraInformation.facebookUrl"
+              target="_blank"
+            >
+              <i class="pi pi-facebook"></i>
+              {{ orchestraInformation?.facebookUrl }}
+            </a>
+
+            <a
+              v-if="orchestraInformation?.instagramUrl"
+              class="app-view__link"
+              :href="orchestraInformation.instagramUrl"
+              target="_blank"
+            >
+              <i class="pi pi-instagram"></i>
+              {{ orchestraInformation?.instagramUrl }}
+            </a>
+
+            <a
+              v-if="orchestraInformation?.youtubeUrl"
+              class="app-view__link"
+              :href="orchestraInformation.youtubeUrl"
+              target="_blank"
+            >
+              <i class="pi pi-youtube"></i>
+              {{ orchestraInformation?.youtubeUrl }}
+            </a>
+          </div>
+        </div>
+      </Panel>
+    </footer>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { RouterView, useRouter } from 'vue-router'
+import { computed, watch } from 'vue'
+import { RouterView, useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { EOrchestraRole } from '@/constants/enums/EOrchestraRole'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useAvailableOrchestrasStore } from './stores/useAvailableOrchestras'
+import { useOrchestraInformation } from './composables/useOrchestraInformation'
 import Badge from 'primevue/badge'
 import Button from 'primevue/button'
 import Menubar from 'primevue/menubar'
@@ -121,6 +193,8 @@ import PanelMenu from 'primevue/panelmenu'
 import Card from 'primevue/card'
 import Message from 'primevue/message'
 import Toast from 'primevue/toast'
+import Panel from 'primevue/panel'
+import Divider from 'primevue/divider'
 
 const availableOrchestrasStore = useAvailableOrchestrasStore()
 const {
@@ -129,6 +203,22 @@ const {
   selectedOrchestraId,
   selectedOrchestraDetails,
 } = storeToRefs(availableOrchestrasStore)
+
+const {
+  orchestraInformation,
+  loadingOrchestraInformation,
+  fetchOrchestraInformation,
+} = useOrchestraInformation()
+
+const route = useRoute()
+
+watch(
+  () => route.params.orchestraId,
+  async orchestraId => {
+    await fetchOrchestraInformation(orchestraId.toString())
+  },
+  { immediate: true },
+)
 
 const authStore = useAuthStore()
 const { isLoggedIn } = storeToRefs(authStore)
@@ -346,6 +436,38 @@ const panelMenuItems = computed<MenuItem[]>(() => {
     align-items: center;
     justify-content: center;
     padding: 10px 0;
+  }
+
+  &__footer {
+    margin: 20px;
+  }
+
+  &__footer-panel {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 20px;
+  }
+
+  &__footer-panel-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__concert-image {
+    width: 100%;
+    max-height: 100px;
+    object-fit: contain;
+  }
+
+  &__link {
+    color: var(--p-primary-color);
+    :visited {
+      color: var(--p-primary-color);
+    }
+    text-decoration: none;
   }
 }
 </style>
