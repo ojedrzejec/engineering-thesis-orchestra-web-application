@@ -49,7 +49,23 @@ export const useConcerts = () => {
     loadingCreateConcert.value = true
 
     const date = concert.date_and_time?.toISOString().split('T')[0].split('-')
-    // const date = concert.date_and_time?.toISOString().split('T')[0].split('-').reverse().join('.')
+
+    // add 1 day to the date
+    if (date) {
+      const year = parseInt(date[0])
+      const month = parseInt(date[1])
+      const day = parseInt(date[2])
+      console.log('year: ', year)
+      console.log('month: ', month)
+      console.log('day: ', day)
+
+      const dateObject = new Date(year, month - 1, day)
+      dateObject.setDate(dateObject.getDate() + 1)
+
+      date[0] = dateObject.getFullYear().toString()
+      date[1] = (dateObject.getMonth() + 1).toString()
+      date[2] = dateObject.getDate().toString()
+    }
 
     let time = concert.date_and_time
       ?.toISOString()
