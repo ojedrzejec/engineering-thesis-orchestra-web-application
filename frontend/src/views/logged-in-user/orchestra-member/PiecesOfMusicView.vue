@@ -32,7 +32,15 @@
         <div v-else>
           <h3>Available pieces of music for your orchestra group:</h3>
         </div>
-        <pre>{{ { piecesOfMusic } }}</pre>
+        <pre>
+          {{ { piecesOfMusic } }}
+          <div v-for="piece in piecesOfMusic" :key="piece.id">
+            {{ piece.id }}
+            {{ piece.id_orchestra }}
+            {{ piece.title }}
+            {{ piece.composer }}
+          </div>
+        </pre>
       </div>
       <div v-else>
         <Message severity="error">
