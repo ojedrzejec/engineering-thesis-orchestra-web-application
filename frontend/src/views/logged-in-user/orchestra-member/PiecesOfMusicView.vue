@@ -4,47 +4,87 @@
       <h1>Pieces of Music</h1>
     </div>
 
+    <pre>
+      {{ { memberGroup } }}
+      {{ memberGroup?.id }}
+      {{ memberGroup?.name }}
+    </pre>
+
     <div class="pieces-of-music-view__content">
+      <div v-if="loadingMemberGroup">
+        <ProgressSpinner />
+      </div>
+      <div v-else-if="memberGroup">
+        <Message severity="info">
+          <div>
+            You belong to the orchestra group:
+            <strong>{{ memberGroup.name }}</strong>
+          </div>
+        </Message>
+
+        <div v-if="loadingPiecesOfMusic">
+          <ProgressSpinner />
+        </div>
+        <div v-else-if="piecesOfMusic.length === 0">
+          <Message severity="error">No pieces of music found.</Message>
+        </div>
+
+        <div v-else>
+          <h3>Available pieces of music for your orchestra group:</h3>
+        </div>
+        <pre>{{ { piecesOfMusic } }}</pre>
+      </div>
+      <div v-else>
+        <Message severity="error">
+          <div>You are not assigned to any orchestra group.</div>
+          <br />
+          <div>No pieces of music available for you.</div>
+        </Message>
+      </div>
+
       <pre>
-        PLAYER (for their group)
+        PLAYER (if he/she is assigned to an orchestra group)
         <div>
           See all pieces of music (title, composer, pdf files, group):
           - button to download pdf files
-        </div>
-
-
-        
-        OWNER
-        <div>
-          See all pieces of music (title, composer, pdf files, group):
-          - button to add a new file "Add new file" -> go to Add new file (form)
-              ..........................
-              Add new file (form)
-              - pdf file
-              - orchestra group (select)
-              = button ("Add")
-              ..........................
-        </div>
-        <div>
-          Create Orchestra Group (form):
-          - name
-          = button ("Create new group")
-        </div>
-        <div>
-          Create new Piece Of Music (form):
-          - title
-          - composer
-          = button ("Create new piece of music" - HERE WITHOUT PDF FILES)
         </div>
       </pre>
     </div>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { watch } from 'vue'
+import { useRoute } from 'vue-router'
+import ProgressSpinner from 'primevue/progressspinner'
+import Message from 'primevue/message'
+import { usePiecesOfMusicView } from '@/composables/usePiecesOfMusicView'
+
+const route = useRoute()
+
+const {
+  memberGroup,
+  piecesOfMusic,
+  loadingMemberGroup,
+  loadingPiecesOfMusic,
+  fetchMemberGroup,
+  fetchPiecesOfMusic,
+} = usePiecesOfMusicView()
+
+watch(
+  () => route.params.orchestraId,
+  async orchestraId => {
+    await fetchMemberGroup()
+    await fetchPiecesOfMusic(orchestraId.toString())
+  },
+  { immediate: true },
+)
+</script>
 
 <style setup lang="scss">
 .pieces-of-music-view {
+  margin-bottom: 50px;
+
   &__title {
     margin-bottom: 50px;
   }
