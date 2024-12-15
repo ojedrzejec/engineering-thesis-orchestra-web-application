@@ -66,6 +66,7 @@ CREATE TABLE concert (
 
 CREATE TABLE piece_of_music (
 	id uuid primary key,
+	id_orchestra uuid references orchestra(id) NOT NULL,
 	title text NOT NULL,
 	composer text NOT NULL
 );
