@@ -45,22 +45,22 @@ export const usePiecesOfMusicView = () => {
   const fetchPiecesOfMusic = async (orchestraId: string) => {
     loadingPiecesOfMusic.value = true
     try {
-      // const response = await fetch(
-      //   `${API_BASE_URL}/repertoire/member-group/${orchestraId}`,
-      //   {
-      //     method: 'GET',
-      //     headers: {
-      //       Authorization: `Bearer ${token.value}`,
-      //     },
-      //   },
-      // )
-      // if (!response.ok) {
-      //   throw new Error('Response not ok.')
-      // }
-      // const data = await response.json()
-      // console.log('Fetched data (available piecesOfMusic): ', data)
-      // piecesOfMusic.value = data
-      // console.log('Fetched available piecesOfMusic: ', piecesOfMusic.value)
+      const response = await fetch(
+        `${API_BASE_URL}/repertoire/member-group/${orchestraId}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token.value}`,
+          },
+        },
+      )
+      if (!response.ok) {
+        throw new Error('Response not ok.')
+      }
+      const data = await response.json()
+      console.log('Fetched data (available piecesOfMusic): ', data)
+      piecesOfMusic.value = data
+      console.log('Fetched available piecesOfMusic: ', piecesOfMusic.value)
     } catch (e) {
       console.error(e)
       const baseErrorMessage = "Failed to fetch orchestra's piecesOfMusic."

@@ -79,6 +79,16 @@ watch(
   },
   { immediate: true },
 )
+
+// watch(
+//   () => memberGroup.value?.id,
+//   async (groupId: string | undefined) => {
+//     if (groupId !== undefined) {
+//       await fetchPiecesOfMusic(groupId.toString())
+//     }
+//   },
+//   { immediate: true },
+// )
 </script>
 
 <style setup lang="scss">
