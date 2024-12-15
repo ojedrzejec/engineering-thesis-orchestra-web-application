@@ -155,6 +155,15 @@ const router = createRouter({
           meta: { logInOnly: true },
         },
         {
+          path: 'repertoire',
+          name: 'repertoire',
+          component: () =>
+            import(
+              '@/views/logged-in-user/orchestra-member/owner/RepertoireView.vue'
+            ),
+          meta: { logInOnly: true },
+        },
+        {
           path: 'manage-access',
           name: 'manage-access',
           component: () =>

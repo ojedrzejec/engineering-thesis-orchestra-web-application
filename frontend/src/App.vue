@@ -383,6 +383,16 @@ const panelMenuItems = computed<MenuItem[]>(() => {
         },
       },
       {
+        label: 'Repertoire',
+        icon: 'pi pi-book',
+        command: () => {
+          router.push({
+            name: 'repertoire',
+            params: { orchestraId: selectedOrchestraId.value },
+          })
+        },
+      },
+      {
         label: 'Manage Access',
         icon: 'pi pi-unlock',
         command: () => {
@@ -455,7 +465,7 @@ const panelMenuItems = computed<MenuItem[]>(() => {
 
   &__footer-orchestra-logo {
     width: 100%;
-    max-height: 160px;
+    max-height: 80px;
     object-fit: contain;
   }
 
