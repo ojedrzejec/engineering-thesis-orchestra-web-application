@@ -28,7 +28,33 @@ const getMemberRepertoireByGroupId = async (orchestraId, memberGroupId) => {
     return result.rows
 }
 
+const getOrchestraRepertoireByOrchestraId = async (orchestraId) => {
+    const query = `
+        SELECT pom.*, pomog.pdf_music_sheet_notes, pomog.id_orchestra_group, og.name
+        FROM piece_of_music pom
+        LEFT JOIN piece_of_music_orchestra_group pomog 
+          ON pom.id = pomog.id_piece_of_music
+        LEFT JOIN orchestra_group og 
+          ON og.id = pomog.id_orchestra_group
+        WHERE pom.id_orchestra = $1;
+    `
+    const result = await pool.query(query, [orchestraId])
+    return result.rows
+}
+
+const getOrchestraPiecesOfMusicByOrchestraId = async (orchestraId) => {
+    const query = `
+        SELECT *
+        FROM piece_of_music
+        WHERE id_orchestra = $1;
+    `
+    const result = await pool.query(query, [orchestraId])
+    return result.rows
+}
+
 module.exports = {
     getMemberGroupByMemberId,
     getMemberRepertoireByGroupId,
+    getOrchestraRepertoireByOrchestraId,
+    getOrchestraPiecesOfMusicByOrchestraId,
 }
