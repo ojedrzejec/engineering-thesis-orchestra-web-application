@@ -594,7 +594,7 @@ const handleUpdate = async () => {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  margin-bottom: 30px;
+  margin-bottom: 50px;
 
   &__title {
     margin-bottom: 20px;

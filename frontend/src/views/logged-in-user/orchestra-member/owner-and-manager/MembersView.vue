@@ -344,7 +344,7 @@ watch(
 
 const openDrawer = (user: TMember) => {
   selectedUser.value = user
-  // drawerVisible.value = true
+  drawerVisible.value = true
 }
 
 const tagSeverity = (accessType: string) => {
