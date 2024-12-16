@@ -1,6 +1,5 @@
 <template>
   <div class="groups-view">
-    <Toast />
     <div class="groups-view__title">
       <h1>Groups</h1>
     </div>
@@ -134,7 +133,6 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useGroups } from '@/composables/useGroups'
-import Toast from 'primevue/toast'
 import ProgressSpinner from 'primevue/progressspinner'
 import Message from 'primevue/message'
 import FloatLabel from 'primevue/floatlabel'
@@ -256,6 +254,8 @@ const addMember = async (selectedMember: TPlayer, selectedGroup: TGroup) => {
 
 <style setup lang="scss">
 .groups-view {
+  margin-bottom: 50px;
+
   &__title {
     margin-bottom: 50px;
   }

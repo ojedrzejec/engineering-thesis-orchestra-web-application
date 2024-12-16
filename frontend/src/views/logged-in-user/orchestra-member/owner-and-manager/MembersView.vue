@@ -267,7 +267,6 @@
             </div>
           </div>
         </Drawer>
-        <Toast />
       </div>
     </div>
   </div>
@@ -292,7 +291,6 @@ import InputText from 'primevue/inputtext'
 import Drawer from 'primevue/drawer'
 import Avatar from 'primevue/avatar'
 import Tag from 'primevue/tag'
-import Toast from 'primevue/toast'
 import ProgressSpinner from 'primevue/progressspinner'
 
 const availableOrchestrasStore = useAvailableOrchestrasStore()

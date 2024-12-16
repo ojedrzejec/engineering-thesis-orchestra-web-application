@@ -1,6 +1,5 @@
 <template>
   <div class="orchestra-information-view">
-    <Toast />
     <div class="orchestra-information-view__title">
       <h1>Orchestra Information</h1>
     </div>
@@ -270,7 +269,6 @@ import InputText from 'primevue/inputtext'
 import Message from 'primevue/message'
 import ProgressSpinner from 'primevue/progressspinner'
 import Textarea from 'primevue/textarea'
-import Toast from 'primevue/toast'
 
 const route = useRoute()
 

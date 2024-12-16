@@ -1,6 +1,5 @@
 <template>
   <div class="manage-access-view">
-    <Toast />
     <div class="manage-access-view__title">
       <h1>Manage Access</h1>
     </div>
@@ -140,7 +139,6 @@ import Avatar from 'primevue/avatar'
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner'
 import Select from 'primevue/select'
-import Toast from 'primevue/toast'
 import { useManageAccess } from '@/composables/useManageAccess'
 import type { TManager } from '@/types/TManager'
 import type { TPlayer } from '@/types/TPlayer'

@@ -1,6 +1,5 @@
 <template>
   <div class="create-orchestra-view">
-    <Toast />
     <div class="create-orchestra-view__title">
       <h1>Create new orchestra</h1>
     </div>
@@ -225,7 +224,6 @@ import Textarea from 'primevue/textarea'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
 import FileUpload, { type FileUploadSelectEvent } from 'primevue/fileupload'
-import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
 const toast = useToast()
 import {

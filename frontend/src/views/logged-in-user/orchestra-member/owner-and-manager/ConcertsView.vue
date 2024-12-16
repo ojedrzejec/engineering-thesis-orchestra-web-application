@@ -1,6 +1,5 @@
 <template>
   <div class="concerts-view">
-    <Toast />
     <div class="concerts-view__title">
       <h1>Concerts</h1>
     </div>
@@ -172,7 +171,6 @@ import { useRoute } from 'vue-router'
 import Drawer from 'primevue/drawer'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
-import Toast from 'primevue/toast'
 import ProgressSpinner from 'primevue/progressspinner'
 import Message from 'primevue/message'
 import ConcertCreateForm from '@/components/ConcertCreateForm.vue'
