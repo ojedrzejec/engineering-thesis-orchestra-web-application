@@ -128,11 +128,47 @@ const getOrchestraPiecesOfMusic = async (req, res) => {
     }
 }
 
+const createPieceOfMusic = async (req, res) => {
+    const { id_orchestra, title, composer } = req.body
+
+    try {
+        // check if the orchestra exists
+        const orchestraExistance =
+            await Orchestra_OrchestraOrchestraMember_Owner_Model.getOrchestraById(
+                id_orchestra
+            )
+        if (!orchestraExistance) {
+            return res.status(404).json({ msg: 'Orchestra not found' })
+        }
+
+        if (!title || !composer) {
+            return res.status(400).json({ msg: 'Please enter all fields' })
+        }
+
+        // Create a new piece of music
+        const newPieceOfMusic = await RepertoireModel.createPieceOfMusic(
+            id_orchestra,
+            title,
+            composer
+        )
+        if (!newPieceOfMusic) {
+            return res.status(404).json({ msg: 'Piece of music not created' })
+        }
+
+        res.status(201).json(newPieceOfMusic)
+    } catch (err) {
+        res.status(500).json({
+            msg: 'Server error while createPieceOfMusic',
+        })
+    }
+}
+const addMusicSheetNotes = (req, res) => {}
+
 module.exports = {
     getMemberGroup,
     getMemberRepertoire,
     getOrchestraRepertoire,
     getOrchestraPiecesOfMusic,
-    // createPieceOfMusic,
+    createPieceOfMusic,
     // addMusicSheetNotes,
 }
