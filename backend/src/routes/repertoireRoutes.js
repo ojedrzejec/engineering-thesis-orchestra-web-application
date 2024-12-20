@@ -7,7 +7,7 @@ const {
     getOrchestraRepertoire,
     getOrchestraPiecesOfMusic,
     createPieceOfMusic,
-    // addMusicSheetNotes,
+    addMusicSheetNotes,
 } = require('../controllers/repertoireController')
 
 router.get('/member-group/', authMiddleware.authenticateToken, getMemberGroup)
@@ -24,6 +24,6 @@ router.get(
     getOrchestraPiecesOfMusic
 )
 router.post('/', authMiddleware.authenticateToken, createPieceOfMusic)
-// router.post('/add-pdf/', authMiddleware.authenticateToken, addMusicSheetNotes)
+router.post('/add-pdf/', authMiddleware.authenticateToken, addMusicSheetNotes)
 
 module.exports = router

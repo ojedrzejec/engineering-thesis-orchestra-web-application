@@ -1,6 +1,15 @@
 const pool = require('../config/database')
 const { v4: uuidv4 } = require('uuid')
 
+const findPieceOfMusicById = async (id) => {
+    const query = `
+        SELECT *
+        FROM piece_of_music
+        WHERE id = $1;
+    `
+    const result = await pool.query(query, [id])
+    return result.rows[0]
+}
 
 const getMemberGroupByMemberId = async (memberId) => {
     const query = `
@@ -65,10 +74,22 @@ const createPieceOfMusic = async (orchestraId, title, composer) => {
     return result.rows[0]
 }
 
+const addMusicSheetNotes = async (pieceOfMusicId, pdf, groupId) => {
+    const query = `
+        INSERT INTO piece_of_music_orchestra_group (id_piece_of_music, id_orchestra_group, pdf_music_sheet_notes)
+        VALUES ($1, $2, $3)
+        RETURNING *;
+    `
+    const result = await pool.query(query, [pieceOfMusicId, groupId, pdf])
+    return result.rows[0]
+}
+
 module.exports = {
+    findPieceOfMusicById,
     getMemberGroupByMemberId,
     getMemberRepertoireByGroupId,
     getOrchestraRepertoireByOrchestraId,
     getOrchestraPiecesOfMusicByOrchestraId,
     createPieceOfMusic,
+    addMusicSheetNotes,
 }

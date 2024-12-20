@@ -168,6 +168,7 @@
                   :disabled="
                     !selectedPieceOfMusic ||
                     !selectedGroup ||
+                    !pdfFile ||
                     loadingMusicSheetNotesAdd
                   "
                 ></Button>
@@ -176,31 +177,6 @@
           </template>
         </Card>
       </div>
-
-      <pre>
-        OWNER (create new pieces of music, add new files)
-        <div>
-          See all pieces of music (title, composer, pdf files, group):
-          - button to add a new file "Add new file" -> go to Add new file (form)
-              ..........................
-              Add new file (form)
-              - pdf file
-              - orchestra group (select)
-              = button ("Add")
-              ..........................
-        </div>
-        <div>
-          Create Orchestra Group (form):
-          - name
-          = button ("Create new group")
-        </div>
-        <div>
-          Create new Piece Of Music (form):
-          - title
-          - composer
-          = button ("Create new piece of music" - HERE WITHOUT PDF FILES)
-        </div>
-      </pre>
     </div>
   </div>
 </template>
@@ -320,6 +296,7 @@ const addFileToGroup = async (
       file,
     )
     await fetchGroups(route.params.orchestraId.toString())
+    await fetchRepertoire(route.params.orchestraId.toString())
   } finally {
     selectedPieceOfMusic.value = null
     selectedGroup.value = null
@@ -328,7 +305,7 @@ const addFileToGroup = async (
 }
 
 const onFileSelect = async (event: FileUploadSelectEvent) => {
-  if (!pdfFile.value) return
+  // if (!pdfFile.value) return
 
   const file: File = Array.isArray(event.files) ? event.files[0] : event.files
 
