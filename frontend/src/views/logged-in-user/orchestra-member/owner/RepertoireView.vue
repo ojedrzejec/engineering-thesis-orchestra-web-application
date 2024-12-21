@@ -57,6 +57,9 @@
                   @click="downloadMusicSheetNotes(pieceOfMusic)"
                 ></Button>
               </div>
+              <div v-else class="error-message">
+                <Message severity="secondary">No music scores added.</Message>
+              </div>
             </template>
           </Card>
           <!-- </div> -->
@@ -133,88 +136,84 @@
 
         <Divider />
 
-        <Card>
-          <template #content>
-            <div class="repertoire-view__form">
-              <div class="repertoire-view__form-input">
-                <div>
-                  <Select
-                    v-model="selectedPieceOfMusic"
-                    showClear
-                    filter
-                    :loading="loadingPiecesOfMusic"
-                    :options="piecesOfMusic"
-                    optionLabel="title"
-                    placeholder="Select a piece of music"
-                    :disabled="loadingPiecesOfMusic"
-                    class="w-full md:w-56"
-                  ></Select>
-                </div>
-                <div>
-                  <Select
-                    v-model="selectedGroup"
-                    showClear
-                    filter
-                    :loading="loadingGroups"
-                    :options="groups"
-                    optionLabel="name"
-                    placeholder="Select a group"
-                    :disabled="loadingGroups"
-                    class="w-full md:w-56"
-                  ></Select>
-                </div>
-              </div>
-
-              <div
-                class="repertoire-view__form-input repertoire-view__file"
-                style="align-items: center"
-              >
-                <FileUpload
-                  mode="advanced"
-                  name="pdf"
-                  accept="application/pdf"
-                  :maxFileSize="1000000"
-                  class="p-button-outlined"
-                  :auto="false"
-                  :customUpload="true"
-                  :show-cancel-button="false"
-                  :show-upload-button="false"
-                  :chooseLabel="pdfFile ? 'Change PDF' : 'Choose PDF File'"
-                  @remove="removeFileCallback"
-                  @select="onFileSelect"
-                >
-                  <template v-if="!pdfFile" #empty>
-                    <span>Drag and drop files to here to upload.</span>
-                  </template>
-                </FileUpload>
-              </div>
-              <div>
-                <Button
-                  class="repertoire-view__form-button"
-                  label="Add music sheet notes to the group"
-                  severity="secondary"
-                  @click="
-                    selectedPieceOfMusic &&
-                      selectedGroup &&
-                      pdfFile &&
-                      addFileToGroup(
-                        selectedPieceOfMusic,
-                        selectedGroup,
-                        pdfFile,
-                      )
-                  "
-                  :loading="loadingMusicSheetNotesAdd"
-                  :disabled="
-                    !selectedPieceOfMusic ||
-                    !selectedGroup ||
-                    !pdfFile ||
-                    loadingMusicSheetNotesAdd
-                  "
-                ></Button>
-              </div>
+        <!-- <Card>
+          <template #content> -->
+        <div class="repertoire-view__form">
+          <div class="repertoire-view__form-input">
+            <div>
+              <Select
+                v-model="selectedPieceOfMusic"
+                showClear
+                filter
+                :loading="loadingPiecesOfMusic"
+                :options="piecesOfMusic"
+                optionLabel="title"
+                placeholder="Select a piece of music"
+                :disabled="loadingPiecesOfMusic"
+                class="w-full md:w-56"
+              ></Select>
             </div>
-          </template>
-        </Card>
+            <div>
+              <Select
+                v-model="selectedGroup"
+                showClear
+                filter
+                :loading="loadingGroups"
+                :options="groups"
+                optionLabel="name"
+                placeholder="Select a group"
+                :disabled="loadingGroups"
+                class="w-full md:w-56"
+              ></Select>
+            </div>
+          </div>
+
+          <div
+            class="repertoire-view__form-input repertoire-view__file"
+            style="align-items: center"
+          >
+            <FileUpload
+              mode="advanced"
+              name="pdf"
+              accept="application/pdf"
+              :maxFileSize="1000000"
+              class="p-button-outlined"
+              :auto="false"
+              :customUpload="true"
+              :show-cancel-button="false"
+              :show-upload-button="false"
+              :chooseLabel="pdfFile ? 'Change PDF' : 'Choose PDF File'"
+              @remove="removeFileCallback"
+              @select="onFileSelect"
+            >
+              <template v-if="!pdfFile" #empty>
+                <span>Drag and drop files to here to upload.</span>
+              </template>
+            </FileUpload>
+          </div>
+          <div>
+            <Button
+              class="repertoire-view__form-button"
+              label="Add music sheet notes to the group"
+              severity="secondary"
+              @click="
+                selectedPieceOfMusic &&
+                  selectedGroup &&
+                  pdfFile &&
+                  addFileToGroup(selectedPieceOfMusic, selectedGroup, pdfFile)
+              "
+              :loading="loadingMusicSheetNotesAdd"
+              :disabled="
+                !selectedPieceOfMusic ||
+                !selectedGroup ||
+                !pdfFile ||
+                loadingMusicSheetNotesAdd
+              "
+            ></Button>
+          </div>
+        </div>
+        <!-- </template>
+        </Card> -->
       </div>
     </div>
   </div>
