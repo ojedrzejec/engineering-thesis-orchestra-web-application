@@ -40,7 +40,15 @@ export const useRepertoire = () => {
       const data = await response.json()
       console.log('Fetched data (available repertoire): ', data)
 
-      repertoire.value = data
+      repertoire.value = data.map((repertoire: any) => ({
+        id: repertoire.id,
+        orchestraId: repertoire.id_orchestra,
+        title: repertoire.title,
+        composer: repertoire.composer,
+        pdf: repertoire.pdf_music_sheet_notes,
+        groupId: repertoire.id_orchestra_group,
+        groupName: repertoire.name,
+      }))
 
       console.log('Fetched available repertoire: ', repertoire.value)
     } catch (e) {

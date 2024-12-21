@@ -18,10 +18,46 @@
         </Message>
       </div>
 
-      <div v-else>
-        <pre>
+      <div v-else class="repertoire-view__content">
+        <!-- <pre>
           {{ { repertoire } }}
+        </pre> -->
+
+        <div class="repertoire-view__all-pieces-of-music-cards">
+          <Card
+            class="repertoire-view__card-piece-of-music"
+            v-for="pieceOfMusic in repertoire"
+            :key="pieceOfMusic.id || ''"
+          >
+            <template #content>
+              <h3>{{ pieceOfMusic.title }}</h3>
+              <p>{{ pieceOfMusic.composer }}</p>
+              <p>
+                <Tag severity="success" :value="pieceOfMusic.groupName"></Tag>
+              </p>
+
+              <div
+                v-if="pieceOfMusic.pdf"
+                class="repertoire-view__card-piece-of-music-pdf"
+              >
+                <img
+                  src="@/components/icons/iconPDF.png"
+                  alt="PDF"
+                  style="width: 100%; max-width: 35px"
+                />
+                <Button
+                  icon="pi pi-download"
+                  severity="help"
+                  text
+                  size="large"
+                  variant="outlined"
         </pre>
+                ></Button>
+              </div>
+            </template>
+          </Card>
+          <!-- </div> -->
+        </div>
 
         <div class="repertoire-view__form">
           <div class="repertoire-view__form-input">
@@ -192,6 +228,7 @@ import Button from 'primevue/button'
 import Select from 'primevue/select'
 import Divider from 'primevue/divider'
 import Card from 'primevue/card'
+import Tag from 'primevue/tag'
 import FileUpload, { type FileUploadSelectEvent } from 'primevue/fileupload'
 import { useRepertoire } from '@/composables/useRepertoire'
 import { useGroups } from '@/composables/useGroups'
@@ -201,6 +238,7 @@ import {
   validateInputLength,
 } from '@/constants/validation/repertoireValidation'
 import type { TPieceOfMusic } from '@/types/TPieceOfMusic'
+import type { TRepertoire } from '@/types/TRepertoire'
 
 const route = useRoute()
 
@@ -375,6 +413,21 @@ const removeFileCallback = () => {
     .p-fileupload-file-badge {
       display: none !important;
     }
+  }
+
+  &__all-pieces-of-music-cards {
+    display: grid;
+    // border: 1px solid red;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    justify-content: center;
+  }
+
+  &__card-piece-of-music-pdf {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
   }
 }
 </style>
