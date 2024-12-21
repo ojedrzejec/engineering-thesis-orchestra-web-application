@@ -214,6 +214,8 @@ const revertManagerToPlayer = async (manager: TManager) => {
 
 <style setup lang="scss">
 .manage-access-view {
+  margin-bottom: 50px;
+
   &__title {
     margin-bottom: 50px;
   }

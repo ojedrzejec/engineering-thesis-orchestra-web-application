@@ -389,6 +389,8 @@ const handleAddMember = async () => {
 
 <style setup lang="scss">
 .members-view {
+  margin-bottom: 50px;
+
   &__title {
     margin-bottom: 50px;
   }

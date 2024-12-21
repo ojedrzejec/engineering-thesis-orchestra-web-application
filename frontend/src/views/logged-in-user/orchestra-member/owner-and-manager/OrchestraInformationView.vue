@@ -408,6 +408,8 @@ const handleOrchestraUpdate = async () => {
 
 <style setup lang="scss">
 .orchestra-information-view {
+  margin-bottom: 50px;
+
   &__title {
     margin-bottom: 50px;
   }

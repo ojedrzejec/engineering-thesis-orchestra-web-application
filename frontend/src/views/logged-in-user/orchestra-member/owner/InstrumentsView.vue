@@ -114,6 +114,8 @@ watch(
 
 <style setup lang="scss">
 .instruments-view {
+  margin-bottom: 50px;
+
   &__title {
     margin-bottom: 50px;
   }
