@@ -45,13 +45,16 @@
                   alt="PDF"
                   style="width: 100%; max-width: 35px"
                 />
+                <p>
+                  {{ definePdfFileName(pieceOfMusic) }}
+                </p>
                 <Button
                   icon="pi pi-download"
                   severity="help"
                   text
                   size="large"
                   variant="outlined"
-        </pre>
+                  @click="downloadMusicSheetNotes(pieceOfMusic)"
                 ></Button>
               </div>
             </template>
@@ -370,6 +373,36 @@ const removeFileCallback = () => {
   if (!pdfFile.value) return
 
   pdfFile.value = null
+}
+
+const definePdfFileName = (pieceOfMusic: TRepertoire) => {
+  return pieceOfMusic.title
+    ? pieceOfMusic.title
+        .replace(/\s+/g, '_')
+        .toLowerCase()
+        .concat('-')
+        .concat(
+          pieceOfMusic.groupName
+            ? pieceOfMusic.groupName.replace(/\s+/g, '_').toLowerCase()
+            : '',
+        )
+        .concat('.pdf')
+    : 'music_sheet_notes.pdf'
+}
+
+const downloadMusicSheetNotes = (pieceOfMusic: TRepertoire) => {
+  const linkSource = pieceOfMusic.pdf
+  const downloadLink = document.createElement('a')
+  const fileName = definePdfFileName(pieceOfMusic)
+
+  if (linkSource) {
+    downloadLink.href = linkSource
+  } else {
+    console.error('PDF link source is null')
+    return
+  }
+  downloadLink.download = fileName
+  downloadLink.click()
 }
 </script>
 
