@@ -3,4 +3,5 @@ export type TPieceOfMusic = {
   id_orchestra: string
   title: string
   composer: string
+  pdf: string
 }

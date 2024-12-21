@@ -33,7 +33,8 @@ const getMemberRepertoireByGroupId = async (orchestraId, memberGroupId) => {
         LEFT JOIN piece_of_music_orchestra_group pomog
           ON pomog.id_piece_of_music = pom.id
         WHERE o.id = $1
-          AND pomog.id_orchestra_group = $2;
+          AND pomog.id_orchestra_group = $2
+        ORDER BY pom.title, pom.composer;
     `
     const result = await pool.query(query, [orchestraId, memberGroupId])
     return result.rows

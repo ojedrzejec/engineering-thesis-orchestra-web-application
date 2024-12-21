@@ -60,6 +60,12 @@ export const usePiecesOfMusicView = () => {
       const data = await response.json()
       console.log('Fetched data (available piecesOfMusic): ', data)
       piecesOfMusic.value = data
+      piecesOfMusic.value = data.map((piece: TPieceOfMusic) => ({
+        title: piece.title,
+        composer: piece.composer,
+        pdf: piece.pdf_music_sheet_notes,
+      }))
+
       console.log('Fetched available piecesOfMusic: ', piecesOfMusic.value)
     } catch (e) {
       console.error(e)
