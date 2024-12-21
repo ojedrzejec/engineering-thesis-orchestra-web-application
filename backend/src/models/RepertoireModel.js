@@ -47,7 +47,8 @@ const getOrchestraRepertoireByOrchestraId = async (orchestraId) => {
           ON pom.id = pomog.id_piece_of_music
         LEFT JOIN orchestra_group og 
           ON og.id = pomog.id_orchestra_group
-        WHERE pom.id_orchestra = $1;
+        WHERE pom.id_orchestra = $1
+        ORDER BY pom.title, pom.composer, og.name;
     `
     const result = await pool.query(query, [orchestraId])
     return result.rows
