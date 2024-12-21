@@ -19,10 +19,6 @@
       </div>
 
       <div v-else class="repertoire-view__content">
-        <!-- <pre>
-          {{ { repertoire } }}
-        </pre> -->
-
         <div class="repertoire-view__all-pieces-of-music-cards">
           <Card
             class="repertoire-view__card-piece-of-music"
@@ -62,7 +58,6 @@
               </div>
             </template>
           </Card>
-          <!-- </div> -->
         </div>
 
         <div class="repertoire-view__form">
@@ -136,8 +131,6 @@
 
         <Divider />
 
-        <!-- <Card>
-          <template #content> -->
         <div class="repertoire-view__form">
           <div class="repertoire-view__form-input">
             <div>
@@ -212,8 +205,6 @@
             ></Button>
           </div>
         </div>
-        <!-- </template>
-        </Card> -->
       </div>
     </div>
   </div>

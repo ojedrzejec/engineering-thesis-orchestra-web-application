@@ -4,17 +4,15 @@
       <h1>Pieces of Music</h1>
     </div>
 
-    <!-- <pre>
-      {{ { memberGroup } }}
-      {{ memberGroup?.id }}
-      {{ memberGroup?.name }}
-    </pre> -->
-
     <div class="pieces-of-music-view__content">
       <div v-if="loadingMemberGroup">
         <ProgressSpinner />
       </div>
-      <div v-else-if="memberGroup">
+
+      <div
+        v-else-if="memberGroup"
+        class="pieces-of-music-view__content-member-group"
+      >
         <Message severity="info">
           <div>
             You belong to the orchestra group:
@@ -32,16 +30,6 @@
         <div v-else>
           <h3>Available pieces of music for your orchestra group:</h3>
         </div>
-        <!-- <pre>
-          {{ { piecesOfMusic } }}
-          <div v-for="piece in piecesOfMusic" :key="piece.id">
-            {{ piece.id }}
-            {{ piece.id_orchestra }}
-            {{ piece.title }}
-            {{ piece.composer }}
-            {{ piece.pdf }}
-          </div>
-        </pre> -->
         <div class="pieces-of-music-view__all-pieces-of-music-cards">
           <Card
             class="pieces-of-music-view__card-piece-of-music"
@@ -81,9 +69,9 @@
               </div>
             </template>
           </Card>
-          <!-- </div> -->
         </div>
       </div>
+
       <div v-else>
         <Message severity="error">
           <div>You are not assigned to any orchestra group.</div>
@@ -91,14 +79,6 @@
           <div>No pieces of music available for you.</div>
         </Message>
       </div>
-
-      <pre>
-        PLAYER (if he/she is assigned to an orchestra group)
-        <div>
-          See all pieces of music (title, composer, pdf files, group):
-          - button to download pdf files
-        </div>
-      </pre>
     </div>
   </div>
 </template>
@@ -179,6 +159,12 @@ const downloadMusicSheetNotes = (pieceOfMusic: TPieceOfMusic) => {
     // align-items: center;
     gap: 50px;
     width: 100%;
+  }
+
+  &__content-member-group {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
   }
 
   &__all-pieces-of-music-cards {
