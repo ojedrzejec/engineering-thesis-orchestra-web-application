@@ -11,12 +11,12 @@
       <div v-else-if="!repertoire">
         <Message severity="error">Failed to load orchestra repertoire.</Message>
       </div>
-      <div v-else-if="repertoire.length === 0">
+      <!-- <div v-else-if="repertoire.length === 0">
         <Message severity="error"
           >Failed to load orchestra repertoire <strong>or</strong> no orchestra
           repertoire found.
         </Message>
-      </div>
+      </div> -->
 
       <div v-else class="repertoire-view__content">
         <div class="repertoire-view__all-pieces-of-music-cards">
@@ -28,7 +28,7 @@
             <template #content>
               <h3>{{ pieceOfMusic.title }}</h3>
               <p>{{ pieceOfMusic.composer }}</p>
-              <p>
+              <p v-if="pieceOfMusic.groupName">
                 <Tag severity="success" :value="pieceOfMusic.groupName"></Tag>
               </p>
 
