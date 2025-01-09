@@ -760,16 +760,15 @@ const handleRegister = async () => {
     toast.add({
       severity: 'info',
       summary: 'Registered successfully!',
-      detail: 'Explore your account! :)',
-      life: 3000,
+      detail: 'Now login to your newly created account! :)',
+      life: 5000,
     })
 
     const { token } = await response.json()
     authStore.setToken(token)
-    // await authStore.fetchUserProfileData();
-    const redirectPath = route.query.redirect?.toString() || '/profile'
+    authStore.removeToken()
+    const redirectPath = route.query.redirect?.toString() || '/login'
     router.push(redirectPath)
-    window.location.reload()
   } catch (error) {
     errorMessage.value = error.message || 'An error occurred during register.'
   } finally {

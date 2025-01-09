@@ -221,7 +221,7 @@ const handleLogin = async () => {
     toast.add({
       severity: 'info',
       summary: 'Successful login!',
-      detail: 'Nice to see you again! :)',
+      detail: 'Explore your account! :)',
       life: 3000,
     })
 
@@ -233,7 +233,6 @@ const handleLogin = async () => {
     console.log('Token set in authStore:', authStore.getToken())
     const redirectPath = route.query.redirect?.toString() || '/profile'
     router.push(redirectPath)
-    window.location.reload()
   } catch (error) {
     errorMessage.value = error.message || 'An error occurred during login.'
   } finally {
