@@ -1,12 +1,12 @@
 <template>
-  <div class="concerts-view">
-    <div class="concerts-view__title">
+  <div class="availability-view">
+    <div class="availability-view__title">
       <h1>My Availability in {{ selectedOrchestraDetails?.name }}</h1>
     </div>
 
-    <div class="concerts-view__content">
+    <div class="availability-view__content">
       <Message severity="info">
-        <div class="concerts-view__message-info">
+        <div class="availability-view__message-info">
           <div>
             <i class="pi pi-info-circle"></i>
           </div>
@@ -25,15 +25,15 @@
       </div>
 
       <div v-else>
-        <div class="concerts-view__concert-list">
+        <div class="availability-view__concert-list">
           <h3>Upcoming Concerts:</h3>
           <div
             v-for="(concert, id) in concerts"
             :key="id"
-            class="concerts-view__concert-details"
+            class="availability-view__concert-details"
             style="display: flex; justify-content: center"
           >
-            <Card style="min-width: 400px; max-width: 600px; overflow: hidden">
+            <Card class="availability-view__concert-card">
               <template #header>
                 <!-- <img
                   v-if="concert.graphic"
@@ -41,7 +41,7 @@
                   :src="
                     concert.graphic ?? 'https://via.placeholder.com/640x200'
                   "
-                  class="concerts-view__concert-image"
+                  class="availability-view__concert-image"
                 /> -->
               </template>
 
@@ -51,9 +51,9 @@
 
               <template #subtitle>
                 <!-- Card subtitle -->
-                <div class="concerts-view__concert-details-subtitle">
+                <div class="availability-view__concert-details-subtitle">
                   <div
-                    class="concerts-view__concert-details-subtitle-single-info"
+                    class="availability-view__concert-details-subtitle-single-info"
                   >
                     <div>
                       <i class="pi pi-calendar" style="color: #708090"></i>
@@ -71,7 +71,7 @@
                     </div>
                   </div>
                   <div
-                    class="concerts-view__concert-details-subtitle-single-info"
+                    class="availability-view__concert-details-subtitle-single-info"
                   >
                     <div>
                       <i class="pi pi-clock" style="color: #708090"></i>
@@ -84,7 +84,7 @@
                     </div>
                   </div>
                   <div
-                    class="concerts-view__concert-details-subtitle-single-info"
+                    class="availability-view__concert-details-subtitle-single-info"
                   >
                     <div>
                       <i class="pi pi-map-marker" style="color: #708090"></i>
@@ -113,7 +113,7 @@
               </template>
 
               <template #footer>
-                <div class="concerts-view__buttons">
+                <div class="availability-view__buttons">
                   <div>
                     <Button
                       v-if="
@@ -181,12 +181,12 @@
                     v-model:visible="visibleDrawerConcertDetails"
                     position="right"
                     header="Concert Details"
-                    class="concerts-view__drawer !w-full md:!w-80 lg:!w-[30rem]"
+                    class="availability-view__drawer !w-full md:!w-80 lg:!w-[30rem]"
                   >
                     <ConcertDetails :concertDetails="selectedConcert" />
                   </Drawer>
                   <Button
-                    class="concerts-view__single-button"
+                    class="availability-view__single-button"
                     @click="openConcertDetails(concert)"
                   >
                     See details
@@ -279,44 +279,12 @@ const updateAvailability = async (concert: TConcert, isAvailable: boolean) => {
   &__content {
     display: flex;
     flex-direction: column;
-    // align-items: center;
     gap: 50px;
-    width: 100%;
-  }
-
-  &__concert-details-subtitle {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-  }
-}
-
-.concerts-view {
-  margin-bottom: 50px;
-
-  &__title {
-    margin-bottom: 50px;
-  }
-
-  &__message-info {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-  }
-
-  &__content {
-    display: flex;
-    flex-direction: column;
-    gap: 50px;
-    // align-items: center;
     width: 100%;
   }
 
   &__concert-details {
     display: flex;
-    // flex-direction: row;
     justify-content: center;
     gap: 20px;
   }
@@ -326,7 +294,6 @@ const updateAvailability = async (concert: TConcert, isAvailable: boolean) => {
     display: flex;
     flex-direction: column;
     gap: 5px;
-    // justify-content: space-between;
   }
 
   &__concert-details-subtitle-single-info {
@@ -334,6 +301,20 @@ const updateAvailability = async (concert: TConcert, isAvailable: boolean) => {
     grid-template-columns: 1fr 3fr;
     gap: 20px;
     align-items: flex-start;
+  }
+
+  &__concert-card {
+    width: 100%;
+    max-width: 600px;
+    overflow: hidden;
+  }
+
+  &__message-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
   }
 
   &__buttons {
