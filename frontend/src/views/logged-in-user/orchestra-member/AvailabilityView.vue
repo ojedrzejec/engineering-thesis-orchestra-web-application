@@ -183,7 +183,11 @@
                     header="Concert Details"
                     class="availability-view__drawer !w-full md:!w-80 lg:!w-[30rem]"
                   >
-                    <ConcertDetails :concertDetails="selectedConcert" />
+                    <ConcertDetails
+                      v-if="selectedConcert"
+                      :concertDetails="selectedConcert"
+                    />
+                    <div v-else>No concert data</div>
                   </Drawer>
                   <Button
                     class="availability-view__single-button"
