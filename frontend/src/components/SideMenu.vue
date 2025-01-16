@@ -32,13 +32,40 @@
 
     <Divider />
 
-    <PanelMenu
-      v-if="availableOrchestras.length && selectedOrchestraId"
-      :model="panelMenuItems"
-      multiple
-      class="w-full md:w-80"
-      :expandedKeys="{ 'owner-panel': true }"
-    />
+    <div v-if="!loadingAvailableOrchestras">
+      <Message v-if="!availableOrchestras.length" severity="info">
+        <div class="side-menu__message-info">
+          <div>
+            <i class="pi pi-info-circle"></i>
+          </div>
+          <h3>You do not belong to any orchestra</h3>
+          <div>
+            Go to the top left drop down menu to create a new orchestra.
+          </div>
+        </div>
+      </Message>
+
+      <Message v-else-if="!selectedOrchestraId" severity="info">
+        <div class="app-view__message-info">
+          <div>
+            <i class="pi pi-info-circle"></i>
+          </div>
+          <h3>Orchestra Selection</h3>
+          <div>
+            Go to the top left drop down menu to select the orchestra or to
+            create a new one.
+          </div>
+        </div>
+      </Message>
+
+      <PanelMenu
+        v-else
+        :model="panelMenuItems"
+        multiple
+        class="w-full md:w-80"
+        :expandedKeys="{ 'owner-panel': true }"
+      />
+    </div>
   </div>
 </template>
 
@@ -53,6 +80,7 @@ import { useRouter } from 'vue-router'
 import Select from 'primevue/select'
 import Button from 'primevue/button'
 import Divider from 'primevue/divider'
+import Message from 'primevue/message'
 
 const router = useRouter()
 
@@ -190,6 +218,14 @@ const panelMenuItems = computed<MenuItem[]>(() => {
   &__create-orchestra-button {
     width: 100%;
     border: 2px solid var(--p-surface-300) !important;
+  }
+
+  &__message-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 20px 0;
+    text-align: center;
   }
 }
 </style>
