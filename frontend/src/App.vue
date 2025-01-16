@@ -68,59 +68,11 @@
       </div>
     </div>
 
-    <footer class="app-view__footer" v-if="isLoggedIn && selectedOrchestraId">
-      <Panel>
-        <div class="app-view__footer-panel">
-          <div class="app-view__footer-panel-column">
-            <img
-              alt="orchestra logo"
-              :src="
-                orchestraInformation?.logo ??
-                'https://via.placeholder.com/640x200'
-              "
-              class="app-view__footer-orchestra-logo"
-            />
-          </div>
-          <div class="app-view__footer-panel-column">
-            <strong>{{ orchestraInformation?.name }}</strong>
-            <div>{{ orchestraInformation?.email }}</div>
-            <div>{{ orchestraInformation?.address }}</div>
-          </div>
-
-          <div class="app-view__footer-panel-column">
-            <a
-              v-if="orchestraInformation?.facebookUrl"
-              class="app-view__link"
-              :href="orchestraInformation.facebookUrl"
-              target="_blank"
-            >
-              <i class="pi pi-facebook"></i>
-              {{ orchestraInformation?.facebookUrl }}
-            </a>
-
-            <a
-              v-if="orchestraInformation?.instagramUrl"
-              class="app-view__link"
-              :href="orchestraInformation.instagramUrl"
-              target="_blank"
-            >
-              <i class="pi pi-instagram"></i>
-              {{ orchestraInformation?.instagramUrl }}
-            </a>
-
-            <a
-              v-if="orchestraInformation?.youtubeUrl"
-              class="app-view__link"
-              :href="orchestraInformation.youtubeUrl"
-              target="_blank"
-              rel="noopener"
-            >
-              <i class="pi pi-youtube"></i>
-              {{ orchestraInformation?.youtubeUrl }}
-            </a>
-          </div>
-        </div>
-      </Panel>
+    <footer
+      class="app-view__footer"
+      v-if="isLoggedIn && selectedOrchestraId && orchestraInformation"
+    >
+      <AppFooter :orchestraInformation="orchestraInformation" />
     </footer>
 
     <Drawer v-model:visible="mobileSideMenuDrawerVisible" header=" ">
@@ -145,6 +97,7 @@ import Drawer from 'primevue/drawer'
 import SideMenu from './components/SideMenu.vue'
 import AppHeader from './components/AppHeader.vue'
 import { useWidthStore } from './stores/useWidthStore'
+import AppFooter from './components/AppFooter.vue'
 
 const widthStore = useWidthStore()
 const { isDesktop } = storeToRefs(widthStore)
