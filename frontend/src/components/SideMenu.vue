@@ -13,7 +13,10 @@
         :options="availableOrchestras"
         option-label="name"
         option-value="id"
-        placeholder="Select orchestra"
+        :placeholder="
+          loadingAvailableOrchestras ? 'Loading orchestras' : 'Select orchestra'
+        "
+        :loading="loadingAvailableOrchestras"
       />
 
       <RouterLink :to="{ name: 'create-orchestra' }">
@@ -54,7 +57,6 @@ import Divider from 'primevue/divider'
 const router = useRouter()
 
 const availableOrchestrasStore = useAvailableOrchestrasStore()
-const { setSelectedOrchestraId } = availableOrchestrasStore
 const {
   availableOrchestras,
   loadingAvailableOrchestras,
