@@ -1,105 +1,11 @@
 <template>
   <div class="app-view">
+    <Toast />
     <header>
-      <Toast />
-
-      <div class="app-view__navigation-menu-horizontal">
-        <Menubar>
-          <template #start>
-            <div class="app-view__header-group">
-              <Button
-                v-if="!isDesktop && isLoggedIn"
-                icon="pi pi-bars"
-                severity="secondary"
-                @click="mobileSideMenuDrawerVisible = true"
-                rounded
-              />
-              <div class="app-view__header-title">Orchestra Manager</div>
-            </div>
-          </template>
-
-          <!-- <template #start>
-            <div v-if="isDesktop">
-              <div v-if="orchestraInformation?.logo">
-                <img
-                  alt="orchestra logo"
-                  :src="orchestraInformation?.logo"
-                  class="app-view__menu-orchestra-logo"
-                />
-              </div>
-              <div v-else>
-                <svg
-                  width="35"
-                  height="40"
-                  viewBox="0 0 35 40"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-8"
-                >
-                  <path
-                    d="M25.87 18.05L23.16 17.45L25.27 20.46V29.78L32.49 23.76V13.53L29.18 14.73L25.87 18.04V18.05ZM25.27 35.49L29.18 31.58V27.67L25.27 30.98V35.49ZM20.16 17.14H20.03H20.17H20.16ZM30.1 5.19L34.89 4.81L33.08 12.33L24.1 15.67L30.08 5.2L30.1 5.19ZM5.72 14.74L2.41 13.54V23.77L9.63 29.79V20.47L11.74 17.46L9.03 18.06L5.72 14.75V14.74ZM9.63 30.98L5.72 27.67V31.58L9.63 35.49V30.98ZM4.8 5.2L10.78 15.67L1.81 12.33L0 4.81L4.79 5.19L4.8 5.2ZM24.37 21.05V34.59L22.56 37.29L20.46 39.4H14.44L12.34 37.29L10.53 34.59V21.05L12.42 18.23L17.45 26.8L22.48 18.23L24.37 21.05ZM22.85 0L22.57 0.69L17.45 13.08L12.33 0.69L12.05 0H22.85Z"
-                    fill="var(--p-primary-color)"
-                  />
-                  <path
-                    d="M30.69 4.21L24.37 4.81L22.57 0.69L22.86 0H26.48L30.69 4.21ZM23.75 5.67L22.66 3.08L18.05 14.24V17.14H19.7H20.03H20.16H20.2L24.1 15.7L30.11 5.19L23.75 5.67ZM4.21002 4.21L10.53 4.81L12.33 0.69L12.05 0H8.43002L4.22002 4.21H4.21002ZM21.9 17.4L20.6 18.2H14.3L13 17.4L12.4 18.2L12.42 18.23L17.45 26.8L22.48 18.23L22.5 18.2L21.9 17.4ZM4.79002 5.19L10.8 15.7L14.7 17.14H14.74H15.2H16.85V14.24L12.24 3.09L11.15 5.68L4.79002 5.2V5.19Z"
-                    fill="var(--p-text-color)"
-                  />
-                </svg>
-              </div>
-            </div>
-            <div v-else>
-              <Button
-                icon="pi pi-bars"
-                severity="secondary"
-                @click="mobileSideMenuDrawerVisible = true"
-                rounded
-              />
-            </div>
-          </template> -->
-          <!-- <template #item="{ item, props, hasSubmenu, root }">
-            <a v-ripple class="flex items-center" v-bind="props.action">
-              <span :class="item.icon"></span>
-              <span>{{ item.label }}</span>
-              <Badge
-                v-if="item.badge"
-                :class="{ 'ml-auto': !root, 'ml-2': root }"
-                :value="item.badge"
-              />
-              <span
-                v-if="item.shortcut"
-                class="ml-auto border border-surface rounded bg-emphasis text-muted-color text-xs p-1"
-                >{{ item.shortcut }}</span
-              >
-              <i
-                v-if="hasSubmenu"
-                :class="[
-                  'pi pi-angle-down ml-auto',
-                  { 'pi-angle-down': root, 'pi-angle-right': !root },
-                ]"
-              ></i>
-            </a>
-          </template> -->
-          <template #end>
-            <div class="app-view__header-group">
-              <RouterLink :to="{ name: 'profile' }">
-                <Button
-                  v-if="isLoggedIn"
-                  severity="secondary"
-                  icon="pi pi-user"
-                  :label="isDesktop ? 'Profile' : undefined"
-                />
-              </RouterLink>
-
-              <Button
-                class="w-32 sm:w-auto"
-                @click.prevent="handleLoginLogoutButtonClick"
-                :icon="loginLogoutIcon"
-                :label="isDesktop ? loginLogoutButtonLabel : undefined"
-              />
-            </div>
-          </template>
-        </Menubar>
-      </div>
+      <AppHeader
+        class="app-view__navigation-menu-horizontal"
+        @mobile-menu-click="mobileSideMenuDrawerVisible = true"
+      />
     </header>
 
     <div class="app-view__app-content">
@@ -236,18 +142,13 @@ import { EOrchestraRole } from '@/constants/enums/EOrchestraRole'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useAvailableOrchestrasStore } from './stores/useAvailableOrchestras'
 import { useOrchestraInformation } from './composables/useOrchestraInformation'
-import Badge from 'primevue/badge'
-import Button from 'primevue/button'
-import Menubar from 'primevue/menubar'
 import type { MenuItem } from 'primevue/menuitem'
 import PanelMenu from 'primevue/panelmenu'
-import Card from 'primevue/card'
-import Message from 'primevue/message'
 import Toast from 'primevue/toast'
 import Panel from 'primevue/panel'
-import { useWidthStore } from './stores/useWidthStore'
 import Drawer from 'primevue/drawer'
 import SideMenu from './components/SideMenu.vue'
+import AppHeader from './components/AppHeader.vue'
 
 const availableOrchestrasStore = useAvailableOrchestrasStore()
 const {
@@ -256,9 +157,6 @@ const {
   selectedOrchestraId,
   selectedOrchestraDetails,
 } = storeToRefs(availableOrchestrasStore)
-
-const widthStore = useWidthStore()
-const { isDesktop } = storeToRefs(widthStore)
 
 const {
   orchestraInformation,
@@ -282,89 +180,6 @@ const authStore = useAuthStore()
 const { isLoggedIn } = storeToRefs(authStore)
 
 const router = useRouter()
-
-const loginLogoutButtonLabel = computed(() => {
-  if (isLoggedIn.value) {
-    return 'Log out'
-  }
-
-  return 'Log in'
-})
-
-const handleLoginLogoutButtonClick = () => {
-  if (isLoggedIn.value) {
-    authStore.removeToken()
-    window.location.reload()
-  }
-
-  router.push({ name: 'login' })
-}
-
-const loginLogoutIcon = computed(() => {
-  if (isLoggedIn.value) {
-    return 'pi pi-sign-out'
-  }
-
-  return 'pi pi-sign-in'
-})
-
-const menubarItems = computed<MenuItem[]>(() => {
-  const menuItems: MenuItem[] = []
-
-  if (!isLoggedIn.value) {
-    return menuItems
-  }
-
-  const orchestrasSubmenu: MenuItem[] = availableOrchestras.value.map(
-    orchestra => ({
-      label: orchestra.name,
-      icon: 'pi pi-folder',
-      command: () => {
-        router.push({
-          name: 'availability',
-          // TODO: stwórz nowy widok, który będzie wyświetlał informacje o orkiestrze a do edycji dla managera i ownera
-          params: { orchestraId: orchestra.id },
-        })
-      },
-    }),
-  )
-
-  if (orchestrasSubmenu.length) {
-    orchestrasSubmenu.push({
-      separator: true,
-    })
-  }
-
-  orchestrasSubmenu.push({
-    label: 'Create Orchestra',
-    icon: 'pi pi-plus-circle',
-    command: () => {
-      router.push({ name: 'create-orchestra' })
-    },
-  })
-
-  menuItems.push(
-    {
-      label: loadingAvailableOrchestras.value
-        ? 'Loading...'
-        : availableOrchestras.value.length === 0
-          ? 'You do not belong to any orchestra'
-          : selectedOrchestraDetails.value?.name || 'Select an orchestra',
-      icon: 'pi pi-folder-open',
-      badge: availableOrchestras.value.length,
-      items: orchestrasSubmenu,
-    },
-    {
-      label: 'My Profile',
-      icon: 'pi pi-user',
-      command: () => {
-        router.push({ name: 'profile' })
-      },
-    },
-  )
-
-  return menuItems
-})
 
 const panelMenuItems = computed<MenuItem[]>(() => {
   const panelMenuItemsBuilder: MenuItem[] = [
