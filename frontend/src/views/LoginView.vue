@@ -234,7 +234,8 @@ const handleLogin = async () => {
     const redirectPath = route.query.redirect?.toString() || '/profile'
     router.push(redirectPath)
   } catch (error) {
-    errorMessage.value = error.message || 'An error occurred during login.'
+    errorMessage.value =
+      (error as Error).message || 'An error occurred during login.'
   } finally {
     loading.value = false
   }
