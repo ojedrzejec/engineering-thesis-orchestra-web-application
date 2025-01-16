@@ -87,8 +87,8 @@
         v-else-if="
           isLoggedIn && availableOrchestras.length && !selectedOrchestraId
         "
-        class="app-view__ navigation-menu-vertical-left"
       >
+        <!-- class="app-view__navigation-menu-vertical-left" -->
         <Card>
           <template #content>
             <Message severity="info">
@@ -100,6 +100,29 @@
                 <div>
                   Go to the top left drop down menu to select the orchestra or
                   to create a new one.
+                </div>
+              </div>
+            </Message>
+          </template>
+        </Card>
+      </div>
+
+      <div
+        v-else-if="
+          isLoggedIn && availableOrchestras.length === 0 && !selectedOrchestraId
+        "
+      >
+        <!-- class="app-view__navigation-menu-vertical-left" -->
+        <Card>
+          <template #content>
+            <Message severity="info">
+              <div class="app-view__message-info">
+                <div>
+                  <i class="pi pi-info-circle"></i>
+                </div>
+                <h3>You do not belong to any orchestra</h3>
+                <div>
+                  Go to the top left drop down menu to create a new orchestra.
                 </div>
               </div>
             </Message>
@@ -254,7 +277,8 @@ const menubarItems = computed<MenuItem[]>(() => {
       icon: 'pi pi-folder',
       command: () => {
         router.push({
-          name: 'orchestra-information',
+          name: 'availability',
+          // TODO: stwórz nowy widok, który będzie wyświetlał informacje o orkiestrze a do edycji dla managera i ownera
           params: { orchestraId: orchestra.id },
         })
       },
