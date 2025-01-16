@@ -1,6 +1,33 @@
 <template>
   <div class="side-menu">
-    <h1>Side menu</h1>
+    <div class="side-menu__select-orchestra-container">
+      <Select
+        class="side-menu__select-orchestra"
+        :model-value="selectedOrchestraId"
+        @update:model-value="
+          $router.push({
+            name: 'availability',
+            params: { orchestraId: $event },
+          })
+        "
+        :options="availableOrchestras"
+        option-label="name"
+        option-value="id"
+        placeholder="Select orchestra"
+      />
+
+      <RouterLink :to="{ name: 'create-orchestra' }">
+        <Button
+          class="side-menu__create-orchestra-button"
+          label="Create new orchestra"
+          icon="pi pi-plus"
+          size="small"
+          severity="secondary"
+        />
+      </RouterLink>
+    </div>
+
+    <Divider />
 
     <PanelMenu
       v-if="availableOrchestras.length && selectedOrchestraId"
@@ -18,12 +45,16 @@ import { EOrchestraRole } from '@/constants/enums/EOrchestraRole'
 import { useAvailableOrchestrasStore } from '@/stores/useAvailableOrchestras'
 import { storeToRefs } from 'pinia'
 import type { MenuItem } from 'primevue/menuitem'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import Select from 'primevue/select'
+import Button from 'primevue/button'
+import Divider from 'primevue/divider'
 
 const router = useRouter()
 
 const availableOrchestrasStore = useAvailableOrchestrasStore()
+const { setSelectedOrchestraId } = availableOrchestrasStore
 const {
   availableOrchestras,
   loadingAvailableOrchestras,
@@ -143,5 +174,20 @@ const panelMenuItems = computed<MenuItem[]>(() => {
 </script>
 
 <style lang="scss">
-// TODO
+.side-menu {
+  &__select-orchestra-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__select-orchestra {
+    width: 100%;
+  }
+
+  &__create-orchestra-button {
+    width: 100%;
+    border: 2px solid var(--p-surface-300) !important;
+  }
+}
 </style>
