@@ -8,7 +8,7 @@
       Don't have an account?
       <RouterLink to="/registration">Go to REGISTRATION page.</RouterLink>
     </div>
-    <Form>
+    <Form @submit="handleLogin">
       <Fluid>
         <div class="login-view__form">
           <div class="login-view__form-input">
@@ -90,10 +90,10 @@
           <div>
             <Button
               class="login-view__form-button"
-              @click.prevent="handleLogin"
+              type="submit"
               :disabled="loading"
               :label="loading ? 'Logging in...' : 'Log in'"
-            ></Button>
+            />
           </div>
         </div>
       </Fluid>
