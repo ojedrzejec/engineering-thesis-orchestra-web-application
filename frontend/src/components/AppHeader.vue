@@ -1,7 +1,7 @@
 <template>
   <Menubar>
     <template #start>
-      <div class="app-view__header-group">
+      <div class="app-header__header-group">
         <Button
           v-if="!isDesktop && isLoggedIn"
           icon="pi pi-bars"
@@ -9,7 +9,7 @@
           @click="$emit('mobile-menu-click')"
           rounded
         />
-        <div class="app-view__header-title">Orchestra Manager</div>
+        <div class="app-header__header-title">Orchestra Manager</div>
       </div>
     </template>
 
@@ -19,7 +19,7 @@
                 <img
                   alt="orchestra logo"
                   :src="orchestraInformation?.logo"
-                  class="app-view__menu-orchestra-logo"
+                  class="app-header__menu-orchestra-logo"
                 />
               </div>
               <div v-else>
@@ -75,7 +75,7 @@
             </a>
           </template> -->
     <template #end>
-      <div class="app-view__header-group">
+      <div class="app-header__header-group">
         <RouterLink :to="{ name: 'profile' }">
           <Button
             v-if="isLoggedIn"
@@ -214,3 +214,26 @@ const menubarItems = computed<MenuItem[]>(() => {
   return menuItems
 })
 </script>
+
+<style lang="scss">
+.app-header {
+  &__header-group {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+  }
+
+  &__header-title {
+    font-weight: bold;
+
+    @media (min-width: 576px) {
+      font-size: 1.2rem;
+    }
+
+    @media (min-width: 768px) {
+      font-size: 1.5rem;
+    }
+  }
+}
+</style>

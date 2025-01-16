@@ -294,25 +294,6 @@ const panelMenuItems = computed<MenuItem[]>(() => {
 
 <style setup lang="scss">
 .app-view {
-  &__header-title {
-    font-weight: bold;
-
-    @media (min-width: 576px) {
-      font-size: 1.2rem;
-    }
-
-    @media (min-width: 768px) {
-      font-size: 1.5rem;
-    }
-  }
-
-  &__header-group {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    align-items: center;
-  }
-
   &__navigation-menu-horizontal {
     margin: 20px;
   }
