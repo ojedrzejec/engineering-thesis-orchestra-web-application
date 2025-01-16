@@ -235,5 +235,11 @@ const menubarItems = computed<MenuItem[]>(() => {
       font-size: 1.5rem;
     }
   }
+
+  &__menu-orchestra-logo {
+    width: 100%;
+    max-height: 40px;
+    object-fit: contain;
+  }
 }
 </style>

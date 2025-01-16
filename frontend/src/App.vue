@@ -16,53 +16,6 @@
         <SideMenu />
       </div>
 
-      <!-- class="app-view__navigation-menu-vertical-left" -->
-      <!-- <div
-        v-else-if="
-          isLoggedIn && availableOrchestras.length && !selectedOrchestraId
-        "
-      >
-        <Card>
-          <template #content>
-            <Message severity="info">
-              <div class="app-view__message-info">
-                <div>
-                  <i class="pi pi-info-circle"></i>
-                </div>
-                <h3>Orchestra Selection</h3>
-                <div>
-                  Go to the top left drop down menu to select the orchestra or
-                  to create a new one.
-                </div>
-              </div>
-            </Message>
-          </template>
-        </Card>
-      </div> -->
-
-      <!-- class="app-view__navigation-menu-vertical-left" -->
-      <!-- <div
-        v-else-if="
-          isLoggedIn && availableOrchestras.length === 0 && !selectedOrchestraId
-        "
-      >
-        <Card>
-          <template #content>
-            <Message severity="info">
-              <div class="app-view__message-info">
-                <div>
-                  <i class="pi pi-info-circle"></i>
-                </div>
-                <h3>You do not belong to any orchestra</h3>
-                <div>
-                  Go to the top left drop down menu to create a new orchestra.
-                </div>
-              </div>
-            </Message>
-          </template>
-        </Card>
-      </div> -->
-
       <div class="app-view__router-view">
         <RouterView />
       </div>
@@ -82,17 +35,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { RouterView, useRoute, useRouter } from 'vue-router'
+import { ref, watch } from 'vue'
+import { RouterView, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { EOrchestraRole } from '@/constants/enums/EOrchestraRole'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useAvailableOrchestrasStore } from './stores/useAvailableOrchestras'
 import { useOrchestraInformation } from './composables/useOrchestraInformation'
-import type { MenuItem } from 'primevue/menuitem'
-import PanelMenu from 'primevue/panelmenu'
 import Toast from 'primevue/toast'
-import Panel from 'primevue/panel'
 import Drawer from 'primevue/drawer'
 import SideMenu from './components/SideMenu.vue'
 import AppHeader from './components/AppHeader.vue'
@@ -103,18 +52,10 @@ const widthStore = useWidthStore()
 const { isDesktop } = storeToRefs(widthStore)
 
 const availableOrchestrasStore = useAvailableOrchestrasStore()
-const {
-  availableOrchestras,
-  loadingAvailableOrchestras,
-  selectedOrchestraId,
-  selectedOrchestraDetails,
-} = storeToRefs(availableOrchestrasStore)
+const { selectedOrchestraId } = storeToRefs(availableOrchestrasStore)
 
-const {
-  orchestraInformation,
-  loadingOrchestraInformation,
-  fetchOrchestraInformation,
-} = useOrchestraInformation()
+const { orchestraInformation, fetchOrchestraInformation } =
+  useOrchestraInformation()
 
 const route = useRoute()
 
@@ -130,8 +71,6 @@ watch(
 
 const authStore = useAuthStore()
 const { isLoggedIn } = storeToRefs(authStore)
-
-const router = useRouter()
 </script>
 
 <style setup lang="scss">
@@ -166,40 +105,6 @@ const router = useRouter()
 
   &__footer {
     margin: 20px;
-  }
-
-  &__footer-panel {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    align-items: center;
-    gap: 20px;
-  }
-
-  &__footer-panel-column {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  &__menu-orchestra-logo {
-    width: 100%;
-    max-height: 40px;
-    object-fit: contain;
-  }
-
-  &__footer-orchestra-logo {
-    width: 100%;
-    max-height: 80px;
-    object-fit: contain;
-  }
-
-  &__link {
-    color: var(--p-primary-color);
-    :visited {
-      color: var(--p-primary-color);
-    }
-    text-decoration: none;
   }
 }
 </style>
