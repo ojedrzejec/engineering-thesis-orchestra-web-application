@@ -13,18 +13,18 @@ const repertoireRoutes = require('./src/routes/repertoireRoutes')
 
 const app = express()
 
-app.use(cors())
-// app.use(
-//     cors({
-//         origin: process.env.CORS_ORIGIN,
-//     })
-// )
+const corsOptions = {
+    origin: process.env.CORS_ORIGIN, // frontend domain
+    methods: 'GET,PUT,PATCH,POST,DELETE',
+    credentials: true,
+    optionsSuccessStatus: 204,
+}
+
+app.use(cors(corsOptions))
 
 const PORT = process.env.PORT || 3000
 
-// app.use(express.json())
-// Increase the size limit for the JSON payload
-app.use(express.json({ limit: '100mb' }))
+app.use(express.json({ limit: '100mb' })) // Increase the size limit for the JSON payload
 app.use(express.urlencoded({ limit: '100mb', extended: true })) // Increase the limit for URL-encoded payloads
 
 app.use('/auth', authRoutes)

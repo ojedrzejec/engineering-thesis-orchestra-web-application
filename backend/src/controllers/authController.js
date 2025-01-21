@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 const OrchestraMemberModel = require('../models/OrchestraMemberModel')
 const InstrumentModel = require('../models/InstrumentModel')
 
-// Handle orchestra member registration
+// user registration
 const register = async (req, res) => {
     const {
         email,
@@ -22,7 +22,7 @@ const register = async (req, res) => {
     } = req.body
 
     try {
-        // Check if user already exists
+        // check if user already exists
         const user = await OrchestraMemberModel.findByEmail(email)
         if (user) {
             return res.status(400).json({ msg: 'User already exists' })
