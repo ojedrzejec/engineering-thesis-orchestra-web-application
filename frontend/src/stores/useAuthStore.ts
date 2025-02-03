@@ -5,11 +5,9 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
 const LOCAL_STORAGE_KEY_TOKEN = 'token'
-// const LOCAL_STORAGE_KEY_ID = 'id'
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(null)
-  // const id = ref<string | null>(null)
   const userProfile = ref<TOrchestraMember>(initOrchestraMember)
 
   const isLoggedIn = computed(() => !!token.value)
@@ -26,23 +24,6 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = null
     localStorage.removeItem(LOCAL_STORAGE_KEY_TOKEN)
   }
-
-  // const setId = (newValue: string) => {
-  //   id.value = newValue
-  //   localStorage.setItem(LOCAL_STORAGE_KEY_ID, newValue)
-  // }
-
-  // const getId = () => {
-  //   if (!id.value) {
-  //     id.value = localStorage.getItem(LOCAL_STORAGE_KEY_ID)
-  //   }
-  //   return id.value
-  // }
-
-  // const removeId = () => {
-  //   id.value = null
-  //   localStorage.removeItem(LOCAL_STORAGE_KEY_ID)
-  // }
 
   const fetchUserProfileData = async () => {
     if (!token.value) {
@@ -101,9 +82,6 @@ export const useAuthStore = defineStore('auth', () => {
     setToken,
     getToken,
     removeToken,
-    // setId,
-    // getId,
-    // removeId,
     fetchUserProfileData,
     userProfile,
   }

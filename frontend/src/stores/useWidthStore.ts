@@ -8,7 +8,6 @@ export const useWidthStore = defineStore('width', () => {
     width.value = window.innerWidth
   })
 
-  // () => width.value < 768
   const isMobile = computed(() => width.value < 768)
 
   const isDesktop = computed(() => width.value >= 768)
