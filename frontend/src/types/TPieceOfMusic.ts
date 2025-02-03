@@ -1,7 +1,7 @@
 export type TPieceOfMusic = {
-  id: string
-  id_orchestra: string
-  title: string
-  composer: string
-  pdf: string
+  id: string | null
+  id_orchestra: string | null
+  title: string | null
+  composer: string | null
+  pdf: string | null
 }

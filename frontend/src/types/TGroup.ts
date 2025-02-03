@@ -1,12 +1,12 @@
 export type TGroup = {
-  id: string
-  name: string
+  id: string | undefined
+  name: string | null
   members: {
-    id: string
-    email: string
-    firstName: string
-    lastName: string
-    instruments: string
+    id: string | null
+    email: string | null
+    firstName: string | null
+    lastName: string | null
+    instruments: string | null
   }[]
-  value: string
+  value: string | undefined
 }

@@ -153,6 +153,8 @@ import {
 } from '@/constants/validation/groupValidation'
 import type { TGroup } from '@/types/TGroup'
 import type { TPlayer } from '@/types/TPlayer'
+import { initGroup } from '@/constants/initGroup'
+import { initPlayer } from '@/constants/initPlayer'
 
 const {
   groups,
@@ -246,8 +248,8 @@ const addMember = async (selectedMember: TPlayer, selectedGroup: TGroup) => {
     await fetchGroups(route.params.orchestraId.toString())
     await fetchMembersNotInAnyGroup(route.params.orchestraId.toString())
   } finally {
-    selectedMember.value = null
-    selectedGroup.value = null
+    selectedMember = initPlayer
+    selectedGroup = initGroup
   }
 }
 </script>

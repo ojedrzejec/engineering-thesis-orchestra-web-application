@@ -11,20 +11,10 @@
       <div v-else-if="!repertoire">
         <Message severity="error">Failed to load orchestra repertoire.</Message>
       </div>
-      <!-- <div v-else-if="repertoire.length === 0">
-        <Message severity="error"
-          >Failed to load orchestra repertoire <strong>or</strong> no orchestra
-          repertoire found.
-        </Message>
-      </div> -->
 
       <div v-else class="repertoire-view__content">
         <div class="repertoire-view__all-pieces-of-music-cards">
-          <Card
-            class="repertoire-view__card-piece-of-music"
-            v-for="pieceOfMusic in repertoire"
-            :key="pieceOfMusic.id || ''"
-          >
+          <Card v-for="pieceOfMusic in repertoire" :key="pieceOfMusic.id || ''">
             <template #content>
               <h3>{{ pieceOfMusic.title }}</h3>
               <p>{{ pieceOfMusic.composer }}</p>
@@ -232,6 +222,8 @@ import {
 } from '@/constants/validation/repertoireValidation'
 import type { TPieceOfMusic } from '@/types/TPieceOfMusic'
 import type { TRepertoire } from '@/types/TRepertoire'
+import { initPieceOfMusic } from '@/constants/initPieceOfMusic'
+import { initGroup } from '@/constants/initGroup'
 
 const route = useRoute()
 
@@ -329,8 +321,8 @@ const addFileToGroup = async (
     await fetchGroups(route.params.orchestraId.toString())
     await fetchRepertoire(route.params.orchestraId.toString())
   } finally {
-    selectedPieceOfMusic.value = null
-    selectedGroup.value = null
+    selectedPieceOfMusic = initPieceOfMusic
+    selectedGroup = initGroup
     pdfFile.value = null
   }
 }
@@ -407,9 +399,15 @@ const downloadMusicSheetNotes = (pieceOfMusic: TRepertoire) => {
   &__content {
     display: flex;
     flex-direction: column;
-    // align-items: center;
     gap: 50px;
     width: 100%;
+  }
+
+  &__all-pieces-of-music-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    justify-content: center;
   }
 
   &__form {
@@ -436,14 +434,6 @@ const downloadMusicSheetNotes = (pieceOfMusic: TRepertoire) => {
     .p-fileupload-file-badge {
       display: none !important;
     }
-  }
-
-  &__all-pieces-of-music-cards {
-    display: grid;
-    // border: 1px solid red;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    justify-content: center;
   }
 
   &__card-piece-of-music-pdf {
