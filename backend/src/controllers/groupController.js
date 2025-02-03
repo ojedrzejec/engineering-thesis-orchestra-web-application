@@ -68,7 +68,6 @@ const getAllGroupsWithMembers = async (req, res) => {
 
             groups[i].members = members
         }
-
         // console.log('groups:', groups)
 
         res.status(200).json(groups)

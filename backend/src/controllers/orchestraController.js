@@ -1,8 +1,6 @@
 const Orchestra_OrchestraOrchestraMember_Owner_Model = require('../models/OrchestraModel_OrchestraOrchestraMember_OWNER')
 const OrchestraOrchestraMemberModel = require('../models/OrchestraOrchestraMemberModel')
 const OrchestraMemberModel = require('../models/OrchestraMemberModel')
-// const jwt = require('jsonwebtoken')
-// const { updateJsonWebToken } = require('../controllers/authController')
 
 const getAllOrchestras = async (req, res) => {
     const orchestras =
@@ -61,8 +59,6 @@ const createOrchestra = async (req, res) => {
                     ownerId: req.user.id,
                 }
             )
-
-        // const token = updateJsonWebToken(req.user.id)
 
         res.status(201).json(orchestra)
     } catch (err) {

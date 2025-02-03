@@ -31,7 +31,6 @@ const getAllInstrumentsWithoutRepeatingTheirNames = async (req, res) => {
 
 //  fetch all instruments of all Orchestra Members associated with a specific orchestra (by orchestra id)
 const getAllByOrchestraId = async (req, res) => {
-    // const { id } = req.params
     const orchestraId = req.params.id
     try {
         console.log('getAllByOrchestraId')

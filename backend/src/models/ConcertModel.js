@@ -4,6 +4,12 @@ const { v4: uuidv4 } = require('uuid')
 const getAllConcertsByOrchestraId = async (orchestraId) => {
     const result = await pool.query(
         `SELECT * FROM concert WHERE id_orchestra = $1`,
+
+        // show only concerts that are in the future
+        // `SELECT * FROM "concert"
+        //   WHERE id_orchestra = $1
+        //     AND date >= current_date
+        //   ORDER BY "date" ASC;`,
         [orchestraId]
     )
     return result.rows

@@ -228,7 +228,7 @@ const deleteOrchestraMember = async (req, res) => {
         // delete all related instruments first
         await InstrumentModel.deleteInstrumentsByOrchestraMemberId(id)
 
-        // now delete the orchestra member
+        // delete the orchestra member
         const deletedMember =
             await OrchestraMemberModel.deleteOrchestraMemberById(id)
         if (!deletedMember) {

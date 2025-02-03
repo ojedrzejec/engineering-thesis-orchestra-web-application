@@ -107,7 +107,7 @@ const generateJsonWebToken = (user) => {
     }
 
     return jwt.sign(payload, process.env.ACCESS_JWT_TOKEN_SECRET, {
-        expiresIn: '4h', // Token expires in 1 hour
+        expiresIn: '4h', // Token expires in 4 hours
     })
 }
 
