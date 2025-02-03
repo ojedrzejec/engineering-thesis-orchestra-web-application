@@ -50,7 +50,6 @@
               >
 
               <template #subtitle>
-                <!-- Card subtitle -->
                 <div class="availability-view__concert-details-subtitle">
                   <div
                     class="availability-view__concert-details-subtitle-single-info"
@@ -97,20 +96,11 @@
                 </div>
               </template>
 
-              <template #content>
-                <!-- <div
-                  style="
-                    display: -webkit-box;
-                    -webkit-line-clamp: 3;
-                    line-clamp: 3;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                  "
-                >
+              <!-- <template #content>
+                <div>
                   {{ concert.description }}
-                </div> -->
-              </template>
+                </div>
+              </template> -->
 
               <template #footer>
                 <div class="availability-view__buttons">
@@ -176,30 +166,29 @@
                   </div>
                 </div>
 
-                <div>
-                  <Drawer
-                    v-model:visible="visibleDrawerConcertDetails"
-                    position="right"
-                    header="Concert Details"
-                    class="availability-view__drawer !w-full md:!w-80 lg:!w-[30rem]"
-                  >
-                    <ConcertDetails
-                      v-if="selectedConcert"
-                      :concertDetails="selectedConcert"
-                    />
-                    <div v-else>No concert data</div>
-                  </Drawer>
-                  <Button
-                    class="availability-view__single-button"
-                    @click="openConcertDetails(concert)"
-                  >
-                    See details
-                    <i class="pi pi-angle-right"></i>
-                  </Button>
-                </div>
+                <Button
+                  class="availability-view__single-button"
+                  @click="openConcertDetails(concert)"
+                >
+                  See details
+                  <i class="pi pi-angle-right"></i>
+                </Button>
               </template>
             </Card>
           </div>
+
+          <Drawer
+            v-model:visible="visibleDrawerConcertDetails"
+            position="right"
+            header="Concert Details"
+            class="availability-view__drawer !w-full md:!w-80 lg:!w-[30rem]"
+          >
+            <ConcertDetails
+              v-if="selectedConcert"
+              :concertDetails="selectedConcert"
+            />
+            <div v-else>No concert data</div>
+          </Drawer>
         </div>
       </div>
     </div>
