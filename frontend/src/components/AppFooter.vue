@@ -1,61 +1,63 @@
 <template>
-  <Panel>
-    <div class="app-footer__footer-panel">
-      <div class="app-footer__footer-panel-column">
-        <img
-          alt="orchestra logo"
-          :src="
-            orchestraInformation.logo ?? 'https://via.placeholder.com/640x200'
-          "
-          class="app-footer__footer-orchestra-logo"
-        />
-      </div>
-      <div class="app-footer__footer-panel-column">
-        <strong>{{ orchestraInformation.name }}</strong>
-        <div>{{ orchestraInformation.email }}</div>
-        <div>{{ orchestraInformation.address }}</div>
-      </div>
-
-      <div class="app-footer__footer-panel-row">
-        <a
-          v-if="orchestraInformation.facebookUrl"
-          class="app-footer__link"
-          :href="orchestraInformation.facebookUrl"
-          target="_blank"
-        >
-          <i
-            class="pi pi-facebook app-footer__social-icon"
-            :class="{ 'app-footer__social-icon--desktop': isDesktop }"
+  <div class="app-footer">
+    <Panel>
+      <div class="app-footer__footer-panel">
+        <div class="app-footer__footer-panel-column">
+          <img
+            alt="orchestra logo"
+            :src="
+              orchestraInformation.logo ?? 'https://via.placeholder.com/640x200'
+            "
+            class="app-footer__footer-orchestra-logo"
           />
-        </a>
+        </div>
+        <div class="app-footer__footer-panel-column">
+          <strong>{{ orchestraInformation.name }}</strong>
+          <div>{{ orchestraInformation.email }}</div>
+          <div>{{ orchestraInformation.address }}</div>
+        </div>
 
-        <a
-          v-if="orchestraInformation.instagramUrl"
-          class="app-footer__link"
-          :href="orchestraInformation.instagramUrl"
-          target="_blank"
-        >
-          <i
-            class="pi pi-instagram app-footer__social-icon"
-            :class="{ 'app-footer__social-icon--desktop': isDesktop }"
-          />
-        </a>
+        <div class="app-footer__footer-panel-row">
+          <a
+            v-if="orchestraInformation.facebookUrl"
+            class="app-footer__link"
+            :href="orchestraInformation.facebookUrl"
+            target="_blank"
+          >
+            <i
+              class="pi pi-facebook app-footer__social-icon"
+              :class="{ 'app-footer__social-icon--desktop': isDesktop }"
+            />
+          </a>
 
-        <a
-          v-if="orchestraInformation.youtubeUrl"
-          class="app-footer__link"
-          :href="orchestraInformation.youtubeUrl"
-          target="_blank"
-          rel="noopener"
-        >
-          <i
-            class="pi pi-youtube app-footer__social-icon"
-            :class="{ 'app-footer__social-icon--desktop': isDesktop }"
-          />
-        </a>
+          <a
+            v-if="orchestraInformation.instagramUrl"
+            class="app-footer__link"
+            :href="orchestraInformation.instagramUrl"
+            target="_blank"
+          >
+            <i
+              class="pi pi-instagram app-footer__social-icon"
+              :class="{ 'app-footer__social-icon--desktop': isDesktop }"
+            />
+          </a>
+
+          <a
+            v-if="orchestraInformation.youtubeUrl"
+            class="app-footer__link"
+            :href="orchestraInformation.youtubeUrl"
+            target="_blank"
+            rel="noopener"
+          >
+            <i
+              class="pi pi-youtube app-footer__social-icon"
+              :class="{ 'app-footer__social-icon--desktop': isDesktop }"
+            />
+          </a>
+        </div>
       </div>
-    </div>
-  </Panel>
+    </Panel>
+  </div>
 </template>
 
 <script setup lang="ts">
