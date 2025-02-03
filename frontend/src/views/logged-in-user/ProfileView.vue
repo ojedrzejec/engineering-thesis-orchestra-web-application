@@ -257,10 +257,7 @@
             </div>
           </div>
 
-          <div
-            class="profile-view__form-input profile-view__file"
-            style="align-items: center"
-          >
+          <div class="profile-view__form-input profile-view__file">
             <FileUpload
               mode="advanced"
               name="profilePicture"
@@ -558,7 +555,7 @@ const handleUpdate = async () => {
       body: JSON.stringify(updateData),
     })
 
-    if (!response) {
+    if (!response.ok) {
       const errorData = await response.json()
       const errorMessage =
         errorData.msg ||
@@ -581,7 +578,8 @@ const handleUpdate = async () => {
       life: 3000,
     })
   } catch (error) {
-    errorMessage.value = error.message || 'An error occurred during update.'
+    errorMessage.value =
+      (error as Error).message || 'An error occurred during update.'
   } finally {
     loading.value = false
   }
@@ -606,6 +604,8 @@ const handleUpdate = async () => {
     align-items: center;
     justify-content: center;
     gap: 10px;
+    width: 100%;
+    min-width: 425px;
   }
 
   &__form {
@@ -614,6 +614,7 @@ const handleUpdate = async () => {
     flex-direction: column;
     align-items: center;
     gap: 30px;
+    width: 100%;
   }
 
   &__form-input {
@@ -621,7 +622,7 @@ const handleUpdate = async () => {
     flex-direction: column;
     /* align-items: center; */
     gap: 5px;
-    min-width: 300px;
+    width: 100%;
   }
 
   &__form-error-messages {
@@ -630,14 +631,9 @@ const handleUpdate = async () => {
     gap: 5px;
   }
 
-  &__info {
-    margin-bottom: 40px;
-    text-align: center;
-  }
-
   &__form-button {
     width: 100%;
-    min-width: 300px;
+    min-width: 450px;
   }
 
   &__form-input-instruments {
@@ -658,6 +654,7 @@ const handleUpdate = async () => {
     .p-fileupload-file-badge {
       display: none !important;
     }
+    align-items: center;
   }
 
   &__form-section {
