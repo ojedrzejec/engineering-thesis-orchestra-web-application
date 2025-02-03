@@ -373,7 +373,7 @@ const handleOrchestraCreation = async () => {
       body: JSON.stringify(formData),
     })
 
-    if (!response) {
+    if (!response.ok) {
       const errorData = await response.json()
       const errorMessage =
         errorData.msg ||
@@ -397,7 +397,7 @@ const handleOrchestraCreation = async () => {
   } catch (error) {
     console.error('Error:', error)
     errorMessage.value =
-      error.message || 'An error occurred during orchestra creation.'
+      (error as Error).message || 'An error occurred during orchestra creation.'
   } finally {
     loading.value = false
   }

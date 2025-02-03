@@ -770,7 +770,8 @@ const handleRegister = async () => {
     const redirectPath = route.query.redirect?.toString() || '/login'
     router.push(redirectPath)
   } catch (error) {
-    errorMessage.value = error.message || 'An error occurred during register.'
+    errorMessage.value =
+      (error as Error).message || 'An error occurred during register.'
   } finally {
     loading.value = false
   }

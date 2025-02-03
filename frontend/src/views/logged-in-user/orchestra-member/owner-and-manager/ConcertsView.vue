@@ -61,7 +61,6 @@
                 ><strong>{{ concert.name }}</strong></template
               >
               <template #subtitle>
-                <!-- Card subtitle -->
                 <div class="concerts-view__concert-details-subtitle">
                   <div
                     class="concerts-view__concert-details-subtitle-single-info"
@@ -133,25 +132,8 @@
               </template>
             </Card>
           </div>
-
-          <!-- <pre>
-          <div>[X] Create a concerts (seperate component)</div>
-          
-          <div>[X] Display all concerts -> go to details (seperate component)</div>
-          
-          <div>concert details component:
-            [ ] edit button on the top right -> go to edit concert (seperate component)
-            [ ] delete button on the top right
-            [X] concert details
-            [X] list of all members with their availability (seperate component)
-          </div>
-  
-          <div>[ ] edit concert component:
-            - form
-            - save button
-          </div>
-        </pre> -->
         </div>
+
         <Drawer
           v-model:visible="visibleDrawerConcertDetails"
           position="full"
@@ -182,7 +164,7 @@ const route = useRoute()
 
 const visibleDrawerConcertCreateForm = ref(false)
 const visibleDrawerConcertDetails = ref(false)
-const selectedConcert = ref<TConcert | null>(null)
+const selectedConcert = ref<TConcert>({} as TConcert)
 
 const { concerts, loadingConcerts, fetchConcerts } = useConcerts()
 

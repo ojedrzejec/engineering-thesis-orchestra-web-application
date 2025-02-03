@@ -312,10 +312,8 @@ const {
 const route = useRoute()
 const selectedEmail = ref<string | null>(null)
 
-// TODO: dwa źródła prawdy o otwartym drawerze | START
 const selectedUser = ref<TMember>(initMember)
 const drawerVisible = ref(false)
-// TTTT: dwa źródła prawdy o otwartym drawerze | END
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -436,7 +434,7 @@ const handleAddMember = async () => {
   &__drawer-content {
     display: flex;
     flex-direction: column;
-    // gap: 10px;
+    gap: 20px;
     // width: 30rem;
     // height: 100%;
   }

@@ -8,6 +8,7 @@
         :value="allMembersAvailability"
         :loading="loadingAllMembersAvailability"
         removableSort
+        size="small"
       >
         <Column field="first_name" header="First Name" sortable></Column>
         <Column field="last_name" header="Last Name" sortable></Column>

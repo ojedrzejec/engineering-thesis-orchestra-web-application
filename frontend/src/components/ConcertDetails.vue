@@ -119,7 +119,7 @@
 import type { TConcert } from '@/types/TConcert'
 import ConcertAvailability from './ConcertAvailability.vue'
 
-const props = defineProps<{
+defineProps<{
   concertDetails: TConcert
 }>()
 </script>
