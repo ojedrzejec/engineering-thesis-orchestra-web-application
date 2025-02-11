@@ -140,7 +140,7 @@
           header="Concert Details"
           class="concerts-view__drawer !w-full md:!w-80 lg:!w-[30rem]"
         >
-          <ConcertDetails :concertDetails="selectedConcert" />
+          <ConcertDetails :concertDetails="selectedConcert" :selectedOrchestraDetails="selectedOrchestraDetails" />
         </Drawer>
       </div>
     </div>
@@ -150,17 +150,22 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import Drawer from 'primevue/drawer'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import ProgressSpinner from 'primevue/progressspinner'
 import Message from 'primevue/message'
+import { useAvailableOrchestrasStore } from '@/stores/useAvailableOrchestras'
 import ConcertCreateForm from '@/components/ConcertCreateForm.vue'
 import ConcertDetails from '@/components/ConcertDetails.vue'
 import { useConcerts } from '@/composables/useConcerts'
 import type { TConcert } from '@/types/TConcert'
 
 const route = useRoute()
+
+const availableOrchestrasStore = useAvailableOrchestrasStore()
+const { selectedOrchestraDetails } = storeToRefs(availableOrchestrasStore)
 
 const visibleDrawerConcertCreateForm = ref(false)
 const visibleDrawerConcertDetails = ref(false)

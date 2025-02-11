@@ -56,7 +56,7 @@
       </div>
     </div>
 
-    <ConcertAvailability v-if="concertDetails" :concertId="concertDetails.id" />
+    <ConcertAvailability v-if="concertDetails && (selectedOrchestraDetails && (selectedOrchestraDetails.accessType === EOrchestraRole.MANAGER || selectedOrchestraDetails.accessType === EOrchestraRole.OWNER))" :concertId="concertDetails.id" />
 
     <div class="concert-details-view__drawer-single-info">
       <div>
@@ -118,9 +118,12 @@
 <script setup lang="ts">
 import type { TConcert } from '@/types/TConcert'
 import ConcertAvailability from './ConcertAvailability.vue'
+import { EOrchestraRole } from '@/constants/enums/EOrchestraRole';
+import type { TOrchestraAccess } from '@/types/TOrchestraAccess';
 
 defineProps<{
   concertDetails: TConcert
+  selectedOrchestraDetails: TOrchestraAccess | null
 }>()
 </script>
 

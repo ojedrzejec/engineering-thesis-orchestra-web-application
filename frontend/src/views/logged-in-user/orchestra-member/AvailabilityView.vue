@@ -186,6 +186,7 @@
             <ConcertDetails
               v-if="selectedConcert"
               :concertDetails="selectedConcert"
+              :selectedOrchestraDetails="selectedOrchestraDetails"
             />
             <div v-else>No concert data</div>
           </Drawer>
