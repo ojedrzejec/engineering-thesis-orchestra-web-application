@@ -4,8 +4,19 @@ const Orchestra_OrchestraOrchestraMember_Owner_Model = require('../models/Orches
 const GroupModel = require('../models/GroupModel')
 
 const getMemberGroup = async (req, res) => {
+    const orchestraId = req.params.id
     const memberId = req.user.id
+
     try {
+        // check if the orchestra exists
+        const orchestraExistance =
+            await Orchestra_OrchestraOrchestraMember_Owner_Model.getOrchestraById(
+                orchestraId
+            )
+        if (!orchestraExistance) {
+            return res.status(404).json({ msg: 'Orchestra not found' })
+        }
+
         // Find orchestra member by id
         const orchestraMember = await OrchestraMemberModel.findById(memberId)
         if (!orchestraMember) {
@@ -14,7 +25,8 @@ const getMemberGroup = async (req, res) => {
 
         // Get the member group by member id
         const memberGroup = await RepertoireModel.getMemberGroupByMemberId(
-            memberId
+            memberId,
+            orchestraId
         )
         if (!memberGroup) {
             return res.status(404).json({ msg: 'Member group not found' })
@@ -33,6 +45,15 @@ const getMemberRepertoire = async (req, res) => {
     const memberId = req.user.id
 
     try {
+        // check if the orchestra exists
+        const orchestraExistance =
+            await Orchestra_OrchestraOrchestraMember_Owner_Model.getOrchestraById(
+                orchestraId
+            )
+        if (!orchestraExistance) {
+            return res.status(404).json({ msg: 'Orchestra not found' })
+        }
+
         // Find orchestra member by id
         const orchestraMember = await OrchestraMemberModel.findById(memberId)
         if (!orchestraMember) {
@@ -41,7 +62,8 @@ const getMemberRepertoire = async (req, res) => {
 
         // Get the member group by member id
         const memberGroup = await RepertoireModel.getMemberGroupByMemberId(
-            memberId
+            memberId,
+            orchestraId
         )
         if (!memberGroup) {
             return res.status(404).json({ msg: 'Member group not found' })

@@ -108,7 +108,7 @@ const {
 watch(
   () => route.params.orchestraId,
   async orchestraId => {
-    await fetchMemberGroup()
+    await fetchMemberGroup(orchestraId.toString())
     await fetchPiecesOfMusic(orchestraId.toString())
   },
   { immediate: true },

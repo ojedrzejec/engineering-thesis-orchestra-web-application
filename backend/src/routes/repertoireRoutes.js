@@ -10,12 +10,12 @@ const {
     addMusicSheetNotes,
 } = require('../controllers/repertoireController')
 
-router.get('/member-group/', authMiddleware.authenticateToken, getMemberGroup)
 router.get(
     '/member-group/:id/',
     authMiddleware.authenticateToken,
-    getMemberRepertoire
+    getMemberGroup
 )
+router.get('/group/:id/', authMiddleware.authenticateToken, getMemberRepertoire)
 
 router.get('/:id/', authMiddleware.authenticateToken, getOrchestraRepertoire)
 router.get(

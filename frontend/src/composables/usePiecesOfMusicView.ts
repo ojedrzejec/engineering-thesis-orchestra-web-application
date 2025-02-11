@@ -13,10 +13,10 @@ export const usePiecesOfMusicView = () => {
   const piecesOfMusic = ref<TPieceOfMusic[]>([])
   const loadingPiecesOfMusic = ref(false)
 
-  const fetchMemberGroup = async () => {
+  const fetchMemberGroup = async (orchestraId: string) => {
     loadingMemberGroup.value = true
     try {
-      const response = await fetch(`${API_BASE_URL}/repertoire/member-group/`, {
+      const response = await fetch(`${API_BASE_URL}/repertoire/member-group/${orchestraId}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token.value}`,
@@ -46,7 +46,7 @@ export const usePiecesOfMusicView = () => {
     loadingPiecesOfMusic.value = true
     try {
       const response = await fetch(
-        `${API_BASE_URL}/repertoire/member-group/${orchestraId}`,
+        `${API_BASE_URL}/repertoire/group/${orchestraId}`,
         {
           method: 'GET',
           headers: {

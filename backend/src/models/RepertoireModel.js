@@ -11,16 +11,15 @@ const findPieceOfMusicById = async (id) => {
     return result.rows[0]
 }
 
-const getMemberGroupByMemberId = async (memberId) => {
+const getMemberGroupByMemberId = async (memberId, orchestraId) => {
     const query = `
-     
         SELECT og.id, og.name
         FROM orchestra_group og
         JOIN orchestra_group_orchestra_member ogom 
           ON og.id = ogom.id_orchestra_group
-        WHERE ogom.id_orchestra_member = $1
+        WHERE ogom.id_orchestra_member = $1 AND og.id_orchestra = $2;
     `
-    const result = await pool.query(query, [memberId])
+    const result = await pool.query(query, [memberId, orchestraId])
     return result.rows[0]
 }
 
